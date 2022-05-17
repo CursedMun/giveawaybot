@@ -8,6 +8,8 @@ export class Giveaway {
   @Prop()
   ID: string;
   @Prop()
+  prize: string;
+  @Prop()
   guildID: string;
   @Prop()
   creatorID: string;

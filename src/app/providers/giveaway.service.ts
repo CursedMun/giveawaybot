@@ -179,17 +179,18 @@ export class GiveawayService {
     const id = SnowflakeUtil.generate();
     let doc = {
       ID: id,
+      prize,
       accessCondition: access_condition,
       condition,
       channelID: channel.id,
-      messageID: '',
+      messageID: "",
       creatorID,
       endDate: Math.floor(endTime / 1e3),
       participants: [],
       guildID: channel.guild.id,
-      winnerCount: winnersCount,    
-    }
-    
+      winnerCount: winnersCount,
+    };
+
     const message = await channel.send({
       embeds: [
         {
@@ -233,18 +234,18 @@ export class GiveawayService {
                     type: "BUTTON",
                     label: "Участвовать",
                     style: "PRIMARY",
-                  }
+                  },
                 ],
               },
             ]
           : undefined,
     });
-    if(access_condition === 'reaction')
+    if (access_condition === "reaction")
       await message.react(config.emojis.giveaway);
     doc = {
       ...doc,
       messageID: message.id,
-    }
+    };
     await this.giveawayService.create(doc);
   }
   // actions: SponsorActions = {
