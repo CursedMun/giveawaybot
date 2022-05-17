@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes:
+      - cache:/data
+    networks:
+      - custom
+  app:
+    container_name: sadnes-mod
+    build: .
+    restart: always
+    depends_on:
+      - cache
+    env_file:
+      - .env
+    external_links:
+      - mongo:mongo
+    networks:
+      - custom
+
+networks:
+  custom:
+    external: true
+volumes:
+  cache:
+    driver: local
