@@ -3,6 +3,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import {
   Client,
   Guild,
+  GuildMember,
   Message,
   MessageEmbedOptions,
   SnowflakeUtil,
@@ -56,14 +57,14 @@ export class GiveawayService {
           channel.messages.cache.get(doc.messageID) ??
           (await channel.messages.fetch(doc.messageID));
         new Timer(
-          doc.end_date * 1e3,
+          doc.endDate * 1e3,
           () => {
-            this.updateTimer(message, doc.end_date * 1e3);
+            this.updateTimer(message, doc.endDate * 1e3);
           },
           config.ticks.tenSeconds / 2
         );
         new Timer(
-          doc.end_date * 1e3,
+          doc.endDate * 1e3,
           () => {
             this.endGiveaway(doc.ID);
           },
@@ -246,7 +247,66 @@ export class GiveawayService {
       ...doc,
       messageID: message.id,
     };
-    await this.giveawayService.create(doc);
+    await Promise.allSettled([
+      access_condition === "reaction"
+        ? message.react(config.emojis.giveaway)
+        : undefined,
+      this.giveawayService.setCache(channel.guild.id, doc.ID),
+      this.giveawayService.create(doc),
+    ]);
+  }
+  async getGiveaway(ID: string) {
+    return this.giveawayService.findOne({ ID });
+  }
+  async getGiveawayByChannel(channelID: string) {
+    return this.giveawayService.findOne({ channelID });
+  }
+  async getServerGiveaways(guildID: string): Promise<string[]> {
+    return await this.giveawayService.getCache(guildID);
+  }
+  async onJoin(
+    member: GuildMember,
+    ID: string
+  ): Promise<{ reason: string; success: boolean }> {
+    let doc = await this.getGiveaway(ID);
+    if (!doc) return { reason: "Розыгрыш не найден", success: false };
+    if (doc.condition === "voice" && !member.voice.channel)
+      return { reason: "Вы должны быть в голосовом канале", success: false };
+    if (doc.participants.includes(member.id))
+      return { reason: "Вы уже участвуете", success: false };
+    await this.giveawayService.GiveawayModel.updateOne(
+      { ID },
+      { $addToSet: { participants: member } }
+    );
+    doc.participants.push(member.id);
+    this.giveawayService.setCache(`giveaways_get_${ID}`, doc);
+    return { reason: "Вы успешно зарегались", success: true };
+  }
+  async onLeave(
+    member: GuildMember,
+    ID: string
+  ): Promise<{ reason: string; success: boolean }> {
+    let doc = await this.getGiveaway(ID);
+    if (!doc) return { reason: "Розыгрыш не найден", success: false };
+    if (!doc.participants.includes(member.id))
+      return { reason: "Вы не участвуете", success: false };
+    //update model and remove member from participants
+
+    doc.participants = doc.participants.splice(
+      doc.participants.indexOf(member.id),
+      1
+    );
+    await this.giveawayService.GiveawayModel.updateOne(
+      { ID },
+      { participants: doc.participants }
+    );
+    this.giveawayService.setCache(`giveaways_get_${ID}`, doc);
+    return { reason: "Вы успешно Вышли", success: true };
+  }
+  async listMembers(ID: string) {
+    const doc = await this.getGiveaway(ID);
+    if (!doc) return [];
+    return doc.participants;
   }
   // actions: SponsorActions = {
   //   add: (data: SponsorActionsData) =>

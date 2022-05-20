@@ -31,6 +31,16 @@ export class MongoGiveawayService {
       { ttl: ttl ?? this.defaulttl }
     );
   }
+  setCache(id: string, value: any, ttl?: number) {
+    let storedValue = this.getCache(id);
+    if (storedValue instanceof Array) {
+      storedValue.push(value);
+    }
+    this.cache.set(id, storedValue ?? value, { ttl: ttl ?? this.defaulttl });
+  }
+  async getCache(id: string): Promise<any> {
+    return await this.cache.get(id);
+  }
   async findOne(data: FilterQuery<GiveawayDocument>, ttl?: number) {
     const cacheKey = `giveaways_find_${data.ID}`;
     return await this.cache.wrap(

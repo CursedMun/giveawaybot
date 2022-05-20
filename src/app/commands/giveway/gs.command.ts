@@ -7,7 +7,7 @@ import {
   MessageComponentInteraction,
   Modal,
   ModalSubmitInteraction,
-  TextChannel,
+  TextChannel
 } from "discord.js";
 import { TextInputStyles } from "discord.js/typings/enums";
 import { GiveawayService } from "src/app/providers/giveaway.service";
@@ -15,7 +15,7 @@ import { config } from "src/app/utils/config";
 import { IsModalInteractionGuard } from "src/app/utils/guards/is-modal-interaction.guard";
 import {
   GiveawayAccessСondition,
-  GiveawayCondition,
+  GiveawayCondition
 } from "src/schemas/mongo/giveaway/giveaway.schema";
 
 @Injectable()
