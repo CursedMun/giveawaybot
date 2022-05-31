@@ -11,6 +11,7 @@ export default class Timer {
     checkInterval = config.ticks.tenSeconds
   ) {
     this.checkInterval = checkInterval;
+    this.lastTick = Date.now();
     this.set(date, fn);
     this.tick();
   }
@@ -24,19 +25,29 @@ export default class Timer {
     }
     return this.timeout(fn, date - Date.now());
   }
-
   tick() {
     this.lastTick = Date.now();
     for (const [id, val] of this.cache) {
       if (val.date <= this.nextTick) {
-        this.timeout(val.fn, val.date - Date.now());
+        this.timeout(
+          val.fn,
+          val.date - Date.now() < 0 ? 0 : val.date - Date.now()
+        );
         this.cache.delete(id);
       }
     }
-    this.timeout(this.tick, this.checkInterval);
+    setTimeout(() => {
+      this.tick();
+    }, this.checkInterval);
   }
 
   timeout(fn: () => void, time = 0) {
     return setTimeout(() => fn(), time);
+  }
+  destroy(){
+    for (const [id, val] of this.cache) {
+      val.fn();
+    }
+    this.cache.clear();
   }
 }

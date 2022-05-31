@@ -23,8 +23,12 @@ export class Giveaway {
   condition: GiveawayCondition;
   @Prop()
   winnerCount: number;
-  @Prop()
+  @Prop({default: Date.now()})
   endDate: number;
+  @Prop({default: false})
+  ended: boolean;
+  @Prop()
+  createdTick: number;
   @Prop()
   participants: string[];
 }

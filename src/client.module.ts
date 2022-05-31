@@ -4,7 +4,6 @@ import { ConfigModule } from "@nestjs/config/dist/config.module";
 import { ConfigService } from "@nestjs/config/dist/config.service";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Intents, Options } from "discord.js";
-import { ClientGateway } from "./app/events/client.gateway";
 
 @Module({
   imports: [
@@ -15,9 +14,11 @@ import { ClientGateway } from "./app/events/client.gateway";
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        uri: process.env.NODE_ENV ?`mongodb://localhost:27017/giveaways` : `mongodb://${configService.get("MONGO_LOGIN")}:${configService.get(
-          "MONGO_PASSWORD"
-        )}@mongo:27017/giveaways`,
+        uri: process.env.NODE_ENV
+          ? `mongodb://localhost:27017/giveaways`
+          : `mongodb://${configService.get("MONGO_LOGIN")}:${configService.get(
+              "MONGO_PASSWORD"
+            )}@mongodb:27017/giveaways`,
       }),
       inject: [ConfigService],
     }),
@@ -27,11 +28,20 @@ import { ClientGateway } from "./app/events/client.gateway";
         prefix: configService.get("PREFIX") || "!",
         token: configService.get("TOKEN")!,
         discordClientOptions: {
+          presence: {
+            status: 'online',
+            activities: [{
+              name: "💫 напишите !invite",
+              type: 'PLAYING',
+              url: 'https://discord.com/api/oauth2/authorize?client_id=960300300038717490&permissions=0&scope=bot'
+            }]
+          },
           makeCache: Options.cacheWithLimits({
             ...Options.defaultMakeCacheSettings,
             ReactionManager: 0,
           }),
           sweepers: Options.defaultSweeperSettings,
+          
           intents: [
             Intents.FLAGS.GUILDS,
             Intents.FLAGS.GUILD_BANS,
@@ -39,223 +49,14 @@ import { ClientGateway } from "./app/events/client.gateway";
             Intents.FLAGS.GUILD_MESSAGES,
             Intents.FLAGS.GUILD_VOICE_STATES,
             Intents.FLAGS.DIRECT_MESSAGES,
+            Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
           ],
         },
-        // removeGlobalCommands: true,
-        // registerCommandOptions: [
-        //   {
-        //     forGuild: configService.get("GUILD_ID_WITH_COMMANDS"),
-        //     removeCommandsBefore: true,
-        //   },
-        // ],
-        // //TODO проверить на правильность
-        // //how to set permissions to commands
-        // slashCommandsPermissions: [
-        //   //Profile
-        //   {
-        //     commandClassType: ProfileCommand,
-        //     permissions: Object.values({
-        //       ...config.roles.staff,
-        //       ...config.roles.privileged,
-        //     })
-        //       .filter((id) => id != config.roles.staff.Eventer)
-        //       .map((roleId) => {
-        //         return {
-        //           id: roleId,
-        //           type: ApplicationCommandPermissionTypes.ROLE,
-        //           permission: true,
-        //         };
-        //       }),
-        //   },
-        //   //Staff
-        //   {
-        //     commandClassType: ClearCommand,
-        //     permissions: [
-        //       {
-        //         id: config.roles.staff.Admin,
-        //         type: ApplicationCommandPermissionTypes.ROLE,
-        //         permission: true,
-        //       },
-        //     ],
-        //   },
-        //   {
-        //     commandClassType: VacationCommand,
-        //     permissions: Object.values(config.roles.staff).map((roleId) => {
-        //       return {
-        //         id: roleId,
-        //         type: ApplicationCommandPermissionTypes.ROLE,
-        //         permission: true,
-        //       };
-        //     }),
-        //   },
-        //   {
-        //     commandClassType: BanCommand,
-        //     permissions: Object.values(config.roles.staff)
-        //       .filter((x) => {
-        //         const roles = config.roles.staff;
-        //         return ![roles.Eventer, roles.Support].some((y) => y == x);
-        //       })
-        //       .map((roleId) => {
-        //         return {
-        //           id: roleId,
-        //           type: ApplicationCommandPermissionTypes.ROLE,
-        //           permission: true,
-        //         };
-        //       }),
-        //   },
-        //   {
-        //     commandClassType: MuteCommand,
-        //     permissions: Object.values(config.roles.staff)
-        //       .filter((x) => {
-        //         const roles = config.roles.staff;
-        //         return ![roles.Eventer, roles.Support].some((y) => y == x);
-        //       })
-        //       .map((roleId) => {
-        //         return {
-        //           id: roleId,
-        //           type: ApplicationCommandPermissionTypes.ROLE,
-        //           permission: true,
-        //         };
-        //       }),
-        //   },
-        //   {
-        //     commandClassType: UnbanCommand,
-        //     permissions: Object.values(config.roles.staff)
-        //       .filter((x) => {
-        //         const roles = config.roles.staff;
-        //         return ![roles.Eventer, roles.Support].some((y) => y == x);
-        //       })
-        //       .map((roleId) => {
-        //         return {
-        //           id: roleId,
-        //           type: ApplicationCommandPermissionTypes.ROLE,
-        //           permission: true,
-        //         };
-        //       }),
-        //   },
-        //   {
-        //     commandClassType: UnmuteCommand,
-        //     permissions: Object.values(config.roles.staff)
-        //       .filter((x) => {
-        //         const roles = config.roles.staff;
-        //         return ![roles.Eventer, roles.Support].some((y) => y == x);
-        //       })
-        //       .map((roleId) => {
-        //         return {
-        //           id: roleId,
-        //           type: ApplicationCommandPermissionTypes.ROLE,
-        //           permission: true,
-        //         };
-        //       }),
-        //   },
-        //   {
-        //     commandClassType: InCommand,
-        //     permissions: Object.values(config.roles.staff)
-        //       .filter((x) => {
-        //         const roles = config.roles.staff;
-        //         return ![roles.Eventer, roles.Support, roles.Moderator].some(
-        //           (y) => y == x
-        //         );
-        //       })
-        //       .map((roleId) => {
-        //         return {
-        //           id: roleId,
-        //           type: ApplicationCommandPermissionTypes.ROLE,
-        //           permission: true,
-        //         };
-        //       }),
-        //   },
-        //   {
-        //     commandClassType: BansCommand,
-        //     permissions: Object.values(config.roles.staff)
-        //       .filter((x) => {
-        //         const roles = config.roles.staff;
-        //         return ![roles.Eventer, roles.Support].some((y) => y == x);
-        //       })
-        //       .map((roleId) => {
-        //         return {
-        //           id: roleId,
-        //           type: ApplicationCommandPermissionTypes.ROLE,
-        //           permission: true,
-        //         };
-        //       }),
-        //   },
-        //   {
-        //     commandClassType: ChangeGenderCommand,
-        //     permissions: Object.values(config.roles.staff)
-        //       .filter((x) => {
-        //         const roles = config.roles.staff;
-        //         return ![roles.Eventer, roles.Moderator].some((y) => y == x);
-        //       })
-        //       .map((roleId) => {
-        //         return {
-        //           id: roleId,
-        //           type: ApplicationCommandPermissionTypes.ROLE,
-        //           permission: true,
-        //         };
-        //       }),
-        //   },
-        //   {
-        //     commandClassType: VerificationCommand,
-        //     permissions: Object.values(config.roles.staff)
-        //       .filter((x) => {
-        //         const roles = config.roles.staff;
-        //         return ![roles.Eventer, roles.Moderator].some((y) => y == x);
-        //       })
-        //       .map((roleId) => {
-        //         return {
-        //           id: roleId,
-        //           type: ApplicationCommandPermissionTypes.ROLE,
-        //           permission: true,
-        //         };
-        //       }),
-        //   },
-        //   {
-        //     commandClassType: TopCommand,
-        //     permissions: Object.values(config.roles.staff)
-        //       .filter((x) => {
-        //         const roles = config.roles.staff;
-        //         return ![roles.Eventer, roles.Moderator].some((y) => y == x);
-        //       })
-        //       .map((roleId) => {
-        //         return {
-        //           id: roleId,
-        //           type: ApplicationCommandPermissionTypes.ROLE,
-        //           permission: true,
-        //         };
-        //       }),
-        //   },
-        //   {
-        //     commandClassType: SponsorCommand,
-        //     permissions: [
-        //       {
-        //         id: config.roles.staff.Admin,
-        //         type: ApplicationCommandPermissionTypes.ROLE,
-        //         permission: true,
-        //       },
-        //     ],
-        //   },
-        //   {
-        //     commandClassType: ActionCommand,
-        //     permissions: Object.values(config.roles.staff)
-        //       .filter((x) => {
-        //         const roles = config.roles.staff;
-        //         return ![roles.Eventer, roles.Support].some((y) => y == x);
-        //       })
-        //       .map((roleId) => {
-        //         return {
-        //           id: roleId,
-        //           type: ApplicationCommandPermissionTypes.ROLE,
-        //           permission: true,
-        //         };
-        //       }),
-        //   },
-        // ],
+        registerCommandOptions: [{}]
       }),
       inject: [ConfigService],
     }),
   ],
-  providers: [ClientGateway],
   exports: [DiscordModule],
 })
 export class ClientModule {}
