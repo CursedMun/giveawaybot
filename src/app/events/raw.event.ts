@@ -24,7 +24,7 @@ export class RawEvent {
     const channel =
       (this.client.channels.cache.get(data.channel_id) as TextChannel) ||
       ((await user.createDM().catch(() => {})) as DMChannel);
-    if (!channel) return;
+    if (!channel || !channel.messages) return;
     // if the message is already in the cache, don't re-emit the event
     if (channel.messages.cache.has(data.message_id)) return;
 

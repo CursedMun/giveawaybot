@@ -73,5 +73,6 @@ export const developmentconfig = {
     devGuild: '905552166348009503',
     giveawayChannel: '905552166348009503',
     newGuildChannel: '905552166348009503',
+    feedbackChannel: '981656983230885899'
   }
 };

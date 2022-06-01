@@ -178,9 +178,9 @@ export class GiveawayEvents {
       );
       if (!docs.length) return;
       if (!docs.some((giveaway) => giveaway?.condition === "voice")) return;
-      const user = await this.userService.getUser(newState.member!.id);
-      if (!user || user.notify)
-        await newState
+      const user = await this.userService.getUser(oldState.member!.id,false,20);
+      if (user && user.settings.voiceNotifications)
+        await oldState
           .member!.send({
             embeds: [
               {
@@ -191,10 +191,10 @@ export class GiveawayEvents {
               },
             ],
           })
-          .catch(() => this.logger.log(`${newState.member!.id} закрытый дм`));
+          .catch(() => this.logger.log(`${oldState.member!.id} закрытый дм`));
       setTimeout(async () => {
-        const member = await oldState.guild.members.fetch(newState.member!.id);
-        if (member.voice.channel) {
+        const member = await oldState.guild.members.fetch(oldState.member?.id ?? '');
+        if (user && user.settings.voiceNotifications && member && member.voice.channel) {
           await member
             .send({
               embeds: [
@@ -206,7 +206,7 @@ export class GiveawayEvents {
                 },
               ],
             })
-            .catch(() => this.logger.log(`${newState.member!.id} закрытый дм`));
+            .catch(() => this.logger.log(`${oldState.member!.id} закрытый дм`));
           return;
         }
         //remove this user from all the giveaways
@@ -214,7 +214,7 @@ export class GiveawayEvents {
           docs.map(
             (giveaway) =>
               giveaway!.condition == "voice" &&
-              this.giveawayService.onLeave(newState.member!, giveaway!.ID)
+              this.giveawayService.onLeave(oldState.member!, giveaway!.ID)
           )
         );
       }, config.ticks.tenSeconds * 2);

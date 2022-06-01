@@ -7,15 +7,16 @@ import {
   Message,
   MessageEmbedOptions,
   SnowflakeUtil,
-  TextChannel
+  TextChannel,
 } from "discord.js";
 import fetch from "node-fetch";
 import {
   Giveaway,
   GiveawayAccessСondition,
-  GiveawayCondition
+  GiveawayCondition,
 } from "src/schemas/mongo/giveaway/giveaway.schema";
 import { MongoGiveawayService } from "src/schemas/mongo/giveaway/giveaway.service";
+import { MongoUserService } from "src/schemas/mongo/user/user.service";
 import { config } from "../utils/config";
 import Timer from "../utils/timer";
 import { parseFilteredTimeArray } from "../utils/utils";
@@ -35,8 +36,9 @@ export class GiveawayService {
   constructor(
     @InjectDiscordClient()
     private readonly client: Client,
+    public readonly userService: MongoUserService,
     public readonly giveawayService: MongoGiveawayService
-  ) { }
+  ) {}
   //global
   async check() {
     const docs = await this.giveawayService.find({ ended: false }, 10);
@@ -202,10 +204,12 @@ export class GiveawayService {
           name: "ᅠ",
           value: [
             `<a:tochka:980106660733399070>Организатор: <@${doc.creatorID}>`,
-            `<a:tochka:980106660733399070>Победител${doc.winnerCount > 1 ? "и" : "ь"
-            }: ${winners.length == 0
-              ? "Нет победителя"
-              : winners.map((id) => `<@${id}>`).join("\n")
+            `<a:tochka:980106660733399070>Победител${
+              doc.winnerCount > 1 ? "и" : "ь"
+            }: ${
+              winners.length == 0
+                ? "Нет победителя"
+                : winners.map((id) => `<@${id}>`).join("\n")
             }`,
           ].join("\n"),
           inline: true,
@@ -217,27 +221,29 @@ export class GiveawayService {
       let prevValues = prevValuesFromCache.split("|") as string[];
       const newValues = prevValues.filter(Boolean).filter((x) => x != doc.ID);
       await Promise.allSettled([
-        winners.map((winner) =>
-          message.guild?.members.cache
-            .get(winner)
-            ?.send({
-              embeds: [
-                {
-                  title: "Удача на вашей стороне",
-                  color: config.meta.defaultColor,
-                  description: [
-                    `Вы выиграли в розыгрыше на **${doc.prize}**, отпишите в лс организатору`,
-                    `розыгрыша за получением награды.`,
-                  ].join("\n"),
-                },
-              ],
-            })
-            .catch(() =>
-              this.logger.log(
-                `Не удалось отправить сообщение победителю у ${winner} оказался закрытый дм`
-              )
-            )
-        ),
+        winners.map(async (winner) => {
+          const user = await this.userService.get(winner);
+          if (user && user.settings.winNotifications)
+            message.guild?.members.cache
+              .get(winner)
+              ?.send({
+                embeds: [
+                  {
+                    title: "Удача на вашей стороне",
+                    color: config.meta.defaultColor,
+                    description: [
+                      `Вы выиграли в розыгрыше на **${doc.prize}**, отпишите в лс организатору`,
+                      `розыгрыша за получением награды.`,
+                    ].join("\n"),
+                  },
+                ],
+              })
+              .catch(() =>
+                this.logger.log(
+                  `Не удалось отправить сообщение победителю у ${winner} оказался закрытый дм`
+                )
+              );
+        }),
         this.giveawayService.GiveawayModel.updateOne(
           { ID },
           { winners: winners }
@@ -305,10 +311,13 @@ export class GiveawayService {
         {
           title: `Приз: ${prize}`,
           color: config.meta.defaultColor,
-          description: `> Для участия нужно нажать ${doc.accessCondition == "reaction"
+          description: `> Для участия нужно нажать ${
+            doc.accessCondition == "reaction"
               ? `на реакцию \"${config.emojis.giveaway}\"`
               : 'на кнопку "**Участвовать**"'
-            } ${doc.condition == "voice" ? "\n> и зайти в голосовой канал" : ""}`,
+          } ${
+            doc.condition == "voice" ? "\n> и зайти в голосовой канал" : ""
+          }\n> **Если хотите получать оповещение(о выигрыше или выхода из голосового канала) пропишите - /notify**`,
           fields: [
             {
               name: "Длительность:",
@@ -327,24 +336,24 @@ export class GiveawayService {
       components:
         access_condition == "button"
           ? [
-            {
-              type: "ACTION_ROW",
-              components: [
-                {
-                  customId: `giveaway.join.${id}`,
-                  type: "BUTTON",
-                  label: "Участвовать",
-                  style: "SUCCESS",
-                },
-                {
-                  customId: `giveaway.list.${id}`,
-                  type: "BUTTON",
-                  label: "Участники - 0",
-                  style: "PRIMARY",
-                },
-              ],
-            },
-          ]
+              {
+                type: "ACTION_ROW",
+                components: [
+                  {
+                    customId: `giveaway.join.${id}`,
+                    type: "BUTTON",
+                    label: "Участвовать",
+                    style: "SUCCESS",
+                  },
+                  {
+                    customId: `giveaway.list.${id}`,
+                    type: "BUTTON",
+                    label: "Участники - 0",
+                    style: "PRIMARY",
+                  },
+                ],
+              },
+            ]
           : undefined,
     });
     if (access_condition === "reaction")
@@ -387,12 +396,12 @@ export class GiveawayService {
               ].join("\n"),
               timestamp: new Date(),
               thumbnail: {
-                url: channel.guild.iconURL({ dynamic: true }) || undefined
-              }
+                url: channel.guild.iconURL({ dynamic: true }) || undefined,
+              },
             },
           ],
         })
-        .catch((err) => this.logger.error(err.message))
+        .catch((err) => this.logger.error(err.message)),
     ]);
     var interval = setInterval(() => {
       this.updateTimer(message, doc.endDate, doc.ID);
@@ -475,9 +484,9 @@ export class GiveawayService {
       reason:
         doc.condition === "voice"
           ? [
-            "При выходе из голосового канала, **вам придет уведомление** и вы ",
-            "автоматические будете сняты с участия в розыгрыше",
-          ].join("\n")
+              "При выходе из голосового канала, **вам придет уведомление** и вы ",
+              "автоматические будете сняты с участия в розыгрыше",
+            ].join("\n")
           : "Пусть удача будет на вашей стороне",
       success: true,
       condition: doc.condition,

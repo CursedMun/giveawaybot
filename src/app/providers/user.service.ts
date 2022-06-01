@@ -8,13 +8,11 @@ import { MongoUserService } from "src/schemas/mongo/user/user.service";
 export class UserService {
   private readonly logger = new Logger(UserService.name);
   constructor(
-    @InjectDiscordClient()
-    private readonly client: Client,
     public readonly userService: MongoUserService
   ) {}
   //DataBase communication
-  async getUser(ID: string): Promise<User | null> {
-    const user = await this.userService.findOne({ ID });
+  async getUser(ID: string,force:boolean,ttl: number): Promise<User | null> {
+    const user = await this.userService.findOne({ ID },force,ttl);
     return user;
   }
 }
