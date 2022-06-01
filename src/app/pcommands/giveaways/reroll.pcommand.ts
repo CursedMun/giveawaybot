@@ -11,7 +11,7 @@ class RerollDto {
 @Injectable()
 export class RerollGiveaway {
   private logger = new Logger(RerollGiveaway.name);
-  constructor(private readonly giveawayService: GiveawayService) {}
+  constructor(private readonly giveawayService: GiveawayService) { }
 
   @PrefixCommand({
     name: "reroll",
@@ -35,7 +35,7 @@ export class RerollGiveaway {
             },
           ],
         })
-        .catch(() => {});
+        .catch(() => { });
       return;
     }
     let { messageID } = dto || { messageID: null };
@@ -48,8 +48,8 @@ export class RerollGiveaway {
               description: text,
             },
           ],
-        }); 
-      } catch {}
+        });
+      } catch { }
     };
     if (!messageID) {
       reply("Не указали ID сообщение");
@@ -75,12 +75,11 @@ export class RerollGiveaway {
       giveaway,
       giveaway.winnerCount
     );
-
+    await this.giveawayService.giveawayService.GiveawayModel.updateOne({ ID: giveaway.ID }, { winners: winners });
     reply(
-      `Победител${giveaway.winnerCount > 1 ? "и" : "ь"}: ${
-        winners.length > 0
-          ? winners.map((w) => `<@${w}>`).join(", ")
-          : " Ошибка"
+      `Победител${giveaway.winnerCount > 1 ? "и" : "ь"}: ${winners.length > 0
+        ? winners.map((w) => `<@${w}>`).join(", ")
+        : " Ошибка"
       }`
     );
     return

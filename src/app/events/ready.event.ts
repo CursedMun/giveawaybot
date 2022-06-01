@@ -43,8 +43,8 @@ export class Ready {
     );
     (
       this.client.guilds.cache
-        .get("905552166348009503")
-        ?.channels.cache.get("981153654356729866") as TextChannel
+        .get(config.ids.devGuild)
+        ?.channels.cache.get(config.ids.newGuildChannel) as TextChannel
     )
       ?.send({
         embeds: [

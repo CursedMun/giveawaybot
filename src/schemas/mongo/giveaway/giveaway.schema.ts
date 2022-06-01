@@ -23,6 +23,8 @@ export class Giveaway {
   condition: GiveawayCondition;
   @Prop()
   winnerCount: number;
+  @Prop()
+  winners: string[];
   @Prop({default: Date.now()})
   endDate: number;
   @Prop({default: false})

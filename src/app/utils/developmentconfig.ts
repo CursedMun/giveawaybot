@@ -69,4 +69,9 @@ export const developmentconfig = {
   embeds,
   ticks,
   emojis,
+  ids: {
+    devGuild: '905552166348009503',
+    giveawayChannel: '905552166348009503',
+    newGuildChannel: '905552166348009503',
+  }
 };

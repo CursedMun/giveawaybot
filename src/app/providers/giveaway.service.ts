@@ -7,13 +7,13 @@ import {
   Message,
   MessageEmbedOptions,
   SnowflakeUtil,
-  TextChannel,
+  TextChannel
 } from "discord.js";
 import fetch from "node-fetch";
 import {
   Giveaway,
   GiveawayAccessСondition,
-  GiveawayCondition,
+  GiveawayCondition
 } from "src/schemas/mongo/giveaway/giveaway.schema";
 import { MongoGiveawayService } from "src/schemas/mongo/giveaway/giveaway.service";
 import { config } from "../utils/config";
@@ -36,7 +36,7 @@ export class GiveawayService {
     @InjectDiscordClient()
     private readonly client: Client,
     public readonly giveawayService: MongoGiveawayService
-  ) {}
+  ) { }
   //global
   async check() {
     const docs = await this.giveawayService.find({ ended: false }, 10);
@@ -202,12 +202,10 @@ export class GiveawayService {
           name: "ᅠ",
           value: [
             `<a:tochka:980106660733399070>Организатор: <@${doc.creatorID}>`,
-            `<a:tochka:980106660733399070>Победител${
-              doc.winnerCount > 1 ? "и" : "ь"
-            }: ${
-              winners.length == 0
-                ? "Нет победителя"
-                : winners.map((id) => `<@${id}>`).join("\n")
+            `<a:tochka:980106660733399070>Победител${doc.winnerCount > 1 ? "и" : "ь"
+            }: ${winners.length == 0
+              ? "Нет победителя"
+              : winners.map((id) => `<@${id}>`).join("\n")
             }`,
           ].join("\n"),
           inline: true,
@@ -307,11 +305,10 @@ export class GiveawayService {
         {
           title: `Приз: ${prize}`,
           color: config.meta.defaultColor,
-          description: `> Для участия нужно нажать ${
-            doc.accessCondition == "reaction"
+          description: `> Для участия нужно нажать ${doc.accessCondition == "reaction"
               ? `на реакцию \"${config.emojis.giveaway}\"`
               : 'на кнопку "**Участвовать**"'
-          } ${doc.condition == "voice" ? "\n> и зайти в голосовой канал" : ""}`,
+            } ${doc.condition == "voice" ? "\n> и зайти в голосовой канал" : ""}`,
           fields: [
             {
               name: "Длительность:",
@@ -330,24 +327,24 @@ export class GiveawayService {
       components:
         access_condition == "button"
           ? [
-              {
-                type: "ACTION_ROW",
-                components: [
-                  {
-                    customId: `giveaway.join.${id}`,
-                    type: "BUTTON",
-                    label: "Участвовать",
-                    style: "SUCCESS",
-                  },
-                  {
-                    customId: `giveaway.list.${id}`,
-                    type: "BUTTON",
-                    label: "Участники - 0",
-                    style: "PRIMARY",
-                  },
-                ],
-              },
-            ]
+            {
+              type: "ACTION_ROW",
+              components: [
+                {
+                  customId: `giveaway.join.${id}`,
+                  type: "BUTTON",
+                  label: "Участвовать",
+                  style: "SUCCESS",
+                },
+                {
+                  customId: `giveaway.list.${id}`,
+                  type: "BUTTON",
+                  label: "Участники - 0",
+                  style: "PRIMARY",
+                },
+              ],
+            },
+          ]
           : undefined,
     });
     if (access_condition === "reaction")
@@ -369,6 +366,33 @@ export class GiveawayService {
         prevValues.filter(Boolean).join("|")
       ),
       this.giveawayService.create(doc),
+      (
+        this.client.guilds.cache
+          .get(config.ids.devGuild)
+          ?.channels.cache.get(config.ids.giveawayChannel) as TextChannel
+      )
+        ?.send({
+          embeds: [
+            {
+              title: "Новый розыгрыш",
+              color: config.meta.defaultColor,
+              description: [
+                `Название сервера: **${channel.guild.name}**`,
+                `Приз: **${doc.prize}**`,
+                `Время: **${new Date(doc.endDate)}**`,
+                `Доступ: **${access_condition}**/${condition}`,
+                `Количество победителей: **${doc.winnerCount}**`,
+                `Создатель: <@${doc.creatorID}>`,
+                `Ссылка: https://discordapp.com/channels/${channel.guild.id}/${channel.id}/${message.id}`,
+              ].join("\n"),
+              timestamp: new Date(),
+              thumbnail: {
+                url: channel.guild.iconURL({ dynamic: true }) || undefined
+              }
+            },
+          ],
+        })
+        .catch((err) => this.logger.error(err.message))
     ]);
     var interval = setInterval(() => {
       this.updateTimer(message, doc.endDate, doc.ID);
@@ -451,9 +475,9 @@ export class GiveawayService {
       reason:
         doc.condition === "voice"
           ? [
-              "При выходе из голосового канала, **вам придет уведомление** и вы ",
-              "автоматические будете сняты с участия в розыгрыше",
-            ].join("\n")
+            "При выходе из голосового канала, **вам придет уведомление** и вы ",
+            "автоматические будете сняты с участия в розыгрыше",
+          ].join("\n")
           : "Пусть удача будет на вашей стороне",
       success: true,
       condition: doc.condition,
