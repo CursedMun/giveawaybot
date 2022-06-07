@@ -44,10 +44,10 @@ export default class Timer {
   timeout(fn: () => void, time = 0) {
     return setTimeout(() => fn(), time);
   }
-  destroy(){
+  destroy() {
     for (const [id, val] of this.cache) {
-      val.fn();
+      this.timeout(val.fn, 0);
+      this.cache.delete(id);
     }
-    this.cache.clear();
   }
 }

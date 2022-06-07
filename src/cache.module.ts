@@ -33,31 +33,32 @@ import * as redisStore from "cache-manager-ioredis";
   ],
   exports: [BaseCacheModule],
 })
-export class CacheModule implements OnModuleInit {
-  private readonly logger = new Logger(CacheModule.name);
-  constructor(@Inject(CACHE_MANAGER) private readonly cache: Cache) {}
+// implements OnModuleInit 
+export class CacheModule {
+  // private readonly logger = new Logger(CacheModule.name);
+  // constructor(@Inject(CACHE_MANAGER) private readonly cache: Cache) {}
 
-  public onModuleInit(): any {
-    // Commands that are interesting to log
-    const commands = ["get", "set", "del"];
-    const cache = this.cache;
-    commands.forEach((commandName) => {
-      const oldCommand = cache[commandName];
-      cache[commandName] = async (...args: any[]) => {
-        // Computes the duration
-        const start = new Date();
-        const result = await oldCommand.call(cache, ...args);
-        const end = new Date();
-        const duration = end.getTime() - start.getTime();
+  // public onModuleInit(): any {
+  //   // Commands that are interesting to log
+  //   const commands = ["get", "set", "del"];
+  //   const cache = this.cache;
+  //   commands.forEach((commandName) => {
+  //     const oldCommand = cache[commandName];
+  //     cache[commandName] = async (...args: any[]) => {
+  //       // Computes the duration
+  //       const start = new Date();
+  //       const result = await oldCommand.call(cache, ...args);
+  //       const end = new Date();
+  //       const duration = end.getTime() - start.getTime();
 
-        // Avoid logging the options
-        args = args.slice(0, 2);
-        this.logger.log(
-          `${commandName.toUpperCase()} ${args.join(", ")} - ${duration}ms`
-        );
+  //       // Avoid logging the options
+  //       args = args.slice(0, 2);
+  //       this.logger.log(
+  //         `${commandName.toUpperCase()} ${args.join(", ")} - ${duration}ms`
+  //       );
 
-        return result;
-      };
-    });
-  }
+  //       return result;
+  //     };
+  //   });
+  // }
 }

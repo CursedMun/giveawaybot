@@ -65,7 +65,7 @@ export class GiveawayStartCommand implements DiscordCommand {
                 label: "Приз",
                 style: TextInputStyles.SHORT,
                 required: true,
-                maxLength: 250
+                maxLength: 250,
               },
             ],
           },
@@ -78,7 +78,7 @@ export class GiveawayStartCommand implements DiscordCommand {
                 label: "Длительность розыгрыша (1d|1h|1m|1s)",
                 style: TextInputStyles.SHORT,
                 required: true,
-                maxLength: 10
+                maxLength: 10,
               },
             ],
           },
@@ -91,7 +91,7 @@ export class GiveawayStartCommand implements DiscordCommand {
                 label: "Кол-во победителей (максимум 20)",
                 style: TextInputStyles.SHORT,
                 required: true,
-                maxLength: 20
+                maxLength: 20,
               },
             ],
           },
@@ -107,7 +107,7 @@ export class GiveawayStartCommand implements DiscordCommand {
                   interaction.channelId,
                 style: TextInputStyles.SHORT,
                 required: true,
-                maxLength: 100
+                maxLength: 100,
               },
             ],
           },
@@ -142,7 +142,7 @@ export class GiveawayStartCommand implements DiscordCommand {
     const [prize, time, winnersCount, channel] = [
       modal.fields.getTextInputValue(this.prizeModalID),
       modal.fields.getTextInputValue(this.timeModalID),
-      modal.fields.getTextInputValue(this.winnerscountModalID),
+      parseInt(modal.fields.getTextInputValue(this.winnerscountModalID)) ?? 0,
       modal.fields.getTextInputValue(this.channelModalID),
     ];
     const msduration = msConvert(time.toLowerCase());
@@ -151,8 +151,14 @@ export class GiveawayStartCommand implements DiscordCommand {
     const giveawayChannel = (modal.guild.channels.cache.get(channel) ||
       modal.guild.channels.cache.find((x) => x.name == channel)) as TextChannel;
     if (!giveawayChannel) return await reply("Неверно указан канал");
-    if (Number(winnersCount) > 99)
-      return await reply("Максимальное количество победителей 99");
+    if (
+      !giveawayChannel
+        .permissionsFor(modal.client.user?.id ?? "")
+        ?.has("SEND_MESSAGES")
+    )
+      return await reply("Недостаточно прав для отправки сообщений в канал");
+    if (typeof winnersCount !== 'number' || winnersCount > 20)
+      return await reply("Неверно указано кол-во победителей");
     let message: Message;
     try {
       message = (await modal.reply({

@@ -93,14 +93,14 @@ export class MongoGiveawayService {
     data: FilterQuery<GiveawayDocument>,
     ttl?: number
   ): Promise<Giveaway[]> {
-    const cacheKey = `giveaways_find_all`;
+    const cacheKey = `find_giveaways`;
     return await this.cache.wrap(
       cacheKey,
       async () => {
-        let giveaway = await this.GiveawayModel.find(data).lean();
-        return giveaway;
+        let giveaways = await this.GiveawayModel.find(data).lean();
+        return giveaways;
       },
-      { ttl: ttl ?? this.defaulttl }
+      { ttl: 10 }
     );
   }
   async findAll(): Promise<Giveaway[]> {

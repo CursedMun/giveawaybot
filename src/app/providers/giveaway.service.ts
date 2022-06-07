@@ -41,7 +41,7 @@ export class GiveawayService {
   ) {}
   //global
   async check() {
-    const docs = await this.giveawayService.find({ ended: false }, 10);
+    const docs = await this.giveawayService.find({ ended: false });
     for (const doc of docs) {
       try {
         const guild =
@@ -63,7 +63,7 @@ export class GiveawayService {
           (await channel.messages.fetch(doc.messageID));
         var interval = setInterval(() => {
           this.updateTimer(message, doc.endDate, doc.ID);
-        }, config.ticks.tenSeconds);
+        }, config.ticks.tenSeconds * 3);
         this.timers.set(
           message.id,
           new Timer(
@@ -90,12 +90,13 @@ export class GiveawayService {
       max: number,
       count: number
     ): Promise<number[]> => {
+      if(min == max) return [min];
       const request = await fetch(
-        `http://www.randomnumberapi.com/api/v1.0/random?min=${min}&max=${max}&count=${count}`,
-        { method: "GET" }
+        `https://www.random.org/integers/?num=${count}&min=${min}&max=${max}&col=1&base=10&format=plain&rnd=new`,
+        { method: "GET",headers: { Authorization: `Bearer 1d7d7744-cfd9-4746-bb45-52d118209528` } }
       );
-      const response = await request.json();
-      return response;
+      const response = await request.text();
+      return response.split('\n').filter(Boolean).map(Number);
     };
     const winners: string[] = [];
     const usersSet = new Set(doc.participants);
@@ -258,8 +259,8 @@ export class GiveawayService {
               title: `Розыгрыш закончен.  Приз: ${doc.prize}`,
               color: config.meta.defaultColor,
               description:
-                "Победитель выбран с помощью \n||https://www.randomnumberapi.com/||",
-              url: "https://www.randomnumberapi.com/",
+                "Победитель выбран с помощью \n||https://www.random.org||",
+              url: "https://www.random.org",
               fields: fields,
               thumbnail: {
                 url: "https://cdn.discordapp.com/attachments/974125927946665995/974185386056249404/1.png",
@@ -327,7 +328,7 @@ export class GiveawayService {
               inline: true,
             },
           ],
-          url: `https://www.randomnumberapi.com/`,
+          url: `https://www.random.org`,
           thumbnail: {
             url: "https://cdn.discordapp.com/attachments/974125927946665995/974185386056249404/1.png",
           },
@@ -355,7 +356,8 @@ export class GiveawayService {
               },
             ]
           : undefined,
-    });
+    }).catch(err => null);
+    if(!message) return;
     if (access_condition === "reaction")
       await message.react(config.emojis.giveaway);
     doc = {
@@ -405,7 +407,7 @@ export class GiveawayService {
     ]);
     var interval = setInterval(() => {
       this.updateTimer(message, doc.endDate, doc.ID);
-    }, config.ticks.tenSeconds);
+    }, config.ticks.tenSeconds * 3);
     new Timer(
       doc.endDate,
       () => {

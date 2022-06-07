@@ -21,7 +21,7 @@ const meta = {
 };
 const emojis = {
   giveaway: "🎉",
-  confirmEmojis: ["✅", "❌"],
+  confirmEmojis: ["Подтвердить", "Отменить"],
 };
 const embeds = {
   confirmEmbed: {

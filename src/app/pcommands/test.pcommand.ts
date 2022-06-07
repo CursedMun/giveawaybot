@@ -1,7 +1,9 @@
 import { PrefixCommandTransformPipe } from "@discord-nestjs/common";
-import { ArgNum, Payload, PrefixCommand } from "@discord-nestjs/core";
+import { PrefixCommand } from "@discord-nestjs/core";
 import { Injectable, Logger, UsePipes } from "@nestjs/common";
-import { InteractionReplyOptions, Message } from "discord.js";
+import { Message } from "discord.js";
+import fetch from "node-fetch";
+
 import { GiveawayService } from "src/app/providers/giveaway.service";
 @Injectable()
 export class Test {
@@ -13,10 +15,18 @@ export class Test {
     prefix: "!",
   })
   @UsePipes(PrefixCommandTransformPipe)
-  async onMessage(
-    message: Message
-  ) {
-    await this.giveawayService.giveawayService.setcache('2121', ['1'])
-    console.log(await this.giveawayService.giveawayService.getCache('905552166348009503'))
+  async onMessage(message: Message) {
+    const request = await fetch(
+      `https://www.random.org/integers/?num=10&min=1&max=10&col=1&base=10&format=plain&rnd=new`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer 1d7d7744-cfd9-4746-bb45-52d118209528`,
+        },
+      }
+    );
+    console.log(request)
+    let response = await request.text();
+    console.log(response.split('\n').filter(Boolean).map(Number));
   }
 }

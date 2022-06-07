@@ -211,9 +211,9 @@ export class GiveawayEvents {
         }
         //remove this user from all the giveaways
         await Promise.allSettled(
-          docs.map(
+          docs.filter(Boolean).map(
             (giveaway) =>
-              giveaway!.condition == "voice" &&
+              giveaway?.condition == "voice" &&
               this.giveawayService.onLeave(oldState.member!, giveaway!.ID)
           )
         );

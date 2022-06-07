@@ -1,10 +1,6 @@
 import { Command, DiscordCommand } from "@discord-nestjs/core";
 import { Injectable, Logger } from "@nestjs/common";
-import {
-  CommandInteraction,
-  InteractionReplyOptions,
-  Message,
-} from "discord.js";
+import { CommandInteraction, Message } from "discord.js";
 import { config } from "src/app/utils/config";
 import { UserSettings } from "src/schemas/mongo/user/user.schema";
 import { MongoUserService } from "src/schemas/mongo/user/user.service";
@@ -20,9 +16,9 @@ export class NotificationsCmd implements DiscordCommand {
     await command.deferReply({}).catch((err) => this.logger.error(err));
     const user = await this.usersService.get(command.user.id, 0);
     const options = {
-      "voiceNotifications": "Войс оповещение",
-      "winNotifications": "Оповещение о выигрыше"
-    }
+      voiceNotifications: "Войс оповещение",
+      winNotifications: "Оповещение о выигрыше",
+    };
     const message = await command
       .editReply({
         embeds: [
@@ -36,7 +32,7 @@ export class NotificationsCmd implements DiscordCommand {
             type: "ACTION_ROW",
             components: [
               {
-                customId: 'notifications',
+                customId: "notifications",
                 type: "SELECT_MENU",
                 label: "Уведомления",
                 options: Object.entries(options).map((item, index) => {
@@ -53,8 +49,7 @@ export class NotificationsCmd implements DiscordCommand {
         ],
       })
       .catch((err) => this.logger.error(err));
-    if (!message)
-      return
+    if (!message) return;
 
     const response = await (message as Message)
       .awaitMessageComponent({
@@ -67,33 +62,40 @@ export class NotificationsCmd implements DiscordCommand {
         componentType: "SELECT_MENU",
       })
       .catch((err) => this.logger.error(err));
-    if (!response)
-      return
-      await response.deferUpdate({}).catch((err) => this.logger.error(err));
+    if (!response) return;
+    await response.deferUpdate({}).catch((err) => this.logger.error(err));
     const selected = response.values;
-    console.log(selected)
+    console.log(selected);
     const items = selected.reduce(
       (a, v) => ({ ...a, [v]: !user.settings[v] }),
       {} as UserSettings
     );
-    console.log(items)
+    console.log(items);
     await this.usersService.UserModel.updateOne(
       { ID: command.user.id },
       { settings: items }
     );
-    response.update({
-      embeds: [
-        {
-          description: [
-            `Вы успешно изменили ваши настройки`,
-            `Было:`,
-            selected.map(v => `${options[v]}: ${user.settings[v] ? 'вкл' : 'выкл'}`).join("\n"),
-            `Стало:`,
-            selected.map(v => `${options[v]}: ${items[v] ? 'вкл' : 'выкл'}`).join("\n"),
-          ].join("\n"),
-        },
-      ],
-      components: []
-    }).catch((err) => this.logger.error(err));
+    response
+      .update({
+        embeds: [
+          {
+            description: [
+              `Вы успешно изменили ваши настройки`,
+              `Было:`,
+              selected
+                .map(
+                  (v) => `${options[v]}: ${user.settings[v] ? "вкл" : "выкл"}`
+                )
+                .join("\n"),
+              `Стало:`,
+              selected
+                .map((v) => `${options[v]}: ${items[v] ? "вкл" : "выкл"}`)
+                .join("\n"),
+            ].join("\n"),
+          },
+        ],
+        components: [],
+      })
+      .catch((err) => this.logger.error(err));
   }
 }
