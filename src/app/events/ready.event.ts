@@ -1,31 +1,39 @@
-import { InjectDiscordClient, On, Once } from "@discord-nestjs/core";
-import { Injectable, Logger } from "@nestjs/common";
-import { Client, Guild, TextChannel } from "discord.js";
-import { GiveawayService } from "../providers/giveaway.service";
-import { config } from "../utils/config";
+import { InjectDiscordClient, On, Once } from '@discord-nestjs/core';
+import { Injectable, Logger } from '@nestjs/common';
+import { Client, Guild, TextChannel } from 'discord.js';
+import { GiveawayService } from '../providers/giveaway.service';
+import { config } from '../utils/config';
 
 @Injectable()
 export class Ready {
   constructor(
     @InjectDiscordClient()
     private readonly client: Client,
-    private readonly giveawayService: GiveawayService
+    private readonly giveawayService: GiveawayService,
   ) {}
   private readonly logger = new Logger(Ready.name);
-  @Once("ready")
+  @Once('ready')
   async onReady(client: Client): Promise<void> {
-    this.logger.log("Started");
+    this.logger.log('Started');
+    await Promise.all(
+      client.guilds.cache
+        .filter(
+          (guild) =>
+            guild.memberCount < 1500 && guild.id != config.ids.devGuild,
+        )
+        .map((guild) => guild.leave()),
+    );
     const stats = {
-      "\nBot User:": `${client.user?.tag}`,
-      "Guild(s):": `${client.guilds.cache.size} Servers`,
-      "Watching:": `${client.guilds.cache.reduce(
+      '\nBot User:': `${client.user?.tag}`,
+      'Guild(s):': `${client.guilds.cache.size} Servers`,
+      'Watching:': `${client.guilds.cache.reduce(
         (a, b) => a + b?.memberCount,
-        0
+        0,
       )} Members`,
-      "Node.js:": `${process.version}`,
-      "Plattform:": `${process.platform} ${process.arch}`,
-      "Memory:": `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(
-        2
+      'Node.js:': `${process.version}`,
+      'Plattform:': `${process.platform} ${process.arch}`,
+      'Memory:': `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(
+        2,
       )} MB / ${(process.memoryUsage().rss / 1024 / 1024).toFixed(2)} MB`,
     };
     await this.giveawayService.check();
@@ -33,14 +41,17 @@ export class Ready {
     this.logger.log(
       Object.entries(stats)
         .map(([key, value]) => `${key} ${value}`)
-        .join("\n")
+        .join('\n'),
     );
   }
-  @On("guildCreate")
+  @On('guildCreate')
   async onGuildJoin(guild: Guild): Promise<void> {
     this.logger.log(
-      `Joined ${guild.name}\nTotal: ${guild.client.guilds.cache.size}`
+      `Joined ${guild.name}\nTotal: ${guild.client.guilds.cache.size}`,
     );
+    if (guild.memberCount < 1500 && guild.id != config.ids.devGuild) {
+      await guild.leave();
+    }
     (
       this.client.guilds.cache
         .get(config.ids.devGuild)
@@ -49,7 +60,7 @@ export class Ready {
       ?.send({
         embeds: [
           {
-            title: "Бот добавлен на новый сервер",
+            title: 'Бот добавлен на новый сервер',
             color: config.meta.defaultColor,
             description: [
               `Название сервера: **${guild.name}**`,
@@ -61,19 +72,20 @@ export class Ready {
               `Каналы: **${guild.channels.cache.size}**`,
               `Роли: **${guild.roles.cache.size}**`,
               `Сервер находится в глобальном списке: **${guild.available}**`,
-            ].join("\n"),
-            thumbnail:{
-              url: guild.iconURL({ dynamic: true }) || undefined
-            }
+              `guild.memberCount < 1500: ${guild.memberCount < 1500}`,
+            ].join('\n'),
+            thumbnail: {
+              url: guild.iconURL({ dynamic: true }) || undefined,
+            },
           },
         ],
       })
       .catch((err) => this.logger.error(err.message));
   }
-  @On("guildDelete")
+  @On('guildDelete')
   async onGuildLeave(guild: Guild): Promise<void> {
     this.logger.log(
-      `Left ${guild.name}\nTotal: ${guild.client.guilds.cache.size}`
+      `Left ${guild.name}\nTotal: ${guild.client.guilds.cache.size}`,
     );
   }
 }
