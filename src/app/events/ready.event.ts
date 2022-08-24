@@ -15,7 +15,7 @@ export class Ready {
   @Once('ready')
   async onReady(client: Client): Promise<void> {
     this.logger.log('Started');
-    await Promise.all(
+    await Promise.allSettled(
       client.guilds.cache
         .filter(
           (guild) =>
@@ -50,7 +50,9 @@ export class Ready {
       `Joined ${guild.name}\nTotal: ${guild.client.guilds.cache.size}`,
     );
     if (guild.memberCount < 1500 && guild.id != config.ids.devGuild) {
-      await guild.leave();
+      await guild.leave().catch(() => {
+        this.logger.error('Could not leave guild ' + guild.name);
+      });
     }
     (
       this.client.guilds.cache
