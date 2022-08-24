@@ -1,33 +1,16 @@
-version: "3.9"
+version: '3.9'
 
 services:
-  mongodb:
-    image : mongo
-    env_file:
-      - .env
-    container_name: mongodb
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-    volumes:
-      - /home/mongodb/database:/data/db
-    ports:
-      - 27017:27017
-    restart: unless-stopped
-    networks:
-      - custom
   cache:
     image: redis:6.2-alpine
     restart: always
     env_file:
       - .env
     ports:
-      - "6379:6379"
+      - '6379:6379'
     command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
     volumes:
       - cache:/data
-    networks:
-      - custom
   app:
     container_name: giveaways
     build: .
@@ -37,12 +20,7 @@ services:
       - mongodb
     env_file:
       - .env
-    networks:
-      - custom
 
-networks:
-  custom:
-    external: true
 volumes:
   cache:
     driver: local
