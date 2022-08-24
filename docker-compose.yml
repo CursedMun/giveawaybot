@@ -17,7 +17,6 @@ services:
     restart: always
     depends_on:
       - cache
-      - mongodb
     env_file:
       - .env
 

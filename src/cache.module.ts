@@ -15,9 +15,9 @@ import * as redisStore from 'cache-manager-ioredis';
             }
           : {
               store: redisStore,
-              host: configService.get('REDIS_HOST'),
-              port: configService.get('REDIS_PORT'),
-              password: configService.get('REDIS_PASSWORD'),
+              host: configService.get('REDISHOST'),
+              port: configService.get('REDISPORT'),
+              password: configService.get('REDISPASSWORD'),
             };
       },
       inject: [ConfigService],
