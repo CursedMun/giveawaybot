@@ -49,7 +49,7 @@ export class Ready {
     this.logger.log(
       `Joined ${guild.name}\nTotal: ${guild.client.guilds.cache.size}`,
     );
-    if (guild.memberCount < 1500 && guild.id != config.ids.devGuild) {
+    if (guild.memberCount < 500 && guild.id != config.ids.devGuild) {
       await guild.leave().catch(() => {
         this.logger.error('Could not leave guild ' + guild.name);
       });
