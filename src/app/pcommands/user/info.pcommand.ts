@@ -52,7 +52,7 @@ export class Info {
                 type: "BUTTON",
                 style: "LINK",
                 url: `https://cursedmun.com`,
-                label: `My Website`,
+                label: `Website`,
               },
             ],
           },

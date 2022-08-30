@@ -24,6 +24,9 @@ export class NotificationsCmd implements DiscordCommand {
         embeds: [
           {
             title: 'Управление уведомлениями',
+            thumbnail: {
+              url: command.user.avatarURL({ dynamic: true, size: 1024 }) || '',
+            },
             description: `Выберите нужный пункт для **включения** или **отключения** уведомления о розыгрыше`,
           },
         ],
