@@ -40,13 +40,13 @@ const embeds = {
         type: "ACTION_ROW",
         components: [
           {
-            emoji: emojis.confirmEmojis[0],
+            label: 'Подтвердить',
             customId: "confirm",
             type: "BUTTON",
             style: "SUCCESS",
           },
           {
-            emoji: emojis.confirmEmojis[1],
+            label: 'Отменить',
             customId: "reject",
             type: "BUTTON",
             style: "DANGER",
