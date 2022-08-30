@@ -39,7 +39,7 @@ export class NotificationsCmd implements DiscordCommand {
                 type: 'SELECT_MENU',
                 label: 'Уведомления',
                 placeholder: 'Нажимать сюда!',
-                emoji: '1014108607098404925',
+                emoji: '<:point:1014108607098404925>',
                 options: Object.entries(options).map((item, index) => {
                   return {
                     label: item[1],

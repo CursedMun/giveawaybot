@@ -231,7 +231,7 @@ export class GiveawayStartCommand implements DiscordCommand {
                 customId: 'select.condition',
                 type: 'SELECT_MENU',
                 placeholder: 'Варианты условий',
-                emoji: '1014108607098404925',
+                emoji: '<:point:1014108607098404925>',
                 options: options.map((option, index) => {
                   return {
                     label: `${index + 1} вариант`,
