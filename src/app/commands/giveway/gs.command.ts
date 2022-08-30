@@ -217,7 +217,7 @@ export class GiveawayStartCommand implements DiscordCommand {
             title: 'Для начала',
             color: config.meta.defaultColor,
             thumbnail: {
-              url: response.user.avatarURL({ dynamic: true }) || undefined,
+              url: response.user.displayAvatarURL({ dynamic: true }) || undefined,
             },
             description:
               'Чтобы продолжить **создание розыгрыша** выберите ниже **одно** из **условий**.',
