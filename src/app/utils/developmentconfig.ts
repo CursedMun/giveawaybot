@@ -1,27 +1,28 @@
-import { InteractionReplyOptions } from "discord.js";
+import { InteractionReplyOptions } from 'discord.js';
 
 const meta = {
   defaultEmbed: {},
   defaultColor: 0x2f3136,
-  defaultTimezone: "Europe/Moscow",
+  defaultTimezone: 'Europe/Moscow',
+  minGuildUsers: 1,
   timeSpelling: {
-    w: "н",
-    d: "д",
-    h: "ч",
-    m: "м",
-    s: "с",
+    w: 'н',
+    d: 'д',
+    h: 'ч',
+    m: 'м',
+    s: 'с',
   },
   pluralTime: {
-    w: [" неделя", " недели", " недель"],
-    d: [" день", " дня", " дней"],
-    h: [" час", " часа", " часов"],
-    m: [" минута", " минуты", " минут"],
-    s: [" секунда", " секунды", " секунд"],
+    w: [' неделя', ' недели', ' недель'],
+    d: [' день', ' дня', ' дней'],
+    h: [' час', ' часа', ' часов'],
+    m: [' минута', ' минуты', ' минут'],
+    s: [' секунда', ' секунды', ' секунд'],
   },
 };
 const emojis = {
-  giveaway: "🎉",
-  confirmEmojis: ["Подтвердить", "Отменить"],
+  giveaway: '🎉',
+  confirmEmojis: ['Подтвердить', 'Отменить'],
 };
 const embeds = {
   confirmEmbed: {
@@ -30,25 +31,25 @@ const embeds = {
       {
         color: meta.defaultColor,
         author: {
-          name: "Подтвердите действие",
+          name: 'Подтвердите действие',
         },
       },
     ],
     components: [
       {
-        type: "ACTION_ROW",
+        type: 'ACTION_ROW',
         components: [
           {
             label: 'Подтвердить',
-            customId: "confirm",
-            type: "BUTTON",
-            style: "SUCCESS",
+            customId: 'confirm',
+            type: 'BUTTON',
+            style: 'SUCCESS',
           },
           {
             label: 'Отменить',
-            customId: "reject",
-            type: "BUTTON",
-            style: "DANGER",
+            customId: 'reject',
+            type: 'BUTTON',
+            style: 'DANGER',
           },
         ],
       },
@@ -73,6 +74,6 @@ export const developmentconfig = {
     devGuild: '905552166348009503',
     giveawayChannel: '905552166348009503',
     newGuildChannel: '905552166348009503',
-    feedbackChannel: '981656983230885899'
-  }
+    feedbackChannel: '981656983230885899',
+  },
 };

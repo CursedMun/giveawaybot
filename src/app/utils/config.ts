@@ -1,28 +1,29 @@
-import { InteractionReplyOptions } from "discord.js";
-import { developmentconfig } from "./developmentconfig";
+import { InteractionReplyOptions } from 'discord.js';
+import { developmentconfig } from './developmentconfig';
 
 const meta = {
   defaultEmbed: {},
   defaultColor: 0x2f3136,
-  defaultTimezone: "Europe/Moscow",
+  defaultTimezone: 'Europe/Moscow',
+  minGuildUsers: 1,
   timeSpelling: {
-    w: "н",
-    d: "д",
-    h: "ч",
-    m: "м",
-    s: "с",
+    w: 'н',
+    d: 'д',
+    h: 'ч',
+    m: 'м',
+    s: 'с',
   },
   pluralTime: {
-    w: [" неделя", " недели", " недель"],
-    d: [" день", " дня", " дней"],
-    h: [" час", " часа", " часов"],
-    m: [" минута", " минуты", " минут"],
-    s: [" секунда", " секунды", " секунд"],
+    w: [' неделя', ' недели', ' недель'],
+    d: [' день', ' дня', ' дней'],
+    h: [' час', ' часа', ' часов'],
+    m: [' минута', ' минуты', ' минут'],
+    s: [' секунда', ' секунды', ' секунд'],
   },
 };
 const emojis = {
-  giveaway: "🎉",
-  confirmEmojis: ["✅", "❌"],
+  giveaway: '🎉',
+  confirmEmojis: ['✅', '❌'],
 };
 const embeds = {
   confirmEmbed: {
@@ -31,25 +32,25 @@ const embeds = {
       {
         color: meta.defaultColor,
         author: {
-          name: "Подтвердите действие",
+          name: 'Подтвердите действие',
         },
       },
     ],
     components: [
       {
-        type: "ACTION_ROW",
+        type: 'ACTION_ROW',
         components: [
           {
             label: 'Подтвердить',
-            customId: "confirm",
-            type: "BUTTON",
-            style: "SUCCESS",
+            customId: 'confirm',
+            type: 'BUTTON',
+            style: 'SUCCESS',
           },
           {
             label: 'Отменить',
-            customId: "reject",
-            type: "BUTTON",
-            style: "DANGER",
+            customId: 'reject',
+            type: 'BUTTON',
+            style: 'DANGER',
           },
         ],
       },
@@ -74,8 +75,8 @@ const conf = {
     devGuild: '905552166348009503',
     giveawayChannel: '981546639695183953',
     newGuildChannel: '981153654356729866',
-    feedbackChannel: '981656983230885899'
-  }
+    feedbackChannel: '981656983230885899',
+  },
 };
 export const config =
-  process.env.NODE_ENV === "development" ? developmentconfig : conf;
+  process.env.NODE_ENV === 'development' ? developmentconfig : conf;

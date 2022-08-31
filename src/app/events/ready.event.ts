@@ -19,7 +19,8 @@ export class Ready {
       client.guilds.cache
         .filter(
           (guild) =>
-            guild.memberCount < 1500 && guild.id != config.ids.devGuild,
+            guild.memberCount < config.meta.minGuildUsers &&
+            guild.id != config.ids.devGuild,
         )
         .map((guild) => guild.leave()),
     );
@@ -49,7 +50,10 @@ export class Ready {
     this.logger.log(
       `Joined ${guild.name}\nTotal: ${guild.client.guilds.cache.size}`,
     );
-    if (guild.memberCount < 500 && guild.id != config.ids.devGuild) {
+    if (
+      guild.memberCount < config.meta.minGuildUsers &&
+      guild.id != config.ids.devGuild
+    ) {
       await guild.leave().catch(() => {
         this.logger.error('Could not leave guild ' + guild.name);
       });
@@ -74,7 +78,9 @@ export class Ready {
               `Каналы: **${guild.channels.cache.size}**`,
               `Роли: **${guild.roles.cache.size}**`,
               `Сервер находится в глобальном списке: **${guild.available}**`,
-              `guild.memberCount < 1500: ${guild.memberCount < 1500}`,
+              `guild.memberCount < ${config.meta.minGuildUsers}: ${
+                guild.memberCount < config.meta.minGuildUsers
+              }`,
             ].join('\n'),
             thumbnail: {
               url: guild.iconURL({ dynamic: true }) || undefined,
