@@ -26,6 +26,7 @@ specifiers:
   ts-loader: 9.2.8
   ts-node: 10.7.0
   tsconfig-paths: 3.14.0
+  typesafe-i18n: ^5.12.0
   typescript: 4.6.2
 
 dependencies:
@@ -45,6 +46,7 @@ dependencies:
   reflect-metadata: 0.1.13
   rimraf: 3.0.2
   rxjs: 7.5.5
+  typesafe-i18n: 5.12.0_typescript@4.6.2
 
 devDependencies:
   '@nestjs/cli': 8.2.3
@@ -2415,11 +2417,19 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
+  /typesafe-i18n/5.12.0_typescript@4.6.2:
+    resolution: {integrity: sha512-9QUVOZcxzRMhY3W7BJq0s87sSjXmHo9K9uyyrYPLxx5YWzDG7SgPJQ6XHvB7RXTkRrr6ixAIiqBS9uAaKJpmFg==}
+    hasBin: true
+    peerDependencies:
+      typescript: '>=3.5.1'
+    dependencies:
+      typescript: 4.6.2
+    dev: false
+
   /typescript/4.6.2:
     resolution: {integrity: sha512-HM/hFigTBHZhLXshn9sN37H085+hQGeJHJ/X7LpBWLID/fbc2acUMfU+lGD98X81sKP+pFa9f0DZmCwB9GnbAg==}
     engines: {node: '>=4.2.0'}
     hasBin: true
-    dev: true
 
   /universalify/2.0.0:
     resolution: {integrity: sha512-hAZsKq7Yy11Zu1DE0OzWjw7nnLZmJZYTDZZyEFHZdUhV8FkH5MCfoU1XMaxXovpyW5nq5scPqq0ZDP9Zyl04oQ==}

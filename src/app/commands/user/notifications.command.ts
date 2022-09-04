@@ -25,7 +25,8 @@ export class NotificationsCmd implements DiscordCommand {
           {
             title: 'Управление уведомлениями',
             thumbnail: {
-              url: command.user.displayAvatarURL({ dynamic: true }) || undefined,
+              url:
+                command.user.displayAvatarURL({ dynamic: true }) || undefined,
             },
             description: `Выберите нужный пункт для **включения** или **отключения** уведомления о розыгрыше`,
           },
@@ -54,7 +55,7 @@ export class NotificationsCmd implements DiscordCommand {
         ],
       })
       .catch((err) => this.logger.error(err));
-    if (!message) return;
+    if (!message || !(message instanceof Message)) return;
 
     const response = await (message as Message)
       .awaitMessageComponent({
