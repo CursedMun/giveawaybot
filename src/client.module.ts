@@ -35,7 +35,7 @@ import { ClientGateway } from './app/events/client.gateaway.event';
             status: 'online',
             activities: [
               {
-                name: '💫 напишите !invite',
+                name: '💫 напишите ??invite',
                 type: 'PLAYING',
                 url: 'https://discord.com/api/oauth2/authorize?client_id=960300300038717490&permissions=0&scope=bot',
               },
