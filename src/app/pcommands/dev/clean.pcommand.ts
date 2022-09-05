@@ -17,13 +17,6 @@ export class CleanMe {
   @UsePipes(PrefixCommandTransformPipe)
   async onMessage(@Payload() dto: EndDto, message: Message): Promise<any> {
     if (!message.guild || message.guild.id != config.ids.devGuild) return;
-    const list = await message.client.guilds.fetch();
-    const guilds = list.map((x) => x.fetch());
-    const guildsData = await Promise.all(guilds);
-    let count = 0;
-    const guildToLeave = guildsData.filter(
-      (x) => x.memberCount < (dto?.count ?? 100),
-    );
     const reply = async (text: string) => {
       return await message
         .reply({
@@ -36,8 +29,14 @@ export class CleanMe {
         })
         .catch(() => {});
     };
-    const awaitMessage = await reply('Начинаю выход из серверов...');
+    const awaitMessage = await reply('Ожидайте...');
     if (!awaitMessage) return;
+    const list = await message.client.guilds.fetch();
+    const guilds = list.map((x) => x.fetch());
+    const guildsData = await Promise.all(guilds);
+    const guildToLeave = guildsData.filter(
+      (x) => x.memberCount < (dto?.count ?? 100),
+    );
     await Promise.allSettled(guildToLeave);
     await awaitMessage.delete();
     await reply('Количество серверов: ' + guildToLeave.length);

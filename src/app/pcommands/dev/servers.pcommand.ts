@@ -16,11 +16,7 @@ export class Servers {
   })
   @UsePipes(PrefixCommandTransformPipe)
   async onMessage(@Payload() dto: EndDto, message: Message): Promise<any> {
-    console.log('test');
     if (!message.guild || message.guild.id != config.ids.devGuild) return null;
-    console.log('test');
-    const list = await message.client.guilds.fetch();
-    const guilds = list.map((x) => x.fetch());
     const reply = async (text: string) => {
       return await message
         .reply({
@@ -35,9 +31,9 @@ export class Servers {
     };
     const awaitMessage = await reply('Ожидайте...');
     if (!awaitMessage) return;
-    const guildsData = await Promise.all(guilds);
+    const list = await message.client.guilds.fetch();
+    const guildsData = await Promise.all(list.map((x) => x.fetch()));
     await awaitMessage.delete().catch();
-
     message
       .reply({
         embeds: [
@@ -50,7 +46,10 @@ export class Servers {
                 value: guildsData.length.toString() ?? '0',
               },
               {
-                name: 'Список серверов',
+                name:
+                  'Список серверов с меньше ' +
+                  (dto?.count ?? 100) +
+                  ' участников',
                 value:
                   guildsData
                     .filter((x) => x.memberCount > (dto?.count ?? 100))
