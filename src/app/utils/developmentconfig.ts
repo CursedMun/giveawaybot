@@ -72,8 +72,8 @@ export const developmentconfig = {
   emojis,
   ids: {
     devGuild: '905552166348009503',
-    giveawayChannel: '905552166348009503',
-    newGuildChannel: '905552166348009503',
+    giveawayChannel: '981546639695183953',
+    newGuildChannel: '981153654356729866',
     feedbackChannel: '981656983230885899',
   },
 };

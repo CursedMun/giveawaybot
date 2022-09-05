@@ -9,7 +9,6 @@ export class FeedBack {
 
   @PrefixCommand({
     name: "fb",
-    prefix: "!",
   })
   @UsePipes(PrefixCommandTransformPipe)
   onMessage(message: Message): any {

@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Intents, Options } from 'discord.js';
+import { ClientGateway } from './app/events/client.gateaway.event';
 
 @Module({
   imports: [
@@ -18,14 +19,16 @@ import { Intents, Options } from 'discord.js';
           'MONGO_LOGIN',
         )}:${configService.get(
           'MONGO_PASSWORD',
-        )}@insomniatests.8ljkr.mongodb.net/?retryWrites=true&w=majority`,
+        )}@insomniatests.8ljkr.mongodb.net/${
+          process.env.NODE_ENV === 'development' ? 'dev' : 'test'
+        }?retryWrites=true&w=majority`,
       }),
       inject: [ConfigService],
     }),
     DiscordModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        prefix: configService.get('PREFIX') || '!',
+        prefix: configService.get('PREFIX') || '??',
         token: configService.get('TOKEN')!,
         discordClientOptions: {
           presence: {
@@ -59,6 +62,7 @@ import { Intents, Options } from 'discord.js';
       inject: [ConfigService],
     }),
   ],
+  providers: [ClientGateway],
   exports: [DiscordModule],
 })
 export class ClientModule {}

@@ -9,9 +9,9 @@ import * as redisStore from 'cache-manager-ioredis';
       useFactory: (configService: ConfigService) => {
         return process.env.NODE_ENV
           ? {
-              store: redisStore,
-              host: 'localhost',
-              port: 6379,
+              store: 'memory' as any,
+              host: '',
+              port: 0,
             }
           : {
               store: redisStore,

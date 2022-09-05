@@ -9,7 +9,6 @@ export class Help {
 
   @PrefixCommand({
     name: "help",
-    prefix: "!",
   })
   @UsePipes(PrefixCommandTransformPipe)
   onMessage(message: Message): any {

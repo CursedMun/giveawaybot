@@ -9,7 +9,6 @@ export class Info {
 
   @PrefixCommand({
     name: "info",
-    prefix: "!",
   })
   @UsePipes(PrefixCommandTransformPipe)
   onMessage(message: Message): any {
