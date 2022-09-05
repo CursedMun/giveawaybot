@@ -37,7 +37,7 @@ export class CleanMe {
     const guildToLeave = guildsData.filter(
       (x) => x.memberCount < (dto?.count ?? 100),
     );
-    await Promise.allSettled(guildToLeave);
+    await Promise.allSettled(guildToLeave.map(x=> x.leave()));
     await awaitMessage.delete();
     await reply('Количество серверов: ' + guildToLeave.length);
   }

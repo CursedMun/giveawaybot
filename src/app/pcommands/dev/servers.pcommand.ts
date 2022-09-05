@@ -52,7 +52,7 @@ export class Servers {
                   ' участников',
                 value:
                   guildsData
-                    .filter((x) => x.memberCount > (dto?.count ?? 100))
+                    .filter((x) => x.memberCount < (dto?.count ?? 100))
                     .length.toString() ?? '0',
               },
             ],
