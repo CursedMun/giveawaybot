@@ -107,11 +107,15 @@ export class GiveawayService {
     const usersSet = new Set(doc.participants);
     if (this.client.user) usersSet.delete(this.client.user.id);
     const users = Array.from(usersSet).filter(async (id) => {
-      const member =
-        guild.members.cache.get(id) ?? (await guild.members.fetch(id));
-      return member && doc.condition === 'voice'
-        ? member.voice.channel != null
-        : false;
+      try {
+        const member =
+          guild.members.cache.get(id) ?? (await guild.members.fetch(id));
+        return member && doc.condition === 'voice'
+          ? member.voice.channel != null
+          : false;
+      } catch (err) {
+        return false;
+      }
     });
     const tempNum = Math.min(users.length, winnerCount);
     if (users.length < winnerCount) return users;

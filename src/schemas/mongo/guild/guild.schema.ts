@@ -11,6 +11,8 @@ export class Guild {
   tier: Tier;
   @Prop()
   totalGiveaways: number;
+  @Prop()
+  language: string;
 }
 
 export const GuildSchema = SchemaFactory.createForClass(Guild);
