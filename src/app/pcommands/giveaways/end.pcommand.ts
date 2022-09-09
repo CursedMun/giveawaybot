@@ -72,7 +72,6 @@ export class EndGiveaway {
     if (!giveaway || giveaway.ended) {
       await awaitMessage?.delete().catch(() => {});
       return reply('Розыгрыш не найден или уже закончен');
-      awaitMessage?.delete().catch(() => {});
     }
     await this.giveawayService.endGiveaway(giveaway.ID);
     await awaitMessage?.delete().catch(() => {});

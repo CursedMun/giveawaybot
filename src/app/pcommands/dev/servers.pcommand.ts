@@ -5,7 +5,7 @@ import { Message } from 'discord.js';
 import { config } from 'src/app/utils/config';
 class EndDto {
   @ArgNum(() => ({ position: 0 }))
-  count?: number;
+  count?: string;
 }
 @Injectable()
 export class Servers {
