@@ -1,10 +1,9 @@
-import { CACHE_MANAGER, Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Cache } from "cache-manager";
-import { FilterQuery, Model } from "mongoose";
-import { config } from "src/app/utils/config";
-import { Giveaway, GiveawayDocument } from "./giveaway.schema";
-
+import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Cache } from 'cache-manager';
+import { FilterQuery, Model } from 'mongoose';
+import { config } from 'src/app/utils/config';
+import { Giveaway, GiveawayDocument } from './giveaway.schema';
 @Injectable()
 export class MongoGiveawayService {
   private readonly logger = new Logger(MongoGiveawayService.name);
@@ -12,7 +11,7 @@ export class MongoGiveawayService {
   constructor(
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
     @InjectModel(Giveaway.name)
-    public GiveawayModel: Model<GiveawayDocument>
+    public GiveawayModel: Model<GiveawayDocument>,
   ) {}
   async get(ID: string, ttl?: number) {
     const cacheKey = `giveaways_get_${ID}`;
@@ -29,7 +28,7 @@ export class MongoGiveawayService {
         }
         return giveaway;
       },
-      { ttl: ttl ?? this.defaulttl }
+      { ttl: ttl ?? this.defaulttl },
     );
   }
   async setCacheForGuild(id: string, value: string, ttl?: number) {
@@ -46,9 +45,9 @@ export class MongoGiveawayService {
   async findOne(
     data: FilterQuery<GiveawayDocument>,
     force?: boolean,
-    ttl?: number
+    ttl?: number,
   ) {
-    const cacheKey = `giveaways_findOne_${Object.values(data).join("_")}`;
+    const cacheKey = `giveaways_findOne_${Object.values(data).join('_')}`;
     if (force) return await this.GiveawayModel.findOne(data).lean();
     return await this.cache.wrap(
       cacheKey,
@@ -56,11 +55,11 @@ export class MongoGiveawayService {
         let giveaway = await this.GiveawayModel.findOne(data).lean();
         return giveaway;
       },
-      { ttl: ttl ?? this.defaulttl }
+      { ttl: ttl ?? this.defaulttl },
     );
   }
   async has(data: FilterQuery<GiveawayDocument>, ttl?: number) {
-    const cacheKey = `giveaways_has_${Object.values(data).join("_")}`;
+    const cacheKey = `giveaways_has_${Object.values(data).join('_')}`;
     return await this.cache.wrap(
       cacheKey,
       async () => {
@@ -69,7 +68,7 @@ export class MongoGiveawayService {
           .countDocuments();
         return giveaway > 0;
       },
-      { ttl: ttl ?? this.defaulttl }
+      { ttl: ttl ?? this.defaulttl },
     );
   }
   async create(createGiveawayDto: Partial<Giveaway>): Promise<Giveaway> {
@@ -78,20 +77,20 @@ export class MongoGiveawayService {
   }
   async countDocuments(
     data: FilterQuery<GiveawayDocument>,
-    ttl?: number
+    ttl?: number,
   ): Promise<number> {
-    const cacheKey = `giveaways_count_${Object.values(data).join("_")}`;
+    const cacheKey = `giveaways_count_${Object.values(data).join('_')}`;
     return await this.cache.wrap(
       cacheKey,
       async () => {
         return await this.GiveawayModel.find(data).countDocuments().lean();
       },
-      { ttl: ttl ?? this.defaulttl }
+      { ttl: ttl ?? this.defaulttl },
     );
   }
   async find(
     data: FilterQuery<GiveawayDocument>,
-    ttl?: number
+    ttl?: number,
   ): Promise<Giveaway[]> {
     const cacheKey = `find_giveaways`;
     return await this.cache.wrap(
@@ -100,13 +99,15 @@ export class MongoGiveawayService {
         let giveaways = await this.GiveawayModel.find(data).lean();
         return giveaways;
       },
-      { ttl: 10 }
+      { ttl: 10 },
     );
   }
   async findAll(): Promise<Giveaway[]> {
-    return await this.GiveawayModel.find();
+    return this.GiveawayModel.find();
   }
-  async deleteOne(data: FilterQuery<GiveawayDocument>): Promise<any> {
-    return await this.GiveawayModel.deleteOne(data).lean();
+  async deleteOne(
+    data: FilterQuery<GiveawayDocument>,
+  ): Promise<any> {
+    return this.GiveawayModel.deleteOne(data);
   }
 }

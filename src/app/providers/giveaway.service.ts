@@ -81,6 +81,8 @@ export class GiveawayService {
           ),
         );
       } catch (err) {
+        const deleted = await this.giveawayService.deleteOne({ ID: doc.ID });
+        if (deleted) this.logger.warn(err);
         this.logger.error(err);
       } finally {
         continue;
