@@ -62,6 +62,10 @@ export class GiveawayService {
         const message =
           channel.messages.cache.get(doc.messageID) ??
           (await channel.messages.fetch(doc.messageID));
+        if (!message) {
+          await this.giveawayService.deleteOne({ ID: doc.ID });
+          continue;
+        }
         var interval = setInterval(() => {
           this.updateTimer(message, doc.endDate, doc.ID);
         }, config.ticks.tenSeconds * 3);
