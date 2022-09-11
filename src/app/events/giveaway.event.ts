@@ -1,11 +1,9 @@
 import { On } from '@discord-nestjs/core';
 import { Injectable, Logger, UseGuards } from '@nestjs/common';
 import {
-  ButtonComponent,
   ButtonInteraction,
   ComponentType,
   GuildMember,
-  MessageActionRowComponent,
   MessageReaction,
   User,
   VoiceState,
@@ -47,9 +45,17 @@ export class GiveawayEvents {
         const newComponents = button.message.components![0].components?.map(
           (component) => {
             const [_, action, __] = (component.customId ?? '1.1.1').split('.');
-            if (action == 'list')
-              (component as any).label = `Участники - ${response.totalParticipants}`;
-            return { ...component } as MessageActionRowComponent;
+
+            return {
+              label:
+                action == 'list'
+                  ? `Участников - ${response.totalParticipants}`
+                  : (component as any).label,
+              customId: component.customId,
+              type: component.type,
+              style: (component as any).style,
+              disabled: (component as any).disabled,
+            };
           },
         );
         console.log(newComponents);
@@ -58,7 +64,7 @@ export class GiveawayEvents {
             components: [
               {
                 type: ComponentType.ActionRow,
-                components: newComponents,
+                components: newComponents as any,
               },
             ],
           })
