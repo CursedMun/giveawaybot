@@ -174,8 +174,6 @@ export class GiveawayService {
         ...message.embeds[0].data,
         fields: fields,
       };
-      console.log(message.embeds[0])
-      console.log(newEmbed)
       message.edit({
         embeds: [newEmbed],
       });

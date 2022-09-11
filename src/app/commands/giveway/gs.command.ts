@@ -156,7 +156,7 @@ export class GiveawayStartCommand implements DiscordCommand {
         ?.has('SendMessages')
     )
       return await reply('Недостаточно прав для отправки сообщений в канал');
-    if (typeof winnersCount !== 'number' || winnersCount > 20)
+    if (typeof winnersCount !== 'number' || winnersCount > 20 || isNaN(winnersCount))
       return await reply('Неверно указано кол-во победителей');
     let message: Message;
     try {
