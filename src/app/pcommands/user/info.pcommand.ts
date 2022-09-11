@@ -6,7 +6,7 @@ import {
   Client,
   ComponentType,
   Message,
-  TextChannel
+  TextChannel,
 } from 'discord.js';
 import { GiveawayService } from 'src/app/providers/giveaway.service';
 import { config } from 'src/app/utils/config';
@@ -106,7 +106,9 @@ export class Info {
       const pageCount = Math.ceil(documentsCount / 4);
       const currentIndex = Math.max(0, Math.min(page, documentsCount - 1));
       const documents =
-        await this.giveawayService.giveawayService.GiveawayModel.find({})
+        await this.giveawayService.giveawayService.GiveawayModel.find({
+          guildID,
+        })
           .skip(currentIndex * 4)
           .limit(4)
           .lean();
