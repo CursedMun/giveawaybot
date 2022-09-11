@@ -11,6 +11,7 @@ import {
 import { GiveawayService } from 'src/app/providers/giveaway.service';
 import { config } from 'src/app/utils/config';
 import Book, { PageCallbackAsync } from 'src/app/utils/navigation/Book';
+import { parseFilteredTimeArray } from 'src/app/utils/utils';
 @Injectable()
 export class Info {
   constructor(
@@ -23,6 +24,7 @@ export class Info {
   })
   @UsePipes(PrefixCommandTransformPipe)
   onMessage(message: Message): any {
+    console.log(process.uptime());
     //all the info about my discord bot in an embed
     const info = {
       'Название:': `${this.client.user?.tag}`,
@@ -36,6 +38,7 @@ export class Info {
       'Память:': `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(
         2,
       )} MB / ${(process.memoryUsage().heapTotal / 1024 / 1024).toFixed(2)} MB`,
+      'Онлайн:': `${parseFilteredTimeArray(process.uptime() * 1000)}`,
     };
     message
       .reply({
