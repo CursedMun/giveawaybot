@@ -223,10 +223,12 @@ export class GiveawayService {
             `<a:tochka:980106660733399070>Организатор: <@${doc.creatorID}>`,
             `<a:tochka:980106660733399070>Победител${
               doc.winnerCount > 1 ? 'и' : 'ь'
-            }: ${
+            } \n${
               winners.length == 0
                 ? 'Нет победителя'
-                : winners.map((id) => `<@${id}>`).join('\n')
+                : winners
+                    .map((id) => `<:background:980765434414522398><@${id}>`)
+                    .join('\n')
             }`,
           ].join('\n'),
           inline: true,
