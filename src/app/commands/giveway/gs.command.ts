@@ -3,13 +3,13 @@ import { Injectable, Logger, UseGuards } from '@nestjs/common';
 import {
   CacheType,
   CommandInteraction,
+  ComponentType,
   Message,
   MessageComponentInteraction,
-  Modal,
   ModalSubmitInteraction,
   TextChannel,
+  TextInputStyle,
 } from 'discord.js';
-import { TextInputStyles } from 'discord.js/typings/enums';
 import { GiveawayService } from 'src/app/providers/giveaway.service';
 import { config } from 'src/app/utils/config';
 import { IsModalInteractionGuard } from 'src/app/utils/guards/is-modal-interaction.guard';
@@ -35,7 +35,7 @@ export class GiveawayStartCommand implements DiscordCommand {
 
   async handler(interaction: CommandInteraction): Promise<any> {
     try {
-      if (!interaction.memberPermissions?.has('ADMINISTRATOR')) {
+      if (!interaction.memberPermissions?.has('Administrator')) {
         return {
           embeds: [
             {
@@ -52,60 +52,61 @@ export class GiveawayStartCommand implements DiscordCommand {
           ephemeral: true,
         };
       }
-      const modal = new Modal({
+
+      await interaction.showModal({
         customId: this.gsModalID,
         title: 'Запрос на участие',
         components: [
           {
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [
               {
-                type: 'TEXT_INPUT',
+                type: ComponentType.TextInput,
                 customId: this.prizeModalID,
                 label: 'Приз',
-                style: TextInputStyles.SHORT,
+                style: TextInputStyle.Short,
                 required: true,
                 maxLength: 250,
               },
             ],
           },
           {
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [
               {
-                type: 'TEXT_INPUT',
+                type: ComponentType.TextInput,
                 customId: this.timeModalID,
                 label: 'Длительность розыгрыша (1d|1h|1m|1s)',
-                style: TextInputStyles.SHORT,
+                style: TextInputStyle.Short,
                 required: true,
                 maxLength: 10,
               },
             ],
           },
           {
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [
               {
-                type: 'TEXT_INPUT',
+                type: ComponentType.TextInput,
                 customId: this.winnerscountModalID,
                 label: 'Кол-во победителей (максимум 20)',
-                style: TextInputStyles.SHORT,
+                style: TextInputStyle.Short,
                 required: true,
                 maxLength: 20,
               },
             ],
           },
           {
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [
               {
-                type: 'TEXT_INPUT',
+                type: ComponentType.TextInput,
                 customId: this.channelModalID,
                 label: 'Название или id канала',
                 value:
                   (interaction.channel as TextChannel)?.name ??
                   interaction.channelId,
-                style: TextInputStyles.SHORT,
+                style: TextInputStyle.Short,
                 required: true,
                 maxLength: 100,
               },
@@ -113,8 +114,6 @@ export class GiveawayStartCommand implements DiscordCommand {
           },
         ],
       });
-
-      await interaction.showModal(modal);
     } catch (err) {
       this.logger.error(err);
     } finally {
@@ -133,7 +132,7 @@ export class GiveawayStartCommand implements DiscordCommand {
             color: config.meta.defaultColor,
             author: {
               name: text,
-              iconURL: modal.user.avatarURL({ dynamic: true }) || undefined,
+              icon_url: modal.user.avatarURL() || '',
             },
           },
         ],
@@ -154,7 +153,7 @@ export class GiveawayStartCommand implements DiscordCommand {
     if (
       !giveawayChannel
         .permissionsFor(modal.client.user?.id ?? '')
-        ?.has('SEND_MESSAGES')
+        ?.has('SendMessages')
     )
       return await reply('Недостаточно прав для отправки сообщений в канал');
     if (typeof winnersCount !== 'number' || winnersCount > 20)
@@ -186,7 +185,7 @@ export class GiveawayStartCommand implements DiscordCommand {
           if (interaction.member?.user.id != modal.user.id) return false;
           return true;
         },
-        componentType: 'BUTTON',
+        componentType: ComponentType.Button,
         time: config.ticks.oneMinute * 10,
       });
       if (!response || response.customId === 'reject') return;
@@ -217,7 +216,7 @@ export class GiveawayStartCommand implements DiscordCommand {
             title: 'Для начала',
             color: config.meta.defaultColor,
             thumbnail: {
-              url: response.user.displayAvatarURL({ dynamic: true }) || undefined,
+              url: response.user.displayAvatarURL() || '',
             },
             description:
               'Чтобы продолжить **создание розыгрыша** выберите ниже **одно** из **условий**.',
@@ -225,11 +224,11 @@ export class GiveawayStartCommand implements DiscordCommand {
         ],
         components: [
           {
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [
               {
                 customId: 'select.condition',
-                type: 'SELECT_MENU',
+                type: ComponentType.SelectMenu,
                 placeholder: 'Варианты условий',
                 emoji: '<:point:1014108607098404925>',
                 options: options.map((option, index) => {
@@ -251,7 +250,7 @@ export class GiveawayStartCommand implements DiscordCommand {
           if (interaction.member?.user.id != modal.user.id) return false;
           return true;
         },
-        componentType: 'SELECT_MENU',
+        componentType: ComponentType.SelectMenu,
         time: config.ticks.oneMinute * 10,
       });
       if (!conditionResponse) return;

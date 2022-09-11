@@ -1,11 +1,12 @@
 import { InjectDiscordClient } from '@discord-nestjs/core';
 import { Injectable, Logger } from '@nestjs/common';
 import {
+  ButtonStyle,
   Client,
+  ComponentType,
   Guild,
   GuildMember,
   Message,
-  MessageEmbedOptions,
   SnowflakeUtil,
   TextChannel,
 } from 'discord.js';
@@ -170,7 +171,7 @@ export class GiveawayService {
         fields: fields,
       };
       message.edit({
-        embeds: [newEmbed as MessageEmbedOptions],
+        embeds: [newEmbed],
       });
     } catch (err) {
       this.logger.error(err);
@@ -300,7 +301,7 @@ export class GiveawayService {
       condition,
       creatorID,
     } = data;
-    const id = SnowflakeUtil.generate();
+    const id = SnowflakeUtil.generate().toString();
     let doc = {
       ID: id,
       prize,
@@ -348,19 +349,19 @@ export class GiveawayService {
           access_condition == 'button'
             ? [
                 {
-                  type: 'ACTION_ROW',
+                  type: ComponentType.ActionRow,
                   components: [
                     {
                       customId: `giveaway.join.${id}`,
-                      type: 'BUTTON',
+                      type: ComponentType.Button,
                       label: 'Участвовать',
-                      style: 'SUCCESS',
+                      style: ButtonStyle.Success,
                     },
                     {
                       customId: `giveaway.list.${id}`,
-                      type: 'BUTTON',
+                      type: ComponentType.Button,
                       label: 'Участники - 0',
-                      style: 'PRIMARY',
+                      style: ButtonStyle.Primary,
                     },
                   ],
                 },
@@ -407,9 +408,9 @@ export class GiveawayService {
                 `Создатель: <@${doc.creatorID}>`,
                 `Ссылка: https://discordapp.com/channels/${channel.guild.id}/${channel.id}/${message.id}`,
               ].join('\n'),
-              timestamp: new Date(),
+              timestamp: new Date().toISOString(),
               thumbnail: {
-                url: channel.guild.iconURL({ dynamic: true }) || undefined,
+                url: channel.guild.iconURL() || '',
               },
             },
           ],

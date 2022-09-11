@@ -1,15 +1,10 @@
 import {
   Client,
-  Collection,
-  DMChannel,
-  Guild,
+  Collection, Guild,
   GuildMember,
   Message,
-  MessageActionRowOptions,
   Role,
-  TextChannel,
-  ThreadChannel,
-  User,
+  TextChannel, User
 } from "discord.js";
 import fetch, { RequestInfo, RequestInit } from "node-fetch";
 import { config } from "./config";
@@ -351,74 +346,5 @@ export function discordRetryHandler(
   });
 }
 
-export function rowThread(
-  ticketID: string,
-  disabled: boolean
-): Required<MessageActionRowOptions> {
-  return {
-    type: "ACTION_ROW",
-    components: [
-      {
-        customId: `report.stop.${ticketID}`,
-        style: "PRIMARY",
-        type: "BUTTON",
-        label: "Завершить репорт",
-      },
-      {
-        customId: `report.start.${ticketID}`,
-        style: "PRIMARY",
-        label: "Создать тикет",
-        type: "BUTTON",
-        disabled: disabled,
-      },
-    ],
-  };
-}
-export function startChat(
-  userID: string,
-  channel: ThreadChannel | DMChannel,
-  targetChannel: ThreadChannel | DMChannel,
-  client: Client
-) {
-  return new Promise<Collection<string, Message> | null>((resolve) => {
-    const filter = (m: Message) => {
-      if (![userID, client.user!.id].some((x) => x === m.author.id))
-        return false;
-      if (m.author.id === client.user!.id && m.content !== "stop") {
-        return false;
-      }
-      return true;
-    };
-    const collector = channel.createMessageCollector({
-      filter: filter,
-      idle: 3.6e6,
-    });
-    collector.on("collect", async (message) => {
-      if (message.content == "stop" && message.author.id === client.user!.id) {
-        message.delete().catch(() => {});
-        collector.stop("exitedbyuser");
-        return;
-      }
-      targetChannel.send(message.content).catch(() => {});
-    });
-    collector.on("end", async (collected) => {
-      resolve(collected);
-    });
-  });
-}
-export const salaries = {
-  supps: {
-    salary: (score: number) => {
-      const initialValue = score >= 30 ? 8.5 : score >= 60 ? 9 : 0;
-      const value = Math.floor(initialValue * score);
-      return value >= 1100 ? 1100 : value;
-    },
-  },
-  mods: {
-    salary: (score: number) => {
-      const initialValue = score >= 50 ? 3 : score >= 200 ? 4 : 0;
-      const value = Math.floor(initialValue * score);
-      return value >= 1100 ? 1100 : value;
-    },
-  },
-};
+
+

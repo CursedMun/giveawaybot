@@ -1,4 +1,8 @@
-import { InteractionReplyOptions } from 'discord.js';
+import {
+  ButtonStyle,
+  ComponentType,
+  InteractionUpdateOptions,
+} from 'discord.js';
 import { developmentconfig } from './developmentconfig';
 
 const meta = {
@@ -38,24 +42,24 @@ const embeds = {
     ],
     components: [
       {
-        type: 'ACTION_ROW',
+        type: ComponentType.ActionRow,
         components: [
           {
             label: 'Подтвердить',
             customId: 'confirm',
-            type: 'BUTTON',
-            style: 'SUCCESS',
+            type: ComponentType.Button,
+            style: ButtonStyle.Success,
           },
           {
             label: 'Отменить',
             customId: 'reject',
-            type: 'BUTTON',
-            style: 'DANGER',
+            type: ComponentType.Button,
+            style: ButtonStyle.Danger,
           },
         ],
       },
     ],
-  } as InteractionReplyOptions,
+  } as InteractionUpdateOptions,
 };
 
 const ticks = {

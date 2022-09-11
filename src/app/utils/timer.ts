@@ -1,5 +1,5 @@
-import { SnowflakeUtil } from "discord.js";
-import { config } from "./config";
+import { SnowflakeUtil } from 'discord.js';
+import { config } from './config';
 
 export default class Timer {
   private cache = new Map<string, { date: number; fn: () => void }>();
@@ -8,7 +8,7 @@ export default class Timer {
   constructor(
     date: number,
     fn: () => void,
-    checkInterval = config.ticks.tenSeconds
+    checkInterval = config.ticks.tenSeconds,
   ) {
     this.checkInterval = checkInterval;
     this.lastTick = Date.now();
@@ -21,7 +21,7 @@ export default class Timer {
 
   set(date: number, fn: () => void) {
     if (this.nextTick > date) {
-      return this.cache.set(SnowflakeUtil.generate(), { date, fn });
+      return this.cache.set(SnowflakeUtil.generate().toString(), { date, fn });
     }
     return this.timeout(fn, date - Date.now());
   }
@@ -31,7 +31,7 @@ export default class Timer {
       if (val.date <= this.nextTick) {
         this.timeout(
           val.fn,
-          val.date - Date.now() < 0 ? 0 : val.date - Date.now()
+          val.date - Date.now() < 0 ? 0 : val.date - Date.now(),
         );
         this.cache.delete(id);
       }

@@ -1,6 +1,6 @@
 import { PrefixCommandTransformPipe } from '@discord-nestjs/common';
-import { ArgNum, Payload, PrefixCommand } from '@discord-nestjs/core';
-import { Injectable, Logger, UsePipes } from '@nestjs/common';
+import { ArgNum, Payload, PrefixCommand, UsePipes } from '@discord-nestjs/core';
+import { Injectable, Logger } from '@nestjs/common';
 import { Message } from 'discord.js';
 import { GiveawayService } from 'src/app/providers/giveaway.service';
 import { config } from 'src/app/utils/config';
@@ -15,10 +15,12 @@ export class EndGiveaway {
 
   @PrefixCommand({
     name: 'end',
+    isRemoveCommandName: false,
+    isRemovePrefix: false,
   })
   @UsePipes(PrefixCommandTransformPipe)
   async onMessage(@Payload() dto: EndDto, message: Message): Promise<any> {
-    if (!message.member?.permissions.has('ADMINISTRATOR')) {
+    if (!message.member?.permissions.has('Administrator')) {
       message
         .reply({
           embeds: [
@@ -37,7 +39,9 @@ export class EndGiveaway {
         .catch(() => {});
       return;
     }
-    let { messageID } = dto || { messageID: null };
+    // let { messageID } = dto || { messageID: null };
+    const args = message.content.split(' ');
+    const messageID = args[1];
     const reply = async (text: string) => {
       return await message
         .reply({

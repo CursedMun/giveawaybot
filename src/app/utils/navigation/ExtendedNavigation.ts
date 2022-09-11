@@ -1,16 +1,20 @@
 import {
   ButtonInteraction,
+  ButtonStyle,
   CacheType,
   CommandInteraction,
+  ComponentType,
   Interaction,
   InteractionCollector,
-  InteractionCollectorOptions,
   InteractionReplyOptions,
+  InteractionUpdateOptions,
   Message,
+  MessageChannelCollectorOptionsParams,
   MessageComponentInteraction,
+  MessageComponentType,
   MessageOptions,
   SelectMenuInteraction,
-} from "discord.js";
+} from 'discord.js';
 
 export interface Page {
   message: MessageOptions;
@@ -20,26 +24,24 @@ export type BookFilter = (interaction: Interaction) => boolean;
 
 export interface NavigationOptions {
   filter: BookFilter;
-  collectorOptions?: InteractionCollectorOptions<
-    MessageComponentInteraction<CacheType>
-  >;
+  collectorOptions?: MessageChannelCollectorOptionsParams<MessageComponentType>;
   buttonName?: string;
 }
 class ExtendedNavigation {
   static buildMessage(
     message: MessageOptions,
-    options: { disabled?: boolean; buttonName?: string }
+    options: { disabled?: boolean; buttonName?: string },
   ): any {
     const disabled = options.disabled || false;
 
     const newComponents = Array.from(message.components || []);
     newComponents.push({
-      type: "ACTION_ROW",
+      type: ComponentType.ActionRow,
       components: [
         {
-          type: "BUTTON",
-          style: "PRIMARY",
-          label: "Назад",
+          type: ComponentType.Button,
+          style: ButtonStyle.Primary,
+          label: 'Назад',
           customId: `${options.buttonName}.back`,
           disabled,
         },
@@ -50,56 +52,54 @@ class ExtendedNavigation {
 
   responsePromise: Promise<Message>;
   collector?: InteractionCollector<
-    | ButtonInteraction<CacheType>
-    | MessageComponentInteraction<CacheType>
-    | SelectMenuInteraction<CacheType>
+    ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
   >;
   stopped: boolean = false;
-  prevMessage: InteractionReplyOptions;
+  prevMessage: InteractionUpdateOptions;
   private options: NavigationOptions;
   constructor(
     public page: Page,
     channel: CommandInteraction | ButtonInteraction,
     options: NavigationOptions,
-    prevMessage: InteractionReplyOptions
+    prevMessage: InteractionUpdateOptions,
   ) {
     this.options = options;
-    this.options.buttonName = this.options.buttonName ?? "navigation";
+    this.options.buttonName = this.options.buttonName ?? 'navigation';
     this.prevMessage = prevMessage;
     this.responsePromise = channel.editReply(
-      this.buildMessage()
+      this.buildMessage(),
     ) as Promise<Message>;
     this.messagePromise
       .then((message) => {
-        if (!message) throw new Error("Message not found");
+        if (!message) throw new Error('Message not found');
 
         const filter = (
-          interaction: MessageComponentInteraction<CacheType>
+          interaction: MessageComponentInteraction<CacheType>,
         ) => {
           if (!interaction.message) return false;
           if (interaction.message.id !== message.id) return false;
           if (!interaction.customId.startsWith(`${this.options.buttonName}.`))
             return false;
-          return options.filter(interaction);
+          return options.filter(interaction as any);
         };
         const collector = message.channel.createMessageComponentCollector({
-          filter: filter as any,
+          filter: filter,
           ...options.collectorOptions,
         });
-        collector.on("collect", async (interaction: ButtonInteraction) => {
+        collector.on('collect', async (interaction: ButtonInteraction) => {
           if (interaction?.customId === `${this.options.buttonName}.back`) {
-            await interaction.update(this.prevMessage as any).catch(() => {});
-            collector.stop("delete");
+            await interaction.update(this.prevMessage).catch(() => {});
+            collector.stop('delete');
             return;
           }
         });
-        collector.on("end", (reason: string) => {
-          if (reason === "delete") return;
+        collector.on('end', (reason: string) => {
+          if (reason === 'delete') return;
           // message.edit(this.buildMessage(true)).catch(() => {})
         });
         if (this.stopped) collector.stop();
 
-        this.collector = collector as any;
+        this.collector = collector;
       })
       .catch(() => {});
   }
@@ -113,7 +113,7 @@ class ExtendedNavigation {
       .catch(() => {});
   }
 
-  stop(reason: string = "ok") {
+  stop(reason: string = 'ok') {
     this.stopped = true;
     if (this.collector) this.collector.stop(reason);
   }

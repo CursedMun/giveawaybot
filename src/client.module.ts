@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Intents, Options } from 'discord.js';
+import { ActivityType, GatewayIntentBits, Options } from 'discord.js';
 import { ClientGateway } from './app/events/client.gateaway.event';
 
 @Module({
@@ -36,26 +36,26 @@ import { ClientGateway } from './app/events/client.gateaway.event';
             activities: [
               {
                 name: '💫 напишите ??invite',
-                type: 'PLAYING',
+                type: ActivityType.Competing,
                 url: 'https://discord.com/api/oauth2/authorize?client_id=960300300038717490&permissions=0&scope=bot',
               },
             ],
           },
+          failIfNotExists: true,
+          intents: [
+            GatewayIntentBits.Guilds,
+            GatewayIntentBits.GuildMembers,
+            GatewayIntentBits.GuildMessages,
+            GatewayIntentBits.GuildVoiceStates,
+            GatewayIntentBits.DirectMessages,
+            GatewayIntentBits.MessageContent,
+            GatewayIntentBits.GuildMessageReactions,
+          ],
           makeCache: Options.cacheWithLimits({
-            ...Options.defaultMakeCacheSettings,
+            ...Options.DefaultMakeCacheSettings,
             ReactionManager: 0,
           }),
-          sweepers: Options.defaultSweeperSettings,
-
-          intents: [
-            Intents.FLAGS.GUILDS,
-            Intents.FLAGS.GUILD_BANS,
-            Intents.FLAGS.GUILD_MEMBERS,
-            Intents.FLAGS.GUILD_MESSAGES,
-            Intents.FLAGS.GUILD_VOICE_STATES,
-            Intents.FLAGS.DIRECT_MESSAGES,
-            Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-          ],
+          sweepers: Options.DefaultSweeperSettings,
         },
         registerCommandOptions: [{}],
       }),

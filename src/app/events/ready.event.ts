@@ -1,6 +1,6 @@
 import { InjectDiscordClient, On, Once } from '@discord-nestjs/core';
 import { Injectable, Logger } from '@nestjs/common';
-import { Client, Guild, TextChannel } from 'discord.js';
+import { Client, Guild, Message, TextChannel } from 'discord.js';
 import { GiveawayService } from '../providers/giveaway.service';
 import { config } from '../utils/config';
 
@@ -83,7 +83,7 @@ export class Ready {
               }`,
             ].join('\n'),
             thumbnail: {
-              url: guild.iconURL({ dynamic: true }) || undefined,
+              url: guild.iconURL() || '',
             },
           },
         ],

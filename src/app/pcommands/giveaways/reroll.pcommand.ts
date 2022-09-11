@@ -15,10 +15,12 @@ export class RerollGiveaway {
 
   @PrefixCommand({
     name: 'reroll',
+    isRemoveCommandName: false,
+    isRemovePrefix: false,
   })
   @UsePipes(PrefixCommandTransformPipe)
   async onMessage(@Payload() dto: RerollDto, message: Message): Promise<any> {
-    if (!message.member?.permissions.has('ADMINISTRATOR')) {
+    if (!message.member?.permissions.has('Administrator')) {
       message
         .reply({
           embeds: [
@@ -37,7 +39,9 @@ export class RerollGiveaway {
         .catch(() => {});
       return;
     }
-    let { messageID } = dto || { messageID: null };
+    // let { messageID } = dto || { messageID: null };
+    const args = message.content.split(' ');
+    const messageID = args[1];
     const reply = async (text: string) => {
       try {
         return await message.reply({

@@ -1,18 +1,20 @@
 import {
   ButtonInteraction,
+  ButtonStyle,
   CacheType,
   CommandInteraction,
+  ComponentType,
   Interaction,
   InteractionCollector,
-  InteractionCollectorOptions,
   Message,
-  MessageActionRow,
-  MessageButton,
+  MessageChannelCollectorOptionsParams,
   MessageComponentInteraction,
+  MessageComponentType,
   MessageOptions,
   SelectMenuInteraction,
   TextChannel,
-} from "discord.js";
+} from 'discord.js';
+import { RawMessageButtonInteractionData } from 'discord.js/typings/rawDataTypes';
 
 export interface Page {
   currentIndex: number;
@@ -22,24 +24,22 @@ export interface Page {
 
 export type PageCallbackAsync = (
   pageIndex: number,
-  lastPage?: boolean
+  lastPage?: boolean,
 ) => Promise<Page>;
 export type PageCallbackSync = (pageIndex: number) => Page;
 
 export type PageCallback = (
   pageIndex: number,
-  lastPage?: boolean
+  lastPage?: boolean,
 ) => Promise<Page> | Page;
 export type BookFilter = (interaction: Interaction) => boolean;
 
 export interface BookOptions {
   filter: BookFilter;
   pageCallback: PageCallback;
-  collectorOptions?: InteractionCollectorOptions<
-    MessageComponentInteraction<CacheType>
-  >;
+  collectorOptions?: MessageChannelCollectorOptionsParams<MessageComponentType>;
   showLastPageButton?: boolean;
-  buttons?: MessageButton[];
+  buttons?: RawMessageButtonInteractionData[];
 }
 
 class Book {
@@ -50,59 +50,45 @@ class Book {
       currentPage: number;
       pageCount: number;
       showLastPage?: boolean;
-      buttons?: MessageButton[];
-    }
+      buttons?: RawMessageButtonInteractionData[];
+    },
   ): any {
     const disabled = options.disabled || false;
     const newComponents = Array.from(message.components || []);
-    newComponents.push(
-      new MessageActionRow({
-        components: [
-          new MessageButton({
-            style: "SECONDARY",
-            emoji: "⬅",
-            customId: "book.page_prev",
-            disabled:
-              disabled || options.currentPage < 1 || options.pageCount < 2,
-          }),
-          new MessageButton({
-            style: "DANGER",
-            emoji: "❌",
-            customId: "book.delete",
-            disabled,
-          }),
-          new MessageButton({
-            style: "SECONDARY",
-            emoji: "➡",
-            customId: "book.page_next",
-            disabled: disabled || options.currentPage >= options.pageCount - 1,
-          }),
-        ]
-          .concat(options.buttons || [])
-          .concat(
-            options.showLastPage
-              ? [
-                  new MessageButton({
-                    style: "SECONDARY",
-                    label: "Другое",
-                    customId: "book.last_page",
-                    disabled:
-                      disabled || options.currentPage >= options.pageCount - 1,
-                  }),
-                ]
-              : []
-          ),
-      })
-    );
+    newComponents.push({
+      type: ComponentType.ActionRow,
+      components: [
+        {
+          type: ComponentType.Button,
+          style: ButtonStyle.Secondary,
+          emoji: '⬅',
+          customId: 'navigation.page_prev',
+          disabled:
+            disabled || options.currentPage < 1 || options.pageCount < 2,
+        },
+        {
+          type: ComponentType.Button,
+          style: ButtonStyle.Danger,
+          emoji: '❌',
+          customId: 'navigation.delete',
+          disabled,
+        },
+        {
+          type: ComponentType.Button,
+          style: ButtonStyle.Secondary,
+          emoji: '➡',
+          customId: 'navigation.page_next',
+          disabled: disabled || options.currentPage >= options.pageCount - 1,
+        },
+      ],
+    });
     return Object.assign({}, message, { components: newComponents });
   }
 
   pageCallback: PageCallback;
   responsePromise: Promise<Message>;
   collector?: InteractionCollector<
-    | ButtonInteraction<CacheType>
-    | MessageComponentInteraction<CacheType>
-    | SelectMenuInteraction<CacheType>
+    ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
   >;
   stopped: boolean = false;
   showLastPage: boolean = false;
@@ -111,7 +97,7 @@ class Book {
   constructor(
     public page: Page,
     channel: TextChannel | ButtonInteraction | CommandInteraction,
-    options: BookOptions
+    options: BookOptions,
   ) {
     this.options = options;
     this.pageCallback = options.pageCallback;
@@ -122,44 +108,44 @@ class Book {
         : (channel.followUp(this.buildMessage()) as Promise<Message>);
     this.messagePromise
       .then((message) => {
-        if (!message) throw new Error("Message not found");
+        if (!message) throw new Error('Message not found');
         const filter = (
-          interaction: MessageComponentInteraction<CacheType>
+          interaction: MessageComponentInteraction<CacheType>,
         ) => {
           if (!interaction.message) return false;
           if (interaction.message.id !== message.id) return false;
-          if (!interaction.customId.startsWith("book.")) return false;
-          return options.filter(interaction);
+          if (!interaction.customId.startsWith('book.')) return false;
+          return options.filter(interaction as any);
         };
 
         const collector = message.channel.createMessageComponentCollector({
-          filter: filter as any,
+          filter: filter,
           ...options.collectorOptions,
         });
 
-        collector.on("collect", async (interaction: ButtonInteraction) => {
-          if (interaction?.customId === "book.delete") {
-            if (this.showLastPage) collector.stop("end");
+        collector.on('collect', async (interaction: ButtonInteraction) => {
+          if (interaction?.customId === 'book.delete') {
+            if (this.showLastPage) collector.stop('end');
             else {
-              collector.stop("delete");
+              collector.stop('delete');
               await interaction.update(this.buildMessage(true)).catch(() => {});
             }
             return;
           }
-          if (interaction?.customId === "book.last_page") {
+          if (interaction?.customId === 'book.last_page') {
             await this.update(interaction, 0, this.lastPage).catch(() => {});
             this.lastPage = !this.lastPage;
           } else {
-            const inc = interaction?.customId === "book.page_next" ? 1 : -1;
+            const inc = interaction?.customId === 'book.page_next' ? 1 : -1;
             await this.update(interaction, inc).catch(() => {});
           }
         });
-        collector.on("end", (reason: string) => {
-          if (reason === "delete") return;
+        collector.on('end', (reason: string) => {
+          if (reason === 'delete') return;
           message.delete().catch(() => {});
         });
         if (this.stopped) collector.stop();
-        this.collector = collector as any;
+        this.collector = collector;
       })
       .catch(() => {});
   }
@@ -176,7 +162,7 @@ class Book {
   async update(
     interaction: ButtonInteraction,
     inc: number = 0,
-    lastPage = false
+    lastPage = false,
   ) {
     let response: Message | null = null;
     const page = await new Promise<Page>((resolve, reject) => {
@@ -198,7 +184,7 @@ class Book {
     }
   }
 
-  stop(reason: string = "ok") {
+  stop(reason: string = 'ok') {
     this.stopped = true;
     if (this.collector) this.collector.stop(reason);
   }

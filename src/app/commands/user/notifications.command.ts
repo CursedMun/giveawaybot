@@ -1,6 +1,6 @@
 import { Command, DiscordCommand } from '@discord-nestjs/core';
 import { Injectable, Logger } from '@nestjs/common';
-import { CommandInteraction, Message } from 'discord.js';
+import { CommandInteraction, ComponentType, Message } from 'discord.js';
 import { config } from 'src/app/utils/config';
 import { UserSettings } from 'src/schemas/mongo/user/user.schema';
 import { MongoUserService } from 'src/schemas/mongo/user/user.service';
@@ -25,19 +25,18 @@ export class NotificationsCmd implements DiscordCommand {
           {
             title: 'Управление уведомлениями',
             thumbnail: {
-              url:
-                command.user.displayAvatarURL({ dynamic: true }) || undefined,
+              url: command.user.displayAvatarURL() || '',
             },
             description: `Выберите нужный пункт для **включения** или **отключения** уведомления о розыгрыше`,
           },
         ],
         components: [
           {
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [
               {
                 customId: 'notifications',
-                type: 'SELECT_MENU',
+                type: ComponentType.SelectMenu,
                 label: 'Уведомления',
                 placeholder: 'Нажимать сюда!',
                 emoji: '<:point:1014108607098404925>',
@@ -65,7 +64,7 @@ export class NotificationsCmd implements DiscordCommand {
           return true;
         },
         time: config.ticks.oneMinute,
-        componentType: 'SELECT_MENU',
+        componentType: ComponentType.SelectMenu,
       })
       .catch((err) => this.logger.error(err));
     if (!response) return;

@@ -9,7 +9,7 @@ export class AppMiddleware implements DiscordMiddleware {
     private readonly logger = new Logger(AppMiddleware.name);
 
     use(event: keyof ClientEvents, context: any[]): void {
-        if (event === 'message') {
+        if (event === 'messageCreate') {
             this.logger.log('On message event triggered');
         }
     }

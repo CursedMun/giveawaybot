@@ -1,18 +1,19 @@
 import {
   ButtonInteraction,
+  ButtonStyle,
   CacheType,
   CommandInteraction,
+  ComponentType,
   Interaction,
   InteractionCollector,
-  InteractionCollectorOptions,
-  InteractionReplyOptions,
+  InteractionUpdateOptions,
   Message,
-  MessageActionRow,
-  MessageButton,
+  MessageChannelCollectorOptionsParams,
   MessageComponentInteraction,
+  MessageComponentType,
   MessageOptions,
   SelectMenuInteraction,
-} from "discord.js";
+} from 'discord.js';
 
 export interface Page {
   currentIndex: number;
@@ -30,104 +31,102 @@ export type BookFilter = (interaction: Interaction) => boolean;
 export interface NavigationOptions {
   filter: BookFilter;
   pageCallback: PageCallback;
-  collectorOptions?: InteractionCollectorOptions<
-    MessageComponentInteraction<CacheType>
-  >;
+  collectorOptions?: MessageChannelCollectorOptionsParams<MessageComponentType>;
 }
 class Navigation {
   static buildMessage(
     message: MessageOptions,
-    options: { disabled?: boolean; currentPage: number; pageCount: number }
+    options: { disabled?: boolean; currentPage: number; pageCount: number },
   ): any {
     const disabled = options.disabled || false;
-
     const newComponents = Array.from(message.components || []);
-    newComponents.push(
-      new MessageActionRow({
-        components: [
-          new MessageButton({
-            style: "DANGER",
-            label: "Назад",
-            customId: "navigation.back",
-          }),
-          new MessageButton({
-            style: "SECONDARY",
-            emoji: "⬅",
-            customId: "navigation.page_prev",
-            disabled:
-              disabled || options.currentPage < 1 || options.pageCount < 2,
-          }),
-          new MessageButton({
-            style: "DANGER",
-            emoji: "❌",
-            customId: "navigation.delete",
-            disabled,
-          }),
-          new MessageButton({
-            style: "SECONDARY",
-            emoji: "➡",
-            customId: "navigation.page_next",
-            disabled: disabled || options.currentPage >= options.pageCount - 1,
-          }),
-        ],
-      })
-    );
+    newComponents.push({
+      type: ComponentType.ActionRow,
+      components: [
+        {
+          customId: 'navigation.back',
+          type: ComponentType.Button,
+          style: ButtonStyle.Danger,
+          label: 'Назад',
+        },
+        {
+          type: ComponentType.Button,
+          style: ButtonStyle.Secondary,
+          emoji: '⬅',
+          customId: 'navigation.page_prev',
+          disabled:
+            disabled || options.currentPage < 1 || options.pageCount < 2,
+        },
+        {
+          type: ComponentType.Button,
+          style: ButtonStyle.Danger,
+          emoji: '❌',
+          customId: 'navigation.delete',
+          disabled,
+        },
+        {
+          type: ComponentType.Button,
+          style: ButtonStyle.Secondary,
+          emoji: '➡',
+          customId: 'navigation.page_next',
+          disabled: disabled || options.currentPage >= options.pageCount - 1,
+        },
+      ],
+    });
     return Object.assign({}, message, { components: newComponents });
   }
 
   pageCallback: PageCallback;
   responsePromise: Promise<Message>;
   collector?: InteractionCollector<
-    | ButtonInteraction<CacheType>
-    | MessageComponentInteraction<CacheType>
-    | SelectMenuInteraction<CacheType>
+    ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
   >;
   stopped: boolean = false;
-  prevMessage: InteractionReplyOptions;
+  prevMessage: InteractionUpdateOptions;
   constructor(
     public page: Page,
     channel: CommandInteraction | ButtonInteraction,
     options: NavigationOptions,
-    prevMessage: InteractionReplyOptions
+    prevMessage: InteractionUpdateOptions,
   ) {
     this.prevMessage = prevMessage;
     this.pageCallback = options.pageCallback;
     this.responsePromise = channel.editReply(
-      this.buildMessage()
+      this.buildMessage(),
     ) as Promise<Message>;
     this.messagePromise.then((message) => {
-      if (!message) throw new Error("Message not found");
+      if (!message) throw new Error('Message not found');
 
       const filter = (interaction: MessageComponentInteraction<CacheType>) => {
         if (!interaction.message) return false;
         if (interaction.message.id !== message.id) return false;
-        if (!interaction.customId.startsWith("navigation.")) return false;
-        return options.filter(interaction);
+        if (!interaction.customId.startsWith('navigation.')) return false;
+        return options.filter(interaction as any);
       };
       const collector = message.channel.createMessageComponentCollector({
-        filter: filter as any,
+        filter: filter,
         ...options.collectorOptions,
       });
-      collector.on("collect", async (interaction: ButtonInteraction) => {
-        if (interaction?.customId === "navigation.delete") {
+      collector.on('collect', async (interaction: ButtonInteraction) => {
+        if (interaction?.customId === 'navigation.delete') {
           await interaction.update(this.buildMessage(true));
           return;
         }
-        if (interaction?.customId === "navigation.back") {
-          await interaction.update(this.prevMessage as any);
-          collector.stop("delete");
+        if (interaction?.customId === 'navigation.back') {
+          await interaction.update(this.prevMessage);
+          collector.stop('delete');
           return;
         }
-        const inc = interaction?.customId === "navigation.page_next" ? 1 : -1;
+        const inc = interaction?.customId === 'navigation.page_next' ? 1 : -1;
         await this.update(interaction, inc);
       });
-      collector.on("end", (reason: string) => {
-        if (reason === "delete") return;
+      collector.on('end', (reason: string) => {
+        if (reason === 'delete') return;
         // message.edit(this.buildMessage(true)).catch(() => {})
       });
       if (this.stopped) collector.stop();
 
-      this.collector = collector as any;
+      this.collector = collector;
     });
   }
 
@@ -162,7 +161,7 @@ class Navigation {
     }
   }
 
-  stop(reason: string = "ok") {
+  stop(reason: string = 'ok') {
     this.stopped = true;
     if (this.collector) this.collector.stop(reason);
   }

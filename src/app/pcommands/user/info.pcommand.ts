@@ -1,7 +1,7 @@
 import { PrefixCommandTransformPipe } from "@discord-nestjs/common";
 import { InjectDiscordClient, PrefixCommand } from "@discord-nestjs/core";
 import { Injectable, UsePipes } from "@nestjs/common";
-import { Client, Message } from "discord.js";
+import { ButtonStyle, Client, ComponentType, Message } from "discord.js";
 import { config } from "src/app/utils/config";
 @Injectable()
 export class Info {
@@ -45,11 +45,11 @@ export class Info {
         ],
         components: [
           {
-            type: "ACTION_ROW",
+            type: ComponentType.ActionRow,
             components: [
               {
-                type: "BUTTON",
-                style: "LINK",
+                type: ComponentType.Button,
+                style: ButtonStyle.Link,
                 url: `https://cursedmun.com`,
                 label: `Website`,
               },
