@@ -34,8 +34,7 @@ export class Servers {
         .catch(() => {});
     };
     const args = message.content.split(' ');
-    const count = parseInt(args[1]) ?? 100;
-    console.log(count)
+    const count = parseInt(args[1] ?? 100) ?? 100;
     const awaitMessage = await reply('Ожидайте...');
     if (!awaitMessage) return;
     const list = await message.client.guilds.fetch();
