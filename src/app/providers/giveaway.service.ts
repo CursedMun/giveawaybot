@@ -171,9 +171,11 @@ export class GiveawayService {
         endTime - Date.now(),
       ).join(' ')}\`\`\``;
       const newEmbed = {
-        ...message.embeds[0],
+        ...message.embeds[0].data,
         fields: fields,
       };
+      console.log(message.embeds[0])
+      console.log(newEmbed)
       message.edit({
         embeds: [newEmbed],
       });
@@ -471,7 +473,10 @@ export class GiveawayService {
   async getServerGiveaways(guildID: string): Promise<string[]> {
     return (await this.giveawayService.getCache(guildID))?.split('|') ?? [];
   }
-
+  async getServerGiveawayObjects(guildID: string): Promise<Giveaway[]> {
+    const giveaways = await this.giveawayService.find({ guildID });
+    return giveaways;
+  }
   //Giveaway handler
   async onJoin(
     member: GuildMember,

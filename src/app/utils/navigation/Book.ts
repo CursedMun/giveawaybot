@@ -62,7 +62,7 @@ class Book {
           type: ComponentType.Button,
           style: ButtonStyle.Secondary,
           emoji: '⬅',
-          customId: 'navigation.page_prev',
+          customId: 'book.page_prev',
           disabled:
             disabled || options.currentPage < 1 || options.pageCount < 2,
         },
@@ -70,14 +70,14 @@ class Book {
           type: ComponentType.Button,
           style: ButtonStyle.Danger,
           emoji: '❌',
-          customId: 'navigation.delete',
+          customId: 'book.delete',
           disabled,
         },
         {
           type: ComponentType.Button,
           style: ButtonStyle.Secondary,
           emoji: '➡',
-          customId: 'navigation.page_next',
+          customId: 'book.page_next',
           disabled: disabled || options.currentPage >= options.pageCount - 1,
         },
       ],
@@ -112,18 +112,20 @@ class Book {
         const filter = (
           interaction: MessageComponentInteraction<CacheType>,
         ) => {
+          console.log(interaction);
           if (!interaction.message) return false;
           if (interaction.message.id !== message.id) return false;
           if (!interaction.customId.startsWith('book.')) return false;
           return options.filter(interaction as any);
         };
-
+        console.log(message);
         const collector = message.channel.createMessageComponentCollector({
-          filter: filter,
+          filter,
           ...options.collectorOptions,
         });
 
         collector.on('collect', async (interaction: ButtonInteraction) => {
+          console.log(interaction);
           if (interaction?.customId === 'book.delete') {
             if (this.showLastPage) collector.stop('end');
             else {
@@ -136,8 +138,11 @@ class Book {
             await this.update(interaction, 0, this.lastPage).catch(() => {});
             this.lastPage = !this.lastPage;
           } else {
+            console.log('test');
             const inc = interaction?.customId === 'book.page_next' ? 1 : -1;
-            await this.update(interaction, inc).catch(() => {});
+            await this.update(interaction, inc).catch((err) => {
+              console.log(err);
+            });
           }
         });
         collector.on('end', (reason: string) => {

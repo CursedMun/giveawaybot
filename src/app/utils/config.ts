@@ -76,6 +76,7 @@ const conf = {
   ticks,
   emojis,
   ids: {
+    devs: ['423946555872116758', '597601244365848585'],
     devGuild: '905552166348009503',
     giveawayChannel: '981546639695183953',
     newGuildChannel: '981153654356729866',
