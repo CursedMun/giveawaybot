@@ -59,6 +59,7 @@ export class EndGiveaway {
     const guildGiveaways = await this.giveawayService.getServerGiveaways(
       message.guildId ?? '',
     );
+    console.log(message.guildId, guildGiveaways)
     let giveawayID = '';
     if (!guildGiveaways.length) {
       await awaitMessage?.delete().catch(() => {});

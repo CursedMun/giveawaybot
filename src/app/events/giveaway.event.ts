@@ -16,6 +16,8 @@ import Book, { PageCallback } from '../utils/navigation/Book';
 
 @Injectable()
 export class GiveawayEvents {
+  private tempItems = [] as Object[];
+  private tempTimeout: NodeJS.Timeout | undefined;
   constructor(
     private readonly giveawayService: GiveawayService,
     private readonly userService: UserService,
@@ -41,6 +43,22 @@ export class GiveawayEvents {
         button.member as GuildMember,
         giveawayID,
       );
+
+      await button
+        .followUp({
+          embeds: [
+            {
+              title: response.success
+                ? 'Теперь вы участвуете в конкурсе'
+                : 'Ой что-то не так',
+              color: config.meta.defaultColor,
+              description: response.reason,
+            },
+          ],
+          ephemeral: true,
+        })
+        .catch((err) => this.logger.error(err.message));
+
       if (response.totalParticipants) {
         const newComponents = button.message.components![0].components?.map(
           (component) => {
@@ -58,31 +76,22 @@ export class GiveawayEvents {
             };
           },
         );
-        await button
-          .editReply({
-            components: [
-              {
-                type: ComponentType.ActionRow,
-                components: newComponents as any,
-              },
-            ],
-          })
-          .catch((err) => this.logger.error(err.message));
-      }
-      await button
-        .followUp({
-          embeds: [
+        this.tempItems.push({
+          components: [
             {
-              title: response.success
-                ? 'Теперь вы участвуете в конкурсе'
-                : 'Ой что-то не так',
-              color: config.meta.defaultColor,
-              description: response.reason,
+              type: ComponentType.ActionRow,
+              components: newComponents as any,
             },
           ],
-          ephemeral: true,
-        })
-        .catch((err) => this.logger.error(err.message));
+        });
+        if (this.tempTimeout) clearTimeout(this.tempTimeout);
+        this.tempTimeout = setTimeout(async () => {
+          await Promise.allSettled([
+            button.editReply(this.tempItems[this.tempItems.length - 1]),
+          ]);
+          this.tempItems = [];
+        }, 2000);
+      }
     } else if (action == 'list') {
       await button
         .deferReply({ ephemeral: true })
