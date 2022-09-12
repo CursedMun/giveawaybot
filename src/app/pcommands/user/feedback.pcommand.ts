@@ -14,16 +14,11 @@ export class FeedBack {
   onMessage(message: Message): any {
     const args = message.content.split(" ");
     const reason = args.join(" ");
-    console.log(args,reason)
-    console.log('test')
     if (!reason) return;
     const guild = this.client.guilds.cache.get(config.ids.devGuild);
-    console.log('test')
     if (!guild) return;
     const channel = guild.channels.cache.get(config.ids.feedbackChannel);
-    console.log('test')
     if (!channel) return;
-    console.log('test')
     if ("send" in channel)
       channel.send(
         `${message.author} отправил своё предложение.\nПредложение: ${reason}`

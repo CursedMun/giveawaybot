@@ -58,7 +58,6 @@ export class GiveawayEvents {
             };
           },
         );
-        console.log(newComponents);
         await button
           .editReply({
             components: [

@@ -178,7 +178,7 @@ export class GiveawayService {
       };
       message.edit({
         embeds: [newEmbed],
-      });
+      }).catch(() => {});
     } catch (err) {
       this.logger.error(err);
     }
@@ -497,7 +497,6 @@ export class GiveawayService {
           '**Условие участия:** Зайдите в любой голосовой канал на сервере',
         success: false,
       };
-    console.log(doc.participants);
     if (doc.participants.includes(member.id))
       return { reason: 'Вы уже участвуете', success: false };
     await this.giveawayService.GiveawayModel.updateOne(
@@ -523,7 +522,6 @@ export class GiveawayService {
     ID: string,
   ): Promise<{ reason: string; success: boolean }> {
     let doc = await this.getGiveaway(ID, true);
-    console.log(doc);
     if (!doc) return { reason: '', success: false };
     if (!doc.participants.includes(member.id))
       return { reason: '', success: false };

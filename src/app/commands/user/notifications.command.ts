@@ -70,12 +70,10 @@ export class NotificationsCmd implements DiscordCommand {
     if (!response) return;
     await response.deferUpdate({}).catch((err) => this.logger.error(err));
     const selected = response.values;
-    console.log(selected);
     const items = selected.reduce(
       (a, v) => ({ ...a, [v]: !user.settings[v] }),
       {} as UserSettings,
     );
-    console.log(items);
     await this.usersService.UserModel.updateOne(
       { ID: command.user.id },
       { settings: items },

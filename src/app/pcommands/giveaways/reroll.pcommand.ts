@@ -42,7 +42,6 @@ export class RerollGiveaway {
     // let { messageID } = dto || { messageID: null };
     const args = message.content.split(' ');
     const messageID = args[1];
-    console.log(messageID)
     const reply = async (text: string) => {
       try {
         return await message.reply({

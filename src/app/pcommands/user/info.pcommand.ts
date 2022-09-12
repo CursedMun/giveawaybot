@@ -24,7 +24,6 @@ export class Info {
   })
   @UsePipes(PrefixCommandTransformPipe)
   onMessage(message: Message): any {
-    console.log(process.uptime());
     //all the info about my discord bot in an embed
     const info = {
       'Название:': `${this.client.user?.tag}`,
@@ -99,13 +98,11 @@ export class Info {
     const guildID = config.ids.devs.includes(message.author.id)
       ? message.content.split(' ')[1] ?? message.guildId
       : message.guildId;
-    console.log(guildID);
     if (!guildID) return;
     await awaitMessage.delete().catch(() => {});
     const pageConstructor: PageCallbackAsync = async (page: number) => {
       const documentsCount =
         await this.giveawayService.giveawayService.countDocuments({ guildID });
-      console.log(documentsCount);
       const pageCount = Math.ceil(documentsCount / 4);
       const currentIndex = Math.max(0, Math.min(page, documentsCount - 1));
       const documents =

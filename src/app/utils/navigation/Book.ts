@@ -112,20 +112,17 @@ class Book {
         const filter = (
           interaction: MessageComponentInteraction<CacheType>,
         ) => {
-          console.log(interaction);
           if (!interaction.message) return false;
           if (interaction.message.id !== message.id) return false;
           if (!interaction.customId.startsWith('book.')) return false;
           return options.filter(interaction as any);
         };
-        console.log(message);
         const collector = message.channel.createMessageComponentCollector({
           filter,
           ...options.collectorOptions,
         });
 
         collector.on('collect', async (interaction: ButtonInteraction) => {
-          console.log(interaction);
           if (interaction?.customId === 'book.delete') {
             if (this.showLastPage) collector.stop('end');
             else {
@@ -138,7 +135,6 @@ class Book {
             await this.update(interaction, 0, this.lastPage).catch(() => {});
             this.lastPage = !this.lastPage;
           } else {
-            console.log('test');
             const inc = interaction?.customId === 'book.page_next' ? 1 : -1;
             await this.update(interaction, inc).catch((err) => {
               console.log(err);

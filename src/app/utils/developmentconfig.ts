@@ -8,7 +8,7 @@ const meta = {
   defaultEmbed: {},
   defaultColor: 0x2f3136,
   defaultTimezone: 'Europe/Moscow',
-  minGuildUsers: 500,
+  minGuildUsers: 0,
   timeSpelling: {
     w: 'н',
     d: 'д',
