@@ -18,7 +18,7 @@ export class Info {
     @InjectDiscordClient() private readonly client: Client,
     private readonly giveawayService: GiveawayService,
   ) {}
-
+//test
   @PrefixCommand({
     name: 'info',
   })
