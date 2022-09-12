@@ -46,7 +46,7 @@ export class Info {
             color: config.meta.defaultColor,
             title: 'Информация',
             description:
-              'Разработчик: <@423946555872116758>\nᅠᅠᅠᅠᅠᅠ`423946555872116758`',
+              'Разработчик: <@423946555872116758>\n`423946555872116758`',
             fields: Object.entries(info).map(([key, value]) => {
               return {
                 name: key,
