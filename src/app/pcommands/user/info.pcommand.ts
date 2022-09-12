@@ -37,7 +37,7 @@ export class Info {
       'Память:': `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(
         2,
       )} MB / ${(process.memoryUsage().heapTotal / 1024 / 1024).toFixed(2)} MB`,
-      'Онлайн:': `${parseFilteredTimeArray(process.uptime() * 1000)}`,
+      'Онлайн:': `${parseFilteredTimeArray(process.uptime() * 1000).join(':')}`,
     };
     message
       .reply({
