@@ -95,20 +95,34 @@ export class Info {
     };
     const awaitMessage = await reply('Ожидайте...');
     if (!awaitMessage) return;
+    const args = message.content.split(' ');
+    console.log(args);
+    const ended = args.length > 2 ? args[1] === 'true' : false;
     const guildID = config.ids.devs.includes(message.author.id)
-      ? message.content.split(' ')[1] ?? message.guildId
+      ? (args.length > 2 ? args[2] : args[1]) ?? message.guildId
       : message.guildId;
     if (!guildID) return;
+    console.log(guildID);
     await awaitMessage.delete().catch(() => {});
+    const guild =
+      guildID === 'all'
+        ? null
+        : this.client.guilds.cache.get(guildID) ??
+          (await this.client.guilds.fetch(guildID).catch(() => null));
     const pageConstructor: PageCallbackAsync = async (page: number) => {
+      const args =
+        guildID === 'all'
+          ? { ended }
+          : {
+              guildID,
+              ended,
+            };
       const documentsCount =
-        await this.giveawayService.giveawayService.countDocuments({ guildID });
+        await this.giveawayService.giveawayService.countDocuments(args);
       const pageCount = Math.ceil(documentsCount / 4);
       const currentIndex = Math.max(0, Math.min(page, documentsCount - 1));
       const documents =
-        await this.giveawayService.giveawayService.GiveawayModel.find({
-          guildID,
-        })
+        await this.giveawayService.giveawayService.GiveawayModel.find(args)
           .skip(currentIndex * 4)
           .limit(4)
           .lean();
@@ -119,29 +133,34 @@ export class Info {
             {
               color: config.meta.defaultColor,
               thumbnail: {
-                url: message.guild?.iconURL() ?? '',
+                url: guild?.iconURL() ?? message.author.avatarURL() ?? '',
               },
               footer: {
                 text: `${message.author.tag} | Страница ${
-                  currentIndex + 1
-                }/${pageCount}`,
+                  pageCount === 0 ? 0 : currentIndex + 1
+                }/${pageCount} | Параметры поиска: Окочен: ${ended} Сервер: ${guildID}`,
               },
-              title: `Сервер: ${this.client.guilds.cache.get(guildID)?.name}`,
-              description: `Количество розыгрешей: ${documentsCount}\n\n`,
+              title: `Сервер: ${
+                guildID === 'all' ? 'Все' : guild?.name ?? 'Неизветсно'
+              }`,
+              description: `Количество ${
+                ended ? 'оконченных' : 'текущих'
+              } розыгрешей: ${documentsCount}\n\n`,
               fields: documents.map((document) => {
                 const winners = document.winners
                   .map((winner) => `<@${winner}>`)
-                  .join(' | ');
+                  .join(', ');
                 return {
-                  name: `${document.prize} | ${new Date(document.endDate)
-                    .toISOString()
-                    .substring(0, 10)} | ${new Date(document.endDate)
-                    .toISOString()
-                    .substring(0, 10)}`,
+                  name: `${document.guildID} | Приз ${document.prize} | ${
+                    ended ? 'Окончен' : 'Активнен'
+                  } (${new Date(document.endDate).toLocaleString('en-GB', {
+                    timeZone: 'UTC',
+                  })})`,
                   value: [
                     `Количество участников: ${document.participants.length}`,
                     `Победител${winners.length > 1 ? 'и' : 'ь'}: ${winners}`,
                     `Организатор: <@${document.creatorID}>`,
+                    `Длительность: ${document.endDate}`,
                   ].join('\n'),
                   inline: false,
                 };
