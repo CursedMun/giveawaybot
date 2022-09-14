@@ -1,26 +1,26 @@
 import { PrefixCommandTransformPipe } from '@discord-nestjs/common';
 import { InjectDiscordClient, PrefixCommand } from '@discord-nestjs/core';
 import { Injectable, UsePipes } from '@nestjs/common';
+import { GiveawayService } from '@providers/giveaway.service';
+import { config } from '@utils/config';
+import Book, { PageCallbackAsync } from '@utils/navigation/Book';
+import { parseFilteredTimeArray } from '@utils/utils';
 import {
   ButtonStyle,
   Client,
   ComponentType,
   Message,
-  TextChannel,
+  TextChannel
 } from 'discord.js';
-import { GiveawayService } from 'src/app/providers/giveaway.service';
-import { config } from 'src/app/utils/config';
-import Book, { PageCallbackAsync } from 'src/app/utils/navigation/Book';
-import { parseFilteredTimeArray } from 'src/app/utils/utils';
 @Injectable()
 export class Info {
   constructor(
     @InjectDiscordClient() private readonly client: Client,
-    private readonly giveawayService: GiveawayService,
+    private readonly giveawayService: GiveawayService
   ) {}
-//test
+  //test
   @PrefixCommand({
-    name: 'info',
+    name: 'info'
   })
   @UsePipes(PrefixCommandTransformPipe)
   onMessage(message: Message): any {
@@ -30,14 +30,14 @@ export class Info {
       'Сервера:': `${this.client.guilds.cache.size}`,
       'Пользователи:': `${this.client.guilds.cache.reduce(
         (a, b) => a + b?.memberCount,
-        0,
+        0
       )}`,
       'Node.js:': `${process.version}`,
       'Платформа:': `${process.platform} ${process.arch}`,
       'Память:': `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(
-        2,
+        2
       )} MB / ${(process.memoryUsage().heapTotal / 1024 / 1024).toFixed(2)} MB`,
-      'Онлайн:': `${parseFilteredTimeArray(process.uptime() * 1000).join(':')}`,
+      'Онлайн:': `${parseFilteredTimeArray(process.uptime() * 1000).join(':')}`
     };
     message
       .reply({
@@ -51,10 +51,10 @@ export class Info {
               return {
                 name: key,
                 value: value,
-                inline: true,
+                inline: true
               };
-            }),
-          },
+            })
+          }
         ],
         components: [
           {
@@ -64,11 +64,11 @@ export class Info {
                 type: ComponentType.Button,
                 style: ButtonStyle.Link,
                 url: `https://cursedmun.com`,
-                label: `Website`,
-              },
-            ],
-          },
-        ],
+                label: `Website`
+              }
+            ]
+          }
+        ]
       })
       .catch(() => {});
     return;
@@ -77,7 +77,7 @@ export class Info {
   @PrefixCommand({
     name: 'server',
     isRemoveCommandName: false,
-    isRemovePrefix: false,
+    isRemovePrefix: false
   })
   @UsePipes(PrefixCommandTransformPipe)
   async onServer(message: Message): Promise<any> {
@@ -87,9 +87,9 @@ export class Info {
           embeds: [
             {
               color: config.meta.defaultColor,
-              description: text,
-            },
-          ],
+              description: text
+            }
+          ]
         });
       } catch {}
     };
@@ -115,7 +115,7 @@ export class Info {
           ? { ended }
           : {
               guildID,
-              ended,
+              ended
             };
       const documentsCount =
         await this.giveawayService.giveawayService.countDocuments(args);
@@ -133,12 +133,12 @@ export class Info {
             {
               color: config.meta.defaultColor,
               thumbnail: {
-                url: guild?.iconURL() ?? message.author.avatarURL() ?? '',
+                url: guild?.iconURL() ?? message.author.avatarURL() ?? ''
               },
               footer: {
                 text: `${message.author.tag} | Страница ${
                   pageCount === 0 ? 0 : currentIndex + 1
-                }/${pageCount} | Параметры поиска: Окочен: ${ended} Сервер: ${guildID}`,
+                }/${pageCount} | Параметры поиска: Окочен: ${ended} Сервер: ${guildID}`
               },
               title: `Сервер: ${
                 guildID === 'all' ? 'Все' : guild?.name ?? 'Неизветсно'
@@ -154,27 +154,27 @@ export class Info {
                   name: `${document.guildID} | Приз ${document.prize} | ${
                     ended ? 'Окончен' : 'Активнен'
                   } (${new Date(document.endDate).toLocaleString('en-GB', {
-                    timeZone: 'UTC',
+                    timeZone: 'UTC'
                   })})`,
                   value: [
                     `Количество участников: ${document.participants.length}`,
                     `Победител${winners.length > 1 ? 'и' : 'ь'}: ${winners}`,
                     `Организатор: <@${document.creatorID}>`,
-                    `Длительность: ${document.endDate}`,
+                    `Длительность: ${document.endDate}`
                   ].join('\n'),
-                  inline: false,
+                  inline: false
                 };
-              }),
-            },
-          ],
+              })
+            }
+          ]
         },
-        pageCount: pageCount,
+        pageCount: pageCount
       };
     };
     new Book(await pageConstructor(0), message.channel as TextChannel, {
       pageCallback: pageConstructor,
       filter: (m) => m.user.id === message.author.id,
-      collectorOptions: { time: config.ticks.oneMinute * 5 },
+      collectorOptions: { time: config.ticks.oneMinute * 5 }
     });
   }
 }

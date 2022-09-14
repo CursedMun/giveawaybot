@@ -1,4 +1,11 @@
 import { InjectDiscordClient } from '@discord-nestjs/core';
+import {
+  Giveaway,
+  GiveawayAccessСondition,
+  GiveawayCondition,
+} from '@mongo/giveaway/giveaway.schema';
+import { MongoGiveawayService } from '@mongo/giveaway/giveaway.service';
+import { MongoUserService } from '@mongo/user/user.service';
 import { Injectable, Logger } from '@nestjs/common';
 import {
   ButtonStyle,
@@ -11,13 +18,6 @@ import {
   TextChannel,
 } from 'discord.js';
 import fetch from 'node-fetch';
-import {
-  Giveaway,
-  GiveawayAccessСondition,
-  GiveawayCondition,
-} from 'src/schemas/mongo/giveaway/giveaway.schema';
-import { MongoGiveawayService } from 'src/schemas/mongo/giveaway/giveaway.service';
-import { MongoUserService } from 'src/schemas/mongo/user/user.service';
 import { config } from '../utils/config';
 import Timer from '../utils/timer';
 import { parseFilteredTimeArray } from '../utils/utils';
@@ -176,9 +176,11 @@ export class GiveawayService {
         ...message.embeds[0].data,
         fields: fields,
       };
-      message.edit({
-        embeds: [newEmbed],
-      }).catch(() => {});
+      message
+        .edit({
+          embeds: [newEmbed],
+        })
+        .catch(() => {});
     } catch (err) {
       this.logger.error(err);
     }

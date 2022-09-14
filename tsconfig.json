@@ -9,7 +9,13 @@
     "target": "ES2020",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"],
+      "@mongo/*": ["src/schemas/mongo/*"],
+      "@providers/*": ["src/app/providers/*"],
+      "@utils/*": ["src/app/utils/*"]
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,

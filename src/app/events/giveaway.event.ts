@@ -6,7 +6,7 @@ import {
   GuildMember,
   MessageReaction,
   User,
-  VoiceState,
+  VoiceState
 } from 'discord.js';
 import { GiveawayService } from '../providers/giveaway.service';
 import { UserService } from '../providers/user.service';
@@ -16,23 +16,22 @@ import Book, { PageCallback } from '../utils/navigation/Book';
 
 @Injectable()
 export class GiveawayEvents {
-  private tempItems = [] as Object[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private tempItems = [] as any;
   private tempTimeout: NodeJS.Timeout | undefined;
   constructor(
     private readonly giveawayService: GiveawayService,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {}
   private readonly logger = new Logger(GiveawayEvents.name);
-  //on interaction create
   @On('interactionCreate')
   @UseGuards(IsButtonInteractionGuard)
   async onInteractionCreate(button: ButtonInteraction): Promise<void> {
-    // if (!button.customId.split(".").length) return;
     if (!button.customId) return;
     const [name, action, giveawayID] = button.customId.split('.') as [
       string,
       'join' | 'list',
-      string,
+      string
     ];
     if (name != 'giveaway') return;
     if (action == 'join') {
@@ -41,7 +40,7 @@ export class GiveawayEvents {
         .catch((err) => this.logger.error(err.message));
       const response = await this.giveawayService.onJoin(
         button.member as GuildMember,
-        giveawayID,
+        giveawayID
       );
 
       await button
@@ -52,42 +51,44 @@ export class GiveawayEvents {
                 ? 'Теперь вы участвуете в конкурсе'
                 : 'Ой что-то не так',
               color: config.meta.defaultColor,
-              description: response.reason,
-            },
+              description: response.reason
+            }
           ],
-          ephemeral: true,
+          ephemeral: true
         })
         .catch((err) => this.logger.error(err.message));
 
       if (response.totalParticipants) {
-        const newComponents = button.message.components![0].components?.map(
+        const newComponents = button.message.components?.[0].components?.map(
           (component) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const [_, action, __] = (component.customId ?? '1.1.1').split('.');
-
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const tempComponent = component as any;
             return {
               label:
                 action == 'list'
                   ? `Участников - ${response.totalParticipants}`
-                  : (component as any).label,
-              customId: component.customId,
-              type: component.type,
-              style: (component as any).style,
-              disabled: (component as any).disabled,
+                  : tempComponent.label,
+              customId: tempComponent.customId,
+              type: tempComponent.type,
+              style: tempComponent.style,
+              disabled: tempComponent.disabled
             };
-          },
+          }
         );
         this.tempItems.push({
           components: [
             {
               type: ComponentType.ActionRow,
-              components: newComponents as any,
-            },
-          ],
+              components: newComponents
+            }
+          ]
         });
         if (this.tempTimeout) clearTimeout(this.tempTimeout);
         this.tempTimeout = setTimeout(async () => {
           await Promise.allSettled([
-            button.editReply(this.tempItems[this.tempItems.length - 1]),
+            button.editReply(this.tempItems[this.tempItems.length - 1])
           ]);
           this.tempItems = [];
         }, 2000);
@@ -117,24 +118,24 @@ export class GiveawayEvents {
                 color: config.meta.defaultColor,
                 description: text,
                 thumbnail: {
-                  url: 'https://cdn.discordapp.com/attachments/974125927946665995/974185386056249404/1.png',
+                  url: 'https://cdn.discordapp.com/attachments/974125927946665995/974185386056249404/1.png'
                 },
                 footer: {
                   text: `${button.user.tag} | Страница ${
                     currentIndex + 1
-                  }/${pageCount}`,
+                  }/${pageCount}`
                 },
-                fields: [],
-              },
-            ],
+                fields: []
+              }
+            ]
           },
-          pageCount: pageCount,
+          pageCount: pageCount
         };
       };
       new Book(await pageConstructor(0), button, {
         pageCallback: pageConstructor,
         filter: () => true,
-        collectorOptions: { time: 60_000 },
+        collectorOptions: { time: 60_000 }
       });
     }
   }
@@ -146,33 +147,33 @@ export class GiveawayEvents {
       if (reaction?.emoji.name == config.emojis.giveaway) {
         let giveaway = await this.giveawayService.getGiveawayByMessage(
           reaction.message.guildId,
-          reaction.message.id,
+          reaction.message.id
         );
         if (!giveaway) {
-          let tempGiveaway = await this.giveawayService.getGiveawayByMessage(
+          const tempGiveaway = await this.giveawayService.getGiveawayByMessage(
             reaction.message.guildId,
             reaction.message.id,
-            true,
+            true
           );
           if (tempGiveaway)
             giveaway = await this.giveawayService.getGiveawayByMessage(
               reaction.message.guildId,
               reaction.message.id,
               false,
-              (tempGiveaway.endDate - Date.now()) / 1e3,
+              (tempGiveaway.endDate - Date.now()) / 1e3
             );
         }
         if (!giveaway) return;
 
         const member =
-          reaction.message.guild!.members.cache.get(user.id) ??
-          (await reaction.message.guild!.members.fetch(user.id));
+          reaction.message.guild?.members.cache.get(user.id) ??
+          (await reaction.message.guild?.members.fetch(user.id));
+        if (!member) return;
         if (giveaway.condition == 'voice' && !member.voice.channel) {
           await reaction.users.remove(user.id);
           return;
         }
         const response = await this.giveawayService.onJoin(member, giveaway.ID);
-        console.log(response);
         if (response.reason == 'Вы уже участвуете') return;
         if (!response.success) await reaction.users.remove(user.id);
       }
@@ -184,44 +185,45 @@ export class GiveawayEvents {
   @On('voiceStateUpdate')
   async onChannelEnter(
     oldState: VoiceState,
-    newState: VoiceState,
+    newState: VoiceState
   ): Promise<void> {
     if (oldState.channel && !newState.channel) {
       const giveaways = await this.giveawayService.getServerGiveaways(
-        newState.guild.id,
+        newState.guild.id
       );
       if (!giveaways) return;
       const docs = await Promise.all(
         giveaways.map((id) =>
           this.giveawayService.giveawayService.findOne({
             ID: id,
-            ended: false,
-          }),
-        ),
+            ended: false
+          })
+        )
       );
       if (!docs.length) return;
       if (!docs.some((giveaway) => giveaway?.condition === 'voice')) return;
+      if (!oldState.member) return;
       const user = await this.userService.getUser(
-        oldState.member!.id,
+        oldState.member.id,
         false,
-        20,
+        20
       );
       if (user && user.settings.voiceNotifications)
-        await oldState
-          .member!.send({
+        await oldState.member
+          .send({
             embeds: [
               {
                 title: 'Участие в розыгрыше',
                 color: config.meta.defaultColor,
                 description:
-                  'Покидая **голосовой канал**, вы отказываетесь от участия в розыгрыше\nУ вас есть **20 секунд** чтобы вернуться.',
-              },
-            ],
+                  'Покидая **голосовой канал**, вы отказываетесь от участия в розыгрыше\nУ вас есть **20 секунд** чтобы вернуться.'
+              }
+            ]
           })
-          .catch(() => this.logger.log(`${oldState.member!.id} закрытый дм`));
+          .catch((reason) => this.logger.log(reason));
       setTimeout(async () => {
         const member = await oldState.guild.members.fetch(
-          oldState.member?.id ?? '',
+          oldState.member?.id ?? ''
         );
         if (
           user &&
@@ -236,11 +238,11 @@ export class GiveawayEvents {
                   title: 'Участие в розыгрыше',
                   color: config.meta.defaultColor,
                   description:
-                    'О, вы вернулись, значит оставляем запись на участие в розыгрыше',
-                },
-              ],
+                    'О, вы вернулись, значит оставляем запись на участие в розыгрыше'
+                }
+              ]
             })
-            .catch(() => this.logger.log(`${oldState.member!.id} закрытый дм`));
+            .catch((reason) => this.logger.log(reason));
           return;
         }
         //remove this user from all the giveaways
@@ -250,8 +252,9 @@ export class GiveawayEvents {
             .map(
               (giveaway) =>
                 giveaway?.condition == 'voice' &&
-                this.giveawayService.onLeave(oldState.member!, giveaway!.ID),
-            ),
+                oldState.member &&
+                this.giveawayService.onLeave(oldState.member, giveaway.ID)
+            )
         );
       }, config.ticks.tenSeconds * 2);
     }

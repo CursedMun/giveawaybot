@@ -1,8 +1,8 @@
 import { PrefixCommandTransformPipe } from '@discord-nestjs/common';
 import { ArgNum, Payload, PrefixCommand, UsePipes } from '@discord-nestjs/core';
 import { Injectable, Logger } from '@nestjs/common';
+import { config } from '@utils/config';
 import { Message } from 'discord.js';
-import { config } from 'src/app/utils/config';
 class ServersDto {
   @ArgNum(() => ({ position: 0 }))
   count?: string;
@@ -16,7 +16,7 @@ export class Servers {
   @PrefixCommand({
     name: 'servers',
     isRemoveCommandName: false,
-    isRemovePrefix: false,
+    isRemovePrefix: false
   })
   @UsePipes(PrefixCommandTransformPipe)
   async onMessage(@Payload() dto: ServersDto, message: Message): Promise<any> {
@@ -27,9 +27,9 @@ export class Servers {
           embeds: [
             {
               color: config.meta.defaultColor,
-              description: text,
-            },
-          ],
+              description: text
+            }
+          ]
         })
         .catch(() => {});
     };
@@ -49,18 +49,18 @@ export class Servers {
             fields: [
               {
                 name: 'Количество серверов',
-                value: guildsData.length.toString() ?? '0',
+                value: guildsData.length.toString() ?? '0'
               },
               {
                 name: 'Список серверов с меньше ' + count + ' участников',
                 value:
                   guildsData
                     .filter((x) => x.memberCount < count)
-                    .length.toString() ?? '0',
-              },
-            ],
-          },
-        ],
+                    .length.toString() ?? '0'
+              }
+            ]
+          }
+        ]
       })
       .catch(() => {});
   }

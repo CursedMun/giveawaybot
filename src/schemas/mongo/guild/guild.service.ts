@@ -1,9 +1,9 @@
-import { CACHE_MANAGER, Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Cache } from "cache-manager";
-import { FilterQuery, Model } from "mongoose";
-import { config } from "src/app/utils/config";
-import { Guild, GuildDocument } from "./guild.schema";
+import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { config } from '@utils/config';
+import { Cache } from 'cache-manager';
+import { FilterQuery, Model } from 'mongoose';
+import { Guild, GuildDocument } from './guild.schema';
 
 @Injectable()
 export class MongoGuildService {
@@ -20,11 +20,11 @@ export class MongoGuildService {
       cacheKey,
       async () => {
         let guild = await this.GuildModel.findOne({
-          ID,
+          ID
         });
         if (!guild) {
           guild = await this.GuildModel.create({
-            ID,
+            ID
           });
         }
         return guild;
@@ -34,7 +34,7 @@ export class MongoGuildService {
   }
   async setCacheForGuild(id: string, value: string, ttl?: number) {
     this.cache.set(id, value, {
-      ttl: config.ticks.oneMonth / 1e3,
+      ttl: config.ticks.oneMonth / 1e3
     });
   }
   async setcache(id: string, value: any, ttl?: number) {
@@ -48,7 +48,7 @@ export class MongoGuildService {
     force?: boolean,
     ttl?: number
   ) {
-    const cacheKey = `guilds_findOne_${Object.values(data).join("_")}`;
+    const cacheKey = `guilds_findOne_${Object.values(data).join('_')}`;
     if (force) return await this.GuildModel.findOne(data).lean();
     return await this.cache.wrap(
       cacheKey,
@@ -60,13 +60,11 @@ export class MongoGuildService {
     );
   }
   async has(data: FilterQuery<GuildDocument>, ttl?: number) {
-    const cacheKey = `guilds_has_${Object.values(data).join("_")}`;
+    const cacheKey = `guilds_has_${Object.values(data).join('_')}`;
     return await this.cache.wrap(
       cacheKey,
       async () => {
-        let guild = await this.GuildModel.findOne(data)
-          .lean()
-          .countDocuments();
+        let guild = await this.GuildModel.findOne(data).lean().countDocuments();
         return guild > 0;
       },
       { ttl: ttl ?? this.defaulttl }
@@ -80,7 +78,7 @@ export class MongoGuildService {
     data: FilterQuery<GuildDocument>,
     ttl?: number
   ): Promise<number> {
-    const cacheKey = `guilds_count_${Object.values(data).join("_")}`;
+    const cacheKey = `guilds_count_${Object.values(data).join('_')}`;
     return await this.cache.wrap(
       cacheKey,
       async () => {
@@ -89,10 +87,7 @@ export class MongoGuildService {
       { ttl: ttl ?? this.defaulttl }
     );
   }
-  async find(
-    data: FilterQuery<GuildDocument>,
-    ttl?: number
-  ): Promise<Guild[]> {
+  async find(data: FilterQuery<GuildDocument>, ttl?: number): Promise<Guild[]> {
     const cacheKey = `guilds_find_all`;
     return await this.cache.wrap(
       cacheKey,

@@ -1,5 +1,5 @@
-import { DiscordClientProvider } from "@discord-nestjs/core";
-import { Injectable } from "@nestjs/common";
+import { DiscordClientProvider } from '@discord-nestjs/core';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ClientGateway {

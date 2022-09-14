@@ -1,34 +1,33 @@
 import { Command, DiscordCommand } from '@discord-nestjs/core';
+import { UserSettings } from '@mongo/user/user.schema';
+import { MongoUserService } from '@mongo/user/user.service';
 import { Injectable, Logger } from '@nestjs/common';
+import locale from '@src/i18n/i18n-node';
+import { config } from '@utils/config';
 import { CommandInteraction, ComponentType, Message } from 'discord.js';
-import { config } from 'src/app/utils/config';
-import { UserSettings } from 'src/schemas/mongo/user/user.schema';
-import { MongoUserService } from 'src/schemas/mongo/user/user.service';
 @Injectable()
 @Command({
   name: 'notify',
-  description: 'Включить/Выключить уведомления о розыгрышах',
+  description: 'Включить/Выключить уведомления о розыгрышах'
 })
 export class NotificationsCmd implements DiscordCommand {
   private logger = new Logger(NotificationsCmd.name);
   constructor(private readonly usersService: MongoUserService) {}
-  async handler(command: CommandInteraction): Promise<any> {
+  async handler(command: CommandInteraction) {
     await command.deferReply({}).catch((err) => this.logger.error(err));
     const user = await this.usersService.get(command.user.id, 0);
-    const options = {
-      voiceNotifications: 'Войс оповещение',
-      winNotifications: 'Оповещение о выигрыше',
-    };
+    const options = locale.en.notification.options;
+
     const message = await command
       .editReply({
         embeds: [
           {
-            title: 'Управление уведомлениями',
+            title: locale.en.notification.title(),
             thumbnail: {
-              url: command.user.displayAvatarURL() || '',
+              url: command.user.displayAvatarURL() || ''
             },
-            description: `Выберите нужный пункт для **включения** или **отключения** уведомления о розыгрыше`,
-          },
+            description: locale.en.notification.description()
+          }
         ],
         components: [
           {
@@ -37,21 +36,21 @@ export class NotificationsCmd implements DiscordCommand {
               {
                 customId: 'notifications',
                 type: ComponentType.SelectMenu,
-                label: 'Уведомления',
-                placeholder: 'Нажимать сюда!',
+                label: locale.en.default.notification(),
+                placeholder: locale.en.notification.placeholder(),
                 emoji: '<:point:1014108607098404925>',
-                options: Object.entries(options).map((item, index) => {
+                options: Object.entries(options).map((item) => {
                   return {
-                    label: item[1],
-                    value: item[0],
+                    label: item[1](),
+                    value: item[0]
                   };
                 }),
                 minValues: 1,
-                maxValues: 2,
-              },
-            ],
-          },
-        ],
+                maxValues: 2
+              }
+            ]
+          }
+        ]
       })
       .catch((err) => this.logger.error(err));
     if (!message || !(message instanceof Message)) return;
@@ -64,7 +63,7 @@ export class NotificationsCmd implements DiscordCommand {
           return true;
         },
         time: config.ticks.oneMinute,
-        componentType: ComponentType.SelectMenu,
+        componentType: ComponentType.SelectMenu
       })
       .catch((err) => this.logger.error(err));
     if (!response) return;
@@ -72,32 +71,44 @@ export class NotificationsCmd implements DiscordCommand {
     const selected = response.values;
     const items = selected.reduce(
       (a, v) => ({ ...a, [v]: !user.settings[v] }),
-      {} as UserSettings,
+      {} as UserSettings
     );
     await this.usersService.UserModel.updateOne(
       { ID: command.user.id },
-      { settings: items },
+      { settings: items }
     );
     response
       .update({
         embeds: [
           {
             description: [
-              `Вы успешно изменили ваши настройки`,
-              `Было:`,
+              locale.en.notification.response.description.text(),
+              `${locale.en.notification.response.description.was()}:`,
               selected
                 .map(
-                  (v) => `${options[v]}: ${user.settings[v] ? 'вкл' : 'выкл'}`,
+                  (v) =>
+                    `${options[v]}: ${
+                      user.settings[v]
+                        ? locale.en.default.on()
+                        : locale.en.default.off()
+                    }`
                 )
                 .join('\n'),
-              `Стало:`,
+              `${locale.en.notification.response.description.is()}:`,
               selected
-                .map((v) => `${options[v]}: ${items[v] ? 'вкл' : 'выкл'}`)
-                .join('\n'),
-            ].join('\n'),
-          },
+                .map(
+                  (v) =>
+                    `${options[v]}: ${
+                      items[v]
+                        ? locale.en.default.on()
+                        : locale.en.default.off()
+                    }`
+                )
+                .join('\n')
+            ].join('\n')
+          }
         ],
-        components: [],
+        components: []
       })
       .catch((err) => this.logger.error(err));
   }

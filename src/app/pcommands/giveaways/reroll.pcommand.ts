@@ -1,9 +1,9 @@
 import { PrefixCommandTransformPipe } from '@discord-nestjs/common';
 import { ArgNum, Payload, PrefixCommand, UsePipes } from '@discord-nestjs/core';
 import { Injectable, Logger } from '@nestjs/common';
+import { GiveawayService } from '@providers/giveaway.service';
+import { config } from '@utils/config';
 import { Message } from 'discord.js';
-import { GiveawayService } from 'src/app/providers/giveaway.service';
-import { config } from 'src/app/utils/config';
 class RerollDto {
   @ArgNum(() => ({ position: 0 }))
   messageID?: string;
@@ -16,7 +16,7 @@ export class RerollGiveaway {
   @PrefixCommand({
     name: 'reroll',
     isRemoveCommandName: false,
-    isRemovePrefix: false,
+    isRemovePrefix: false
   })
   @UsePipes(PrefixCommandTransformPipe)
   async onMessage(@Payload() dto: RerollDto, message: Message): Promise<any> {
@@ -30,11 +30,11 @@ export class RerollGiveaway {
               fields: [
                 {
                   name: 'Нужные права',
-                  value: '` ⚪ Администратор ` ` Вкл `',
-                },
-              ],
-            },
-          ],
+                  value: '` ⚪ Администратор ` ` Вкл `'
+                }
+              ]
+            }
+          ]
         })
         .catch(() => {});
       return;
@@ -48,9 +48,9 @@ export class RerollGiveaway {
           embeds: [
             {
               color: config.meta.defaultColor,
-              description: text,
-            },
-          ],
+              description: text
+            }
+          ]
         });
       } catch {}
     };
@@ -63,7 +63,7 @@ export class RerollGiveaway {
     const giveaway = await this.giveawayService.getGiveawayByMessage(
       message.guildId,
       messageID,
-      true,
+      true
     );
     if (!giveaway || !giveaway.ended) {
       await awaitMessage?.delete().catch(() => {});
@@ -82,11 +82,11 @@ export class RerollGiveaway {
     const winners = await this.giveawayService.getWinners(
       message.guild!,
       giveaway,
-      giveaway.winnerCount,
+      giveaway.winnerCount
     );
     await this.giveawayService.giveawayService.GiveawayModel.updateOne(
       { ID: giveaway.ID },
-      { winners: winners },
+      { winners: winners }
     );
     await awaitMessage?.delete().catch(() => {});
     reply(
@@ -94,7 +94,7 @@ export class RerollGiveaway {
         winners.length > 0
           ? winners.map((w) => `<@${w}>`).join(', ')
           : ' Ошибка'
-      }`,
+      }`
     );
     return;
   }
