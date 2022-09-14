@@ -1,1 +1,1 @@
-export { GiveawayModule } from "./giveaway/giveaway.module";
+export { GiveawayModule } from './giveaway/giveaway.module';
