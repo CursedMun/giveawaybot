@@ -1,9 +1,9 @@
-import { CACHE_MANAGER, Inject, Injectable, Logger } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Cache } from "cache-manager";
-import { FilterQuery, Model } from "mongoose";
-import { config } from "src/app/utils/config";
-import { User, UserDocument } from "./user.schema";
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { config } from '@utils/config';
+import { Cache } from 'cache-manager';
+import { FilterQuery, Model } from 'mongoose';
+import { User, UserDocument } from './user.schema';
 
 @Injectable()
 export class MongoUserService {
@@ -19,11 +19,11 @@ export class MongoUserService {
       cacheKey,
       async () => {
         let user = await this.UserModel.findOne({
-          ID,
+          ID
         });
         if (!user) {
           user = await this.UserModel.create({
-            ID,
+            ID
           });
         }
         return user;
@@ -42,7 +42,7 @@ export class MongoUserService {
     force?: boolean,
     ttl?: number
   ) {
-    const cacheKey = `user_findOne_${Object.values(data).join("_")}`;
+    const cacheKey = `user_findOne_${Object.values(data).join('_')}`;
     if (force) return await this.UserModel.findOne(data).lean();
     return await this.cache.wrap(
       cacheKey,
@@ -54,13 +54,11 @@ export class MongoUserService {
     );
   }
   async has(data: FilterQuery<UserDocument>, ttl?: number) {
-    const cacheKey = `user_has_${Object.values(data).join("_")}`;
+    const cacheKey = `user_has_${Object.values(data).join('_')}`;
     return await this.cache.wrap(
       cacheKey,
       async () => {
-        let user = await this.UserModel.findOne(data)
-          .lean()
-          .countDocuments();
+        let user = await this.UserModel.findOne(data).lean().countDocuments();
         return user > 0;
       },
       { ttl: ttl ?? this.defaulttl }
@@ -74,7 +72,7 @@ export class MongoUserService {
     data: FilterQuery<UserDocument>,
     ttl?: number
   ): Promise<number> {
-    const cacheKey = `user_count_${Object.values(data).join("_")}`;
+    const cacheKey = `user_count_${Object.values(data).join('_')}`;
     return await this.cache.wrap(
       cacheKey,
       async () => {
@@ -83,10 +81,7 @@ export class MongoUserService {
       { ttl: ttl ?? this.defaulttl }
     );
   }
-  async find(
-    data: FilterQuery<UserDocument>,
-    ttl?: number
-  ): Promise<User[]> {
+  async find(data: FilterQuery<UserDocument>, ttl?: number): Promise<User[]> {
     const cacheKey = `user_find_all`;
     return await this.cache.wrap(
       cacheKey,

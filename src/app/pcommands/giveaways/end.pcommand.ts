@@ -1,9 +1,9 @@
 import { PrefixCommandTransformPipe } from '@discord-nestjs/common';
 import { ArgNum, Payload, PrefixCommand, UsePipes } from '@discord-nestjs/core';
 import { Injectable, Logger } from '@nestjs/common';
+import { GiveawayService } from '@providers/giveaway.service';
+import { config } from '@utils/config';
 import { Message } from 'discord.js';
-import { GiveawayService } from 'src/app/providers/giveaway.service';
-import { config } from 'src/app/utils/config';
 class EndDto {
   @ArgNum(() => ({ position: 0 }))
   messageID?: string;
@@ -16,7 +16,7 @@ export class EndGiveaway {
   @PrefixCommand({
     name: 'end',
     isRemoveCommandName: false,
-    isRemovePrefix: false,
+    isRemovePrefix: false
   })
   @UsePipes(PrefixCommandTransformPipe)
   async onMessage(@Payload() dto: EndDto, message: Message): Promise<any> {
@@ -30,11 +30,11 @@ export class EndGiveaway {
               fields: [
                 {
                   name: 'Нужные права',
-                  value: '` ⚪ Администратор ` ` Вкл `',
-                },
-              ],
-            },
-          ],
+                  value: '` ⚪ Администратор ` ` Вкл `'
+                }
+              ]
+            }
+          ]
         })
         .catch(() => {});
       return;
@@ -48,16 +48,16 @@ export class EndGiveaway {
           embeds: [
             {
               color: config.meta.defaultColor,
-              description: text,
-            },
-          ],
+              description: text
+            }
+          ]
         })
         .catch(() => {});
     };
     const awaitMessage = await reply('Ожидайте...');
     if (!awaitMessage) return;
     const guildGiveaways = await this.giveawayService.getServerGiveaways(
-      message.guildId ?? '',
+      message.guildId ?? ''
     );
     let giveawayID = '';
     if (!guildGiveaways.length) {
@@ -70,7 +70,7 @@ export class EndGiveaway {
       ? await this.giveawayService.getGiveawayByMessage(
           message.guildId,
           messageID,
-          true,
+          true
         )
       : await this.giveawayService.getGiveaway(giveawayID);
     if (!giveaway || giveaway.ended) {

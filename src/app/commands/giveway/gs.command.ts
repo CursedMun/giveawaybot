@@ -1,5 +1,13 @@
 import { Command, DiscordCommand, On } from '@discord-nestjs/core';
+import {
+  GiveawayAccessСondition,
+  GiveawayCondition
+} from '@mongo/giveaway/giveaway.schema';
 import { Injectable, Logger, UseGuards } from '@nestjs/common';
+import { GiveawayService } from '@providers/giveaway.service';
+import { config } from '@utils/config';
+import { IsModalInteractionGuard } from '@utils/guards/is-modal-interaction.guard';
+import { msConvert } from '@utils/utils';
 import {
   CacheType,
   CommandInteraction,
@@ -8,21 +16,14 @@ import {
   MessageComponentInteraction,
   ModalSubmitInteraction,
   TextChannel,
-  TextInputStyle,
+  TextInputStyle
 } from 'discord.js';
-import { GiveawayService } from 'src/app/providers/giveaway.service';
-import { config } from 'src/app/utils/config';
-import { IsModalInteractionGuard } from 'src/app/utils/guards/is-modal-interaction.guard';
-import { msConvert } from 'src/app/utils/utils';
-import {
-  GiveawayAccessСondition,
-  GiveawayCondition,
-} from 'src/schemas/mongo/giveaway/giveaway.schema';
+import locale from 'src/i18n/i18n-node';
 
 @Injectable()
 @Command({
   name: 'gs',
-  description: 'Начать розыгрыш?',
+  description: 'Начать розыгрыш?/Start a giveaway?'
 })
 export class GiveawayStartCommand implements DiscordCommand {
   private readonly logger = new Logger(GiveawayStartCommand.name);
@@ -33,29 +34,31 @@ export class GiveawayStartCommand implements DiscordCommand {
   private readonly channelModalID = 'channel';
   constructor(private readonly giveawayService: GiveawayService) {}
 
-  async handler(interaction: CommandInteraction): Promise<any> {
+  async handler(interaction: CommandInteraction) {
     try {
       if (!interaction.memberPermissions?.has('Administrator')) {
         return {
           embeds: [
             {
               color: config.meta.defaultColor,
-              description: 'Недостаточно прав для использования команды',
+              description: locale.en.errors.noPerms.description(),
               fields: [
                 {
-                  name: 'Нужные права',
-                  value: '` ⚪ Администратор ` ` Вкл `',
-                },
-              ],
-            },
+                  name: locale.en.errors.noPerms.field(),
+                  value: locale.en.errors.noPerms.value({
+                    perm: locale.en.admin()
+                  })
+                }
+              ]
+            }
           ],
-          ephemeral: true,
+          ephemeral: true
         };
       }
 
       await interaction.showModal({
         customId: this.gsModalID,
-        title: 'Запрос на участие',
+        title: locale.en.giveaway.modal.title(),
         components: [
           {
             type: ComponentType.ActionRow,
@@ -63,12 +66,12 @@ export class GiveawayStartCommand implements DiscordCommand {
               {
                 type: ComponentType.TextInput,
                 customId: this.prizeModalID,
-                label: 'Приз',
+                label: locale.en.giveaway.modal.prize(),
                 style: TextInputStyle.Short,
                 required: true,
-                maxLength: 250,
-              },
-            ],
+                maxLength: 250
+              }
+            ]
           },
           {
             type: ComponentType.ActionRow,
@@ -76,12 +79,12 @@ export class GiveawayStartCommand implements DiscordCommand {
               {
                 type: ComponentType.TextInput,
                 customId: this.timeModalID,
-                label: 'Длительность розыгрыша (1d|1h|1m|1s)',
+                label: locale.en.giveaway.modal.duration(),
                 style: TextInputStyle.Short,
                 required: true,
-                maxLength: 10,
-              },
-            ],
+                maxLength: 10
+              }
+            ]
           },
           {
             type: ComponentType.ActionRow,
@@ -89,12 +92,12 @@ export class GiveawayStartCommand implements DiscordCommand {
               {
                 type: ComponentType.TextInput,
                 customId: this.winnerscountModalID,
-                label: 'Кол-во победителей (максимум 20)',
+                label: locale.en.giveaway.modal.winnersCount(),
                 style: TextInputStyle.Short,
                 required: true,
-                maxLength: 20,
-              },
-            ],
+                maxLength: 20
+              }
+            ]
           },
           {
             type: ComponentType.ActionRow,
@@ -102,21 +105,20 @@ export class GiveawayStartCommand implements DiscordCommand {
               {
                 type: ComponentType.TextInput,
                 customId: this.channelModalID,
-                label: 'Название или id канала',
+                label: locale.en.giveaway.modal.channel(),
                 value:
                   (interaction.channel as TextChannel)?.name ??
                   interaction.channelId,
                 style: TextInputStyle.Short,
                 required: true,
-                maxLength: 100,
-              },
-            ],
-          },
-        ],
+                maxLength: 100
+              }
+            ]
+          }
+        ]
       });
     } catch (err) {
       this.logger.error(err);
-    } finally {
     }
   }
   @On('interactionCreate')
@@ -132,53 +134,72 @@ export class GiveawayStartCommand implements DiscordCommand {
             color: config.meta.defaultColor,
             author: {
               name: text,
-              icon_url: modal.user.avatarURL() || '',
-            },
-          },
-        ],
+              icon_url: modal.user.avatarURL() || ''
+            }
+          }
+        ]
       });
     };
     const [prize, time, winnersCount, channel] = [
       modal.fields.getTextInputValue(this.prizeModalID),
       modal.fields.getTextInputValue(this.timeModalID),
       parseInt(modal.fields.getTextInputValue(this.winnerscountModalID)) ?? 0,
-      modal.fields.getTextInputValue(this.channelModalID),
+      modal.fields.getTextInputValue(this.channelModalID)
     ];
     const msduration = msConvert(time.toLowerCase());
     if (typeof msduration !== 'number' || msduration > config.ticks.oneWeek * 2)
-      return await reply('Неверно указано время');
+      return await reply(locale.en.errors.noInput.time());
     const giveawayChannel = (modal.guild.channels.cache.get(channel) ||
       modal.guild.channels.cache.find((x) => x.name == channel)) as TextChannel;
-    if (!giveawayChannel) return await reply('Неверно указан канал');
+    if (!giveawayChannel)
+      return await reply(locale.en.errors.noInput.channel());
     if (
       !giveawayChannel
         .permissionsFor(modal.client.user?.id ?? '')
         ?.has('SendMessages')
     )
-      return await reply('Недостаточно прав для отправки сообщений в канал');
-    if (typeof winnersCount !== 'number' || winnersCount > 20 || isNaN(winnersCount))
-      return await reply('Неверно указано кол-во победителей');
-    let message: Message;
-    try {
-      message = (await modal.reply({
+      return await reply(locale.en.errors.noSendMessagePerm());
+    if (
+      typeof winnersCount !== 'number' ||
+      winnersCount > 20 ||
+      isNaN(winnersCount)
+    )
+      return await reply(locale.en.errors.noInput.winnersCount());
+    const message = (await modal
+      .reply({
         embeds: [
           {
             title: 'Уточним...',
             color: config.meta.defaultColor,
             description: [
-              `Приз: **${prize}**`,
-              `Время: **${time}**`,
-              `Кол-во победителей: **${winnersCount}**`,
-              `Канал: ${giveawayChannel}`,
+              locale.en.giveaway.modalReply.description({
+                description: 'Приз',
+                type: `**${prize}**`
+              }),
+              locale.en.giveaway.modalReply.description({
+                description: 'Время',
+                type: `**${time}**`
+              }),
+              locale.en.giveaway.modalReply.description({
+                description: 'Кол-во победителей',
+                type: `**${winnersCount}**`
+              }),
+              locale.en.giveaway.modalReply.description({
+                description: 'Канал',
+                type: `${giveawayChannel}`
+              })
             ].join('\n'),
             thumbnail: {
-              url: 'https://media.discordapp.net/attachments/980765606364205056/980766567069528104/1.png',
-            },
-          },
+              url: 'https://media.discordapp.net/attachments/980765606364205056/980766567069528104/1.png'
+            }
+          }
         ],
         components: config.embeds.confirmEmbed.components,
-        fetchReply: true,
-      })) as Message;
+        fetchReply: true
+      })
+      .catch(() => null)) as Message | null;
+    if (!message) return;
+    try {
       const response = await message.awaitMessageComponent({
         filter: (interaction: MessageComponentInteraction<CacheType>) => {
           if (interaction.message.id != message.id) return false;
@@ -186,20 +207,17 @@ export class GiveawayStartCommand implements DiscordCommand {
           return true;
         },
         componentType: ComponentType.Button,
-        time: config.ticks.oneMinute * 10,
+        time: config.ticks.oneMinute * 10
       });
       if (!response || response.customId === 'reject') return;
-      const options = [
-        'Нажатие реакции',
-        'Нажатие реакции + зайти в войс',
-        'Нажатие кнопки',
-        'Нажатие кнопки + зайти в войс',
-      ];
+      const options = Object.values(locale.en.giveaway.conditions).map((x) =>
+        x()
+      );
       const emojis = [
         '980134978190983188',
         '980135630803726346',
         '980136293012996106',
-        '980136291767320606',
+        '980136291767320606'
       ];
       const optionsJson: {
         access_condition: GiveawayAccessСondition;
@@ -208,19 +226,18 @@ export class GiveawayStartCommand implements DiscordCommand {
         { access_condition: 'reaction', condition: 'novoice' },
         { access_condition: 'reaction', condition: 'voice' },
         { access_condition: 'button', condition: 'novoice' },
-        { access_condition: 'button', condition: 'voice' },
+        { access_condition: 'button', condition: 'voice' }
       ];
       await response.update({
         embeds: [
           {
-            title: 'Для начала',
+            title: locale.en.giveaway.response.title(),
             color: config.meta.defaultColor,
             thumbnail: {
-              url: response.user.displayAvatarURL() || '',
+              url: response.user.displayAvatarURL() || ''
             },
-            description:
-              'Чтобы продолжить **создание розыгрыша** выберите ниже **одно** из **условий**.',
-          },
+            description: locale.en.giveaway.response.description()
+          }
         ],
         components: [
           {
@@ -229,20 +246,20 @@ export class GiveawayStartCommand implements DiscordCommand {
               {
                 customId: 'select.condition',
                 type: ComponentType.SelectMenu,
-                placeholder: 'Варианты условий',
+                placeholder: locale.en.giveaway.response.options(),
                 emoji: '<:point:1014108607098404925>',
                 options: options.map((option, index) => {
                   return {
-                    label: `${index + 1} вариант`,
+                    label: `${index + 1} ${locale.en.default.option()}`,
                     value: index.toString(),
                     description: option,
-                    emoji: emojis[index],
+                    emoji: emojis[index]
                   };
-                }),
-              },
-            ],
-          },
-        ],
+                })
+              }
+            ]
+          }
+        ]
       });
       const conditionResponse = await message.awaitMessageComponent({
         filter: (interaction: MessageComponentInteraction<CacheType>) => {
@@ -251,7 +268,7 @@ export class GiveawayStartCommand implements DiscordCommand {
           return true;
         },
         componentType: ComponentType.SelectMenu,
-        time: config.ticks.oneMinute * 10,
+        time: config.ticks.oneMinute * 10
       });
       if (!conditionResponse) return;
       this.giveawayService.createGiveaway({
@@ -260,12 +277,12 @@ export class GiveawayStartCommand implements DiscordCommand {
         winnersCount,
         creatorID: modal.user.id,
         channel: giveawayChannel,
-        ...optionsJson[conditionResponse.values[0]],
+        ...optionsJson[conditionResponse.values[0]]
       });
     } catch (err) {
       this.logger.error(err);
     } finally {
-      message!?.delete().catch((err) => {
+      message?.delete().catch(() => {
         this.logger.error('Не удалось удалить сообщение');
       });
     }
