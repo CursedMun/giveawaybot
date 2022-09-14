@@ -173,20 +173,20 @@ export class GiveawayStartCommand implements DiscordCommand {
             color: config.meta.defaultColor,
             description: [
               locale.en.giveaway.modalReply.description({
-                description: 'Приз',
-                type: `**${prize}**`
+                type: 'Приз',
+                description: `**${prize}**`
               }),
               locale.en.giveaway.modalReply.description({
-                description: 'Время',
-                type: `**${time}**`
+                type: 'Время',
+                description: `**${time}**`
               }),
               locale.en.giveaway.modalReply.description({
-                description: 'Кол-во победителей',
-                type: `**${winnersCount}**`
+                type: 'Кол-во победителей',
+                description: `**${winnersCount}**`
               }),
               locale.en.giveaway.modalReply.description({
-                description: 'Канал',
-                type: `${giveawayChannel}`
+                type: 'Канал',
+                description: `${giveawayChannel}`
               })
             ].join('\n'),
             thumbnail: {
