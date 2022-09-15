@@ -10,26 +10,26 @@ import { ClientGateway } from './app/events/client.gateaway.event';
   imports: [
     ConfigModule.forRoot({
       envFilePath:
-        process.env.NODE_ENV === 'development' ? '.development.env' : '.env',
+        process.env.NODE_ENV === 'development' ? '.development.env' : '.env'
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         uri: `mongodb+srv://${configService.get(
-          'MONGO_LOGIN',
+          'MONGO_LOGIN'
         )}:${configService.get(
-          'MONGO_PASSWORD',
+          'MONGO_PASSWORD'
         )}@insomniatests.8ljkr.mongodb.net/${
           process.env.NODE_ENV === 'development' ? 'dev' : 'test'
-        }?retryWrites=true&w=majority`,
+        }?retryWrites=true&w=majority`
       }),
-      inject: [ConfigService],
+      inject: [ConfigService]
     }),
     DiscordModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         prefix: configService.get('PREFIX') || '??',
-        token: configService.get('TOKEN')!,
+        token: configService.get('TOKEN') ?? '',
         discordClientOptions: {
           presence: {
             status: 'online',
@@ -37,9 +37,9 @@ import { ClientGateway } from './app/events/client.gateaway.event';
               {
                 name: '💫 напишите ??invite',
                 type: ActivityType.Competing,
-                url: 'https://discord.com/api/oauth2/authorize?client_id=960300300038717490&permissions=0&scope=bot',
-              },
-            ],
+                url: 'https://discord.com/api/oauth2/authorize?client_id=960300300038717490&permissions=0&scope=bot'
+              }
+            ]
           },
           failIfNotExists: true,
           intents: [
@@ -49,20 +49,20 @@ import { ClientGateway } from './app/events/client.gateaway.event';
             GatewayIntentBits.GuildVoiceStates,
             GatewayIntentBits.DirectMessages,
             GatewayIntentBits.MessageContent,
-            GatewayIntentBits.GuildMessageReactions,
+            GatewayIntentBits.GuildMessageReactions
           ],
           makeCache: Options.cacheWithLimits({
             ...Options.DefaultMakeCacheSettings,
-            ReactionManager: 0,
+            ReactionManager: 0
           }),
-          sweepers: Options.DefaultSweeperSettings,
+          sweepers: Options.DefaultSweeperSettings
         },
-        registerCommandOptions: [{}],
+        registerCommandOptions: [{}]
       }),
-      inject: [ConfigService],
-    }),
+      inject: [ConfigService]
+    })
   ],
   providers: [ClientGateway],
-  exports: [DiscordModule],
+  exports: [DiscordModule]
 })
 export class ClientModule {}
