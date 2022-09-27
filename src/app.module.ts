@@ -1,9 +1,9 @@
-import { Module } from "@nestjs/common";
-import { CommandModule } from "./app/command.module";
-import { EventsModule } from "./app/events.module";
-import { PrefixCommandModule } from "./app/prefixcommand.module";
-import { CacheModule } from "./cache.module";
-import { ClientModule } from "./client.module";
+import { Module } from '@nestjs/common';
+import { CommandModule } from './app/command.module';
+import { EventsModule } from './app/events.module';
+import { PrefixCommandModule } from './app/prefixcommand.module';
+import { CacheModule } from './cache.module';
+import { ClientModule } from './client.module';
 
 @Module({
   imports: [
@@ -12,8 +12,8 @@ import { ClientModule } from "./client.module";
     //Discord
     PrefixCommandModule,
     CommandModule,
-    EventsModule,
+    EventsModule
   ],
-  providers: [],
+  providers: []
 })
 export class AppModule {}

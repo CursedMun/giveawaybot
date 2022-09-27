@@ -1,13 +1,15 @@
 import {
   Client,
-  Collection, Guild,
+  Collection,
+  Guild,
   GuildMember,
   Message,
   Role,
-  TextChannel, User
-} from "discord.js";
-import fetch, { RequestInfo, RequestInit } from "node-fetch";
-import { config } from "./config";
+  TextChannel,
+  User
+} from 'discord.js';
+import fetch, { RequestInfo, RequestInit } from 'node-fetch';
+import { config } from './config';
 export type nil = null | undefined;
 
 export type NilPartial<T> = { [K in keyof T]: T[K] | nil };
@@ -20,13 +22,13 @@ export interface ParsedTime {
   s: number;
 }
 
-export function resolveMentionUserID(mention: string = "") {
+export function resolveMentionUserID(mention = '') {
   const regex = /^<@!?(\d+)>$/;
   const match = mention.match(regex);
   if (!match) return null;
   return match[1];
 }
-export function resolveMentionRoleID(mention: string = "") {
+export function resolveMentionRoleID(mention = '') {
   const regex = /^<@&?(\d+)>$/;
   const match = mention.match(regex);
   if (!match) return null;
@@ -36,26 +38,22 @@ export function resolveRoleID(mention: string): string | null {
   if (/^\d+$/.test(mention)) return mention;
   return resolveMentionRoleID(mention);
 }
-export function awaitMessage(
-  channel: TextChannel,
-  userID: string,
-  amount: number = 1
-) {
-  return new Promise<Message | Collection<String, Message> | null>(
+export function awaitMessage(channel: TextChannel, userID: string, amount = 1) {
+  return new Promise<Message | Collection<string, Message> | null>(
     (resolve) => {
       const filter = (m: Message) => m.author.id === userID;
       const collector = channel.createMessageCollector({
         filter: filter,
         idle: 6e4,
-        max: 1,
+        max: 1
       });
-      collector.on("collect", (message) => {
-        if (amount > 1 && message.content.toLowerCase() === "stop")
-          collector.stop("endbyuser");
+      collector.on('collect', (message) => {
+        if (amount > 1 && message.content.toLowerCase() === 'stop')
+          collector.stop('endbyuser');
         resolve(message);
       });
-      collector.on("end", (collected, reason) =>
-        reason === "endbyuser" ? resolve(collected) : resolve(null)
+      collector.on('end', (collected, reason) =>
+        reason === 'endbyuser' ? resolve(collected) : resolve(null)
       );
     }
   );
@@ -76,19 +74,19 @@ export function react(
       `https://discord.com/api/v7/channels/${message.channel.id}/messages/${
         message.id
       }/reactions/${encodeURIComponent(
-        typeof emoji === "string" ? emoji : `${emoji.name}:${emoji.id}`
+        typeof emoji === 'string' ? emoji : `${emoji.name}:${emoji.id}`
       )}/@me`,
-      { method: "PUT", headers: { Authorization: `Bot ${client.token}` } }
+      { method: 'PUT', headers: { Authorization: `Bot ${client.token}` } }
     )
       .then((res) => {
-        if (res.headers.get("content-type") === "application/json") {
+        if (res.headers.get('content-type') === 'application/json') {
           return res.json();
         } else {
           return { retry_after: undefined };
         }
       })
       .then((res) => {
-        if (typeof res.retry_after === "number") {
+        if (typeof res.retry_after === 'number') {
           setTimeout(
             () => resolve(react(message, emojiID, client)),
             res.retry_after
@@ -104,24 +102,28 @@ export function confirm(
   message: Message,
   user: User,
   client: Client,
-  time: number = 7.2e6
+  time = 7.2e6
 ): Promise<boolean | null> {
   const emojis = config.emojis.confirmEmojis;
   (async () => {
     try {
       for (const emoji of emojis) await react(message, emoji, client);
-    } catch (_) {}
+    } catch (err) {
+      throw new Error(err);
+    }
   })();
 
   return message
     .awaitReactions({
       filter: (r, u) => {
+        if (!r.emoji) return false;
         return (
-          u.id === user.id && emojis.includes(r.emoji.id! || r.emoji.name!)
+          u.id === user.id &&
+          emojis.includes(r.emoji?.id || r.emoji?.name || '')
         );
       },
       max: 1,
-      time,
+      time
     })
     .then((collected) => collected.first())
     .then((r) => {
@@ -129,7 +131,7 @@ export function confirm(
       return (r.emoji.id || r.emoji.name) === emojis[0];
     })
     .catch(() => {
-      message.reactions.removeAll().catch(() => {});
+      message.reactions.removeAll().catch(() => null);
       return null;
     });
 }
@@ -147,9 +149,9 @@ export function resolveRole(
     resolve(guild.roles.fetch(roleID).catch(() => null));
   });
 }
-export const isFilled = <T extends {}>(
+export const isFilled = <T extends { [k: string]: string }>(
   v: PromiseSettledResult<T>
-): v is PromiseFulfilledResult<T> => v.status === "fulfilled";
+): v is PromiseFulfilledResult<T> => v.status === 'fulfilled';
 
 export function msToDate(ms: number) {
   const date = new Date(ms);
@@ -159,7 +161,7 @@ export function msToDate(ms: number) {
     date.getMonth() + 1,
     date.getFullYear(),
     date.getHours() < 10 ? `0${date.getHours()}` : date.getHours(),
-    date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes(),
+    date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
   ];
 }
 export function resolveMember(
@@ -172,8 +174,8 @@ export function resolveMember(
 
     const targetID = resolveUserID(mention) || mention;
     if (!targetID) return resolve(null);
-    if (guild.members.cache.get(targetID))
-      return resolve(guild.members.cache.get(targetID)!);
+    const member = guild.members.cache.get(targetID);
+    if (member) return resolve(member);
     resolve(guild.members.fetch(targetID).catch(() => null));
   });
 }
@@ -188,21 +190,21 @@ export function getNounPluralForm(a: number) {
 }
 
 export function pluralNoun(num: number, ...forms: string[]) {
-  if (forms.length === 1) throw new Error("Not enough forms");
+  if (forms.length === 1) throw new Error('Not enough forms');
   if (forms.length === 2) return num > 1 ? forms[1] : forms[0];
   return forms[getNounPluralForm(num)];
 }
 export function parseTime(
   time: number,
-  limit: keyof ParsedTime = "d"
+  limit: keyof ParsedTime = 'd'
 ): ParsedTime {
   const parsed: Partial<ParsedTime> = {};
-  parsed.w = ["d", "h", "m", "s"].includes(limit)
+  parsed.w = ['d', 'h', 'm', 's'].includes(limit)
     ? 0
     : Math.floor(time / 6.048e8);
-  parsed.d = ["h", "m", "s"].includes(limit) ? 0 : Math.floor(time / 8.64e7);
-  parsed.h = ["m", "s"].includes(limit) ? 0 : Math.floor(time / 3.6e6);
-  parsed.m = ["s"].includes(limit) ? 0 : Math.floor(time / 6e4);
+  parsed.d = ['h', 'm', 's'].includes(limit) ? 0 : Math.floor(time / 8.64e7);
+  parsed.h = ['m', 's'].includes(limit) ? 0 : Math.floor(time / 3.6e6);
+  parsed.m = ['s'].includes(limit) ? 0 : Math.floor(time / 6e4);
   parsed.s = Math.ceil(time / 1e3);
 
   if (parsed.w > 0) {
@@ -228,7 +230,7 @@ export function parseFullTimeArray(
   time: number,
   {
     nouns = config.meta.timeSpelling,
-    limit = "d",
+    limit = 'd'
   }: {
     nouns?: { [key in keyof ParsedTime]: string | string[] };
     limit?: keyof ParsedTime;
@@ -237,7 +239,7 @@ export function parseFullTimeArray(
   const parsed = parseTime(time, limit);
   return Object.entries(parsed).map(([k, v]) => {
     const noun = nouns[k as keyof ParsedTime];
-    return `${(v || 0).toLocaleString("ru-RU")}${
+    return `${(v || 0).toLocaleString('ru-RU')}${
       Array.isArray(noun) ? pluralNoun(v || 0, ...noun) : noun
     }`;
   });
@@ -247,7 +249,7 @@ export function parseTimeArray(
   time: number,
   {
     nouns = config.meta.timeSpelling,
-    limit = "d",
+    limit = 'd'
   }: {
     nouns?: { [key in keyof ParsedTime]: string | string[] };
     limit?: keyof ParsedTime;
@@ -255,14 +257,14 @@ export function parseTimeArray(
 ) {
   const parsed: Partial<ParsedTime> = parseTime(time, limit);
 
-  if (["d", "h", "m", "s"].includes(limit)) delete parsed.w;
-  if (["h", "m", "s"].includes(limit)) delete parsed.d;
-  if (["m", "s"].includes(limit)) delete parsed.h;
-  if (["s"].includes(limit)) delete parsed.m;
+  if (['d', 'h', 'm', 's'].includes(limit)) delete parsed.w;
+  if (['h', 'm', 's'].includes(limit)) delete parsed.d;
+  if (['m', 's'].includes(limit)) delete parsed.h;
+  if (['s'].includes(limit)) delete parsed.m;
 
   return Object.entries(parsed).map(([k, v]) => {
     const noun = nouns[k as keyof ParsedTime];
-    return `${(v || 0).toLocaleString("ru-RU")}${
+    return `${(v || 0).toLocaleString('ru-RU')}${
       Array.isArray(noun) ? pluralNoun(v || 0, ...noun) : noun
     }`;
   });
@@ -272,7 +274,7 @@ export function parseFilteredTimeArray(
   time: number,
   {
     nouns = config.meta.timeSpelling,
-    limit = "d",
+    limit = 'd'
   }: {
     nouns?: { [key in keyof ParsedTime]: string | string[] };
     limit?: keyof ParsedTime;
@@ -280,20 +282,20 @@ export function parseFilteredTimeArray(
 ) {
   const parsed = parseTime(time, limit);
 
-  const filteredEntries = Object.entries(parsed).filter(([_, v]) => {
+  const filteredEntries = Object.entries(parsed).filter(([, v]) => {
     return (v || 0) > 0;
   });
-  if (filteredEntries.length < 1) filteredEntries.push(["s", 0]);
+  if (filteredEntries.length < 1) filteredEntries.push(['s', 0]);
 
   return filteredEntries.map(([k, v]) => {
     const noun = nouns[k as keyof ParsedTime];
-    return `${(v || 0).toLocaleString("ru-RU")}${
+    return `${(v || 0).toLocaleString('ru-RU')}${
       Array.isArray(noun) ? pluralNoun(v || 0, ...noun) : noun
     }`;
   });
 }
 
-export function msConvert(time: string = ""): number | null {
+export function msConvert(time = ''): number | null {
   const multipliers = {
     w: 6.048e8,
     н: 6.048e8,
@@ -304,11 +306,11 @@ export function msConvert(time: string = ""): number | null {
     m: 6e4,
     м: 6e4,
     s: 1e3,
-    с: 1e3,
+    с: 1e3
   };
   const regex = new RegExp(
-    `^(\\d+)(${Object.keys(multipliers).join("|")})$`,
-    "i"
+    `^(\\d+)(${Object.keys(multipliers).join('|')})$`,
+    'i'
   );
   const match = time.match(regex);
   if (!match) return null;
@@ -320,20 +322,21 @@ export function msConvert(time: string = ""): number | null {
 export function discordRetryHandler(
   input: RequestInfo,
   init?: RequestInit | undefined,
-  tries: number = 0
+  tries = 0
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     fetch(`https://discord.com/api/v8/${input}`, init)
       .then((res) => {
-        if (res.headers.get("content-type") === "application/json") {
+        if (res.headers.get('content-type') === 'application/json') {
           return res.json();
         } else {
           return { retry_after: undefined };
         }
       })
-      .then((res: any) => {
-        if (typeof res.retry_after === "number") {
-          if (tries > 1) return reject(new Error("Too many tries"));
+      .then((res) => {
+        if (typeof res.retry_after === 'number') {
+          if (tries > 1) return reject(new Error('Too many tries'));
           setTimeout(
             () => resolve(discordRetryHandler(input, init, tries + 1)),
             Math.ceil(res.retry_after) * 1000
@@ -345,6 +348,3 @@ export function discordRetryHandler(
       .catch(reject);
   });
 }
-
-
-

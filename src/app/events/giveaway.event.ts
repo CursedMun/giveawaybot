@@ -24,6 +24,7 @@ export class GiveawayEvents {
     private readonly userService: UserService
   ) {}
   private readonly logger = new Logger(GiveawayEvents.name);
+
   @On('interactionCreate')
   @UseGuards(IsButtonInteractionGuard)
   async onInteractionCreate(button: ButtonInteraction): Promise<void> {
@@ -42,7 +43,7 @@ export class GiveawayEvents {
         button.member as GuildMember,
         giveawayID
       );
-
+      (button.member as GuildMember).roles.cache.has();
       await button
         .followUp({
           embeds: [

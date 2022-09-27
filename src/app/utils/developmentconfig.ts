@@ -1,7 +1,7 @@
 import {
   ButtonStyle,
   ComponentType,
-  InteractionUpdateOptions,
+  InteractionUpdateOptions
 } from 'discord.js';
 
 const meta = {
@@ -14,19 +14,19 @@ const meta = {
     d: 'д',
     h: 'ч',
     m: 'м',
-    s: 'с',
+    s: 'с'
   },
   pluralTime: {
     w: [' неделя', ' недели', ' недель'],
     d: [' день', ' дня', ' дней'],
     h: [' час', ' часа', ' часов'],
     m: [' минута', ' минуты', ' минут'],
-    s: [' секунда', ' секунды', ' секунд'],
-  },
+    s: [' секунда', ' секунды', ' секунд']
+  }
 };
 const emojis = {
   giveaway: '🎉',
-  confirmEmojis: ['Подтвердить', 'Отменить'],
+  confirmEmojis: ['Подтвердить', 'Отменить']
 };
 const embeds = {
   confirmEmbed: {
@@ -35,9 +35,9 @@ const embeds = {
       {
         color: meta.defaultColor,
         author: {
-          name: 'Подтвердите действие',
-        },
-      },
+          name: 'Подтвердите действие'
+        }
+      }
     ],
     components: [
       {
@@ -47,18 +47,18 @@ const embeds = {
             label: 'Подтвердить',
             customId: 'confirm',
             type: ComponentType.Button,
-            style: ButtonStyle.Success,
+            style: ButtonStyle.Success
           },
           {
             label: 'Отменить',
             customId: 'reject',
             type: ComponentType.Button,
-            style: ButtonStyle.Danger,
-          },
-        ],
-      },
-    ],
-  } as InteractionUpdateOptions,
+            style: ButtonStyle.Danger
+          }
+        ]
+      }
+    ]
+  } as InteractionUpdateOptions
 };
 
 const ticks = {
@@ -66,7 +66,7 @@ const ticks = {
   oneMinute: 6e4, // 1 minute in milliseconds
   oneHour: 3.6e6, // 1 hour in milliseconds
   oneWeek: 6.048e8, // 1 week in milliseconds
-  oneMonth: 2.628e9, // one month in milliseconds
+  oneMonth: 2.628e9 // one month in milliseconds
 };
 
 export const developmentconfig = {
@@ -79,6 +79,6 @@ export const developmentconfig = {
     devGuild: '905552166348009503',
     giveawayChannel: '981546639695183953',
     newGuildChannel: '981153654356729866',
-    feedbackChannel: '981656983230885899',
-  },
+    feedbackChannel: '981656983230885899'
+  }
 };

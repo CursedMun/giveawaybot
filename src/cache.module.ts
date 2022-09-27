@@ -11,19 +11,19 @@ import * as redisStore from 'cache-manager-ioredis';
           ? {
               store: 'memory' as any,
               host: '',
-              port: 0,
+              port: 0
             }
           : {
               store: redisStore,
               host: configService.get('REDISHOST'),
               port: configService.get('REDISPORT'),
-              password: configService.get('REDISPASSWORD'),
+              password: configService.get('REDISPASSWORD')
             };
       },
-      inject: [ConfigService],
-    }),
+      inject: [ConfigService]
+    })
   ],
-  exports: [BaseCacheModule],
+  exports: [BaseCacheModule]
 })
 // implements OnModuleInit
 export class CacheModule {
