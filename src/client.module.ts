@@ -47,7 +47,6 @@ import { ClientGateway } from './app/events/client.gateaway.event';
             GatewayIntentBits.GuildMessages,
             GatewayIntentBits.GuildVoiceStates,
             GatewayIntentBits.DirectMessages,
-            GatewayIntentBits.MessageContent,
             GatewayIntentBits.GuildMessageReactions
           ],
           makeCache: Options.cacheWithLimits({
