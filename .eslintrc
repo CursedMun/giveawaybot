@@ -9,7 +9,10 @@
     "prettier"
   ],
   "rules": {
-    "no-console": 2, // Remember, this means error!
-    "prettier/prettier": 2 // Means error
+    "no-console": 0, // Remember, this means error!
+    "prettier/prettier": 2, // Means error
+    "no-empty-function": 0,
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/no-empty-function": 0
   }
 }

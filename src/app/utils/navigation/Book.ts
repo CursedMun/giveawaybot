@@ -12,7 +12,7 @@ import {
   MessageComponentType,
   MessageOptions,
   SelectMenuInteraction,
-  TextChannel,
+  TextChannel
 } from 'discord.js';
 import { RawMessageButtonInteractionData } from 'discord.js/typings/rawDataTypes';
 
@@ -24,13 +24,13 @@ export interface Page {
 
 export type PageCallbackAsync = (
   pageIndex: number,
-  lastPage?: boolean,
+  lastPage?: boolean
 ) => Promise<Page>;
 export type PageCallbackSync = (pageIndex: number) => Page;
 
 export type PageCallback = (
   pageIndex: number,
-  lastPage?: boolean,
+  lastPage?: boolean
 ) => Promise<Page> | Page;
 export type BookFilter = (interaction: Interaction) => boolean;
 
@@ -51,7 +51,7 @@ class Book {
       pageCount: number;
       showLastPage?: boolean;
       buttons?: RawMessageButtonInteractionData[];
-    },
+    }
   ): any {
     const disabled = options.disabled || false;
     const newComponents = Array.from(message.components || []);
@@ -63,24 +63,23 @@ class Book {
           style: ButtonStyle.Secondary,
           emoji: '⬅',
           customId: 'book.page_prev',
-          disabled:
-            disabled || options.currentPage < 1 || options.pageCount < 2,
+          disabled: disabled || options.currentPage < 1 || options.pageCount < 2
         },
         {
           type: ComponentType.Button,
           style: ButtonStyle.Danger,
           emoji: '❌',
           customId: 'book.delete',
-          disabled,
+          disabled
         },
         {
           type: ComponentType.Button,
           style: ButtonStyle.Secondary,
           emoji: '➡',
           customId: 'book.page_next',
-          disabled: disabled || options.currentPage >= options.pageCount - 1,
-        },
-      ],
+          disabled: disabled || options.currentPage >= options.pageCount - 1
+        }
+      ]
     });
     return Object.assign({}, message, { components: newComponents });
   }
@@ -90,14 +89,14 @@ class Book {
   collector?: InteractionCollector<
     ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
   >;
-  stopped: boolean = false;
-  showLastPage: boolean = false;
-  lastPage: boolean = true;
+  stopped = false;
+  showLastPage = false;
+  lastPage = true;
   private options: BookOptions;
   constructor(
     public page: Page,
     channel: TextChannel | ButtonInteraction | CommandInteraction,
-    options: BookOptions,
+    options: BookOptions
   ) {
     this.options = options;
     this.pageCallback = options.pageCallback;
@@ -110,16 +109,16 @@ class Book {
       .then((message) => {
         if (!message) throw new Error('Message not found');
         const filter = (
-          interaction: MessageComponentInteraction<CacheType>,
+          interaction: MessageComponentInteraction<CacheType>
         ) => {
           if (!interaction.message) return false;
           if (interaction.message.id !== message.id) return false;
           if (!interaction.customId.startsWith('book.')) return false;
-          return options.filter(interaction as any);
+          return options.filter(interaction as Interaction);
         };
         const collector = message.channel.createMessageComponentCollector({
           filter,
-          ...options.collectorOptions,
+          ...options.collectorOptions
         });
 
         collector.on('collect', async (interaction: ButtonInteraction) => {
@@ -127,12 +126,14 @@ class Book {
             if (this.showLastPage) collector.stop('end');
             else {
               collector.stop('delete');
-              await interaction.update(this.buildMessage(true)).catch(() => {});
+              await interaction
+                .update(this.buildMessage(true))
+                .catch(() => null);
             }
             return;
           }
           if (interaction?.customId === 'book.last_page') {
-            await this.update(interaction, 0, this.lastPage).catch(() => {});
+            await this.update(interaction, 0, this.lastPage).catch(() => null);
             this.lastPage = !this.lastPage;
           } else {
             const inc = interaction?.customId === 'book.page_next' ? 1 : -1;
@@ -143,12 +144,13 @@ class Book {
         });
         collector.on('end', (reason: string) => {
           if (reason === 'delete') return;
-          message.delete().catch(() => {});
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          message.delete().catch(() => null);
         });
         if (this.stopped) collector.stop();
         this.collector = collector;
       })
-      .catch(() => {});
+      .catch(() => null);
   }
 
   get messagePromise() {
@@ -157,15 +159,11 @@ class Book {
         const message: Message | null = response;
         return message;
       })
-      .catch(() => {});
+      .catch(() => null);
   }
 
-  async update(
-    interaction: ButtonInteraction,
-    inc: number = 0,
-    lastPage = false,
-  ) {
-    let response: Message | null = null;
+  async update(interaction: ButtonInteraction, inc = 0, lastPage = false) {
+    const response: Message | null = null;
     const page = await new Promise<Page>((resolve, reject) => {
       const promise = this.pageCallback(this.page.currentIndex + inc, lastPage);
       if (promise instanceof Promise) {
@@ -177,15 +175,15 @@ class Book {
     this.page = page;
     const newMessage = this.buildMessage();
     if (response) {
-      (response as Message).delete().catch(() => {});
+      (response as Message).delete().catch(() => null);
       if (interaction.message && interaction.message instanceof Message)
-        interaction.message.edit(newMessage).catch(() => {});
+        interaction.message.edit(newMessage).catch(() => null);
     } else {
-      interaction.update(newMessage).catch(() => {});
+      interaction.update(newMessage).catch(() => null);
     }
   }
 
-  stop(reason: string = 'ok') {
+  stop(reason = 'ok') {
     this.stopped = true;
     if (this.collector) this.collector.stop(reason);
   }
@@ -196,7 +194,7 @@ class Book {
       pageCount: this.page.pageCount,
       buttons: this.options.buttons,
       disabled,
-      showLastPage: this.showLastPage,
+      showLastPage: this.showLastPage
     });
   }
 }

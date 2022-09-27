@@ -6,14 +6,13 @@ import {
   ComponentType,
   Interaction,
   InteractionCollector,
-  InteractionReplyOptions,
   InteractionUpdateOptions,
   Message,
   MessageChannelCollectorOptionsParams,
   MessageComponentInteraction,
   MessageComponentType,
   MessageOptions,
-  SelectMenuInteraction,
+  SelectMenuInteraction
 } from 'discord.js';
 
 export interface Page {
@@ -30,8 +29,8 @@ export interface NavigationOptions {
 class ExtendedNavigation {
   static buildMessage(
     message: MessageOptions,
-    options: { disabled?: boolean; buttonName?: string },
-  ): any {
+    options: { disabled?: boolean; buttonName?: string }
+  ) {
     const disabled = options.disabled || false;
 
     const newComponents = Array.from(message.components || []);
@@ -43,9 +42,9 @@ class ExtendedNavigation {
           style: ButtonStyle.Primary,
           label: 'Назад',
           customId: `${options.buttonName}.back`,
-          disabled,
-        },
-      ],
+          disabled
+        }
+      ]
     });
     return Object.assign({}, message, { components: newComponents });
   }
@@ -54,54 +53,54 @@ class ExtendedNavigation {
   collector?: InteractionCollector<
     ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
   >;
-  stopped: boolean = false;
+  stopped = false;
   prevMessage: InteractionUpdateOptions;
   private options: NavigationOptions;
   constructor(
     public page: Page,
     channel: CommandInteraction | ButtonInteraction,
     options: NavigationOptions,
-    prevMessage: InteractionUpdateOptions,
+    prevMessage: InteractionUpdateOptions
   ) {
     this.options = options;
     this.options.buttonName = this.options.buttonName ?? 'navigation';
     this.prevMessage = prevMessage;
     this.responsePromise = channel.editReply(
-      this.buildMessage(),
+      this.buildMessage()
     ) as Promise<Message>;
     this.messagePromise
       .then((message) => {
         if (!message) throw new Error('Message not found');
 
         const filter = (
-          interaction: MessageComponentInteraction<CacheType>,
+          interaction: MessageComponentInteraction<CacheType>
         ) => {
           if (!interaction.message) return false;
           if (interaction.message.id !== message.id) return false;
           if (!interaction.customId.startsWith(`${this.options.buttonName}.`))
             return false;
-          return options.filter(interaction as any);
+          return options.filter(interaction as Interaction);
         };
         const collector = message.channel.createMessageComponentCollector({
           filter: filter,
-          ...options.collectorOptions,
+          ...options.collectorOptions
         });
         collector.on('collect', async (interaction: ButtonInteraction) => {
           if (interaction?.customId === `${this.options.buttonName}.back`) {
-            await interaction.update(this.prevMessage).catch(() => {});
+            await interaction.update(this.prevMessage).catch(() => null);
             collector.stop('delete');
             return;
           }
         });
         collector.on('end', (reason: string) => {
           if (reason === 'delete') return;
-          // message.edit(this.buildMessage(true)).catch(() => {})
+          // message.edit(this.buildMessage(true)).catch(() => null)
         });
         if (this.stopped) collector.stop();
 
         this.collector = collector;
       })
-      .catch(() => {});
+      .catch(() => null);
   }
 
   get messagePromise() {
@@ -110,10 +109,10 @@ class ExtendedNavigation {
         const message: Message | null = response;
         return message;
       })
-      .catch(() => {});
+      .catch(() => null);
   }
 
-  stop(reason: string = 'ok') {
+  stop(reason = 'ok') {
     this.stopped = true;
     if (this.collector) this.collector.stop(reason);
   }
@@ -121,7 +120,7 @@ class ExtendedNavigation {
   buildMessage(disabled = false) {
     return ExtendedNavigation.buildMessage(this.page.message, {
       disabled,
-      buttonName: this.options.buttonName,
+      buttonName: this.options.buttonName
     });
   }
 }
