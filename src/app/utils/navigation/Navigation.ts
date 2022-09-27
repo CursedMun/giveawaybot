@@ -12,7 +12,7 @@ import {
   MessageComponentInteraction,
   MessageComponentType,
   MessageOptions,
-  SelectMenuInteraction,
+  SelectMenuInteraction
 } from 'discord.js';
 
 export interface Page {
@@ -36,7 +36,7 @@ export interface NavigationOptions {
 class Navigation {
   static buildMessage(
     message: MessageOptions,
-    options: { disabled?: boolean; currentPage: number; pageCount: number },
+    options: { disabled?: boolean; currentPage: number; pageCount: number }
   ): any {
     const disabled = options.disabled || false;
     const newComponents = Array.from(message.components || []);
@@ -47,31 +47,30 @@ class Navigation {
           customId: 'navigation.back',
           type: ComponentType.Button,
           style: ButtonStyle.Danger,
-          label: 'Назад',
+          label: 'Назад'
         },
         {
           type: ComponentType.Button,
           style: ButtonStyle.Secondary,
           emoji: '⬅',
           customId: 'navigation.page_prev',
-          disabled:
-            disabled || options.currentPage < 1 || options.pageCount < 2,
+          disabled: disabled || options.currentPage < 1 || options.pageCount < 2
         },
         {
           type: ComponentType.Button,
           style: ButtonStyle.Danger,
           emoji: '❌',
           customId: 'navigation.delete',
-          disabled,
+          disabled
         },
         {
           type: ComponentType.Button,
           style: ButtonStyle.Secondary,
           emoji: '➡',
           customId: 'navigation.page_next',
-          disabled: disabled || options.currentPage >= options.pageCount - 1,
-        },
-      ],
+          disabled: disabled || options.currentPage >= options.pageCount - 1
+        }
+      ]
     });
     return Object.assign({}, message, { components: newComponents });
   }
@@ -81,18 +80,18 @@ class Navigation {
   collector?: InteractionCollector<
     ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
   >;
-  stopped: boolean = false;
+  stopped = false;
   prevMessage: InteractionUpdateOptions;
   constructor(
     public page: Page,
     channel: CommandInteraction | ButtonInteraction,
     options: NavigationOptions,
-    prevMessage: InteractionUpdateOptions,
+    prevMessage: InteractionUpdateOptions
   ) {
     this.prevMessage = prevMessage;
     this.pageCallback = options.pageCallback;
     this.responsePromise = channel.editReply(
-      this.buildMessage(),
+      this.buildMessage()
     ) as Promise<Message>;
     this.messagePromise.then((message) => {
       if (!message) throw new Error('Message not found');
@@ -105,7 +104,7 @@ class Navigation {
       };
       const collector = message.channel.createMessageComponentCollector({
         filter: filter,
-        ...options.collectorOptions,
+        ...options.collectorOptions
       });
       collector.on('collect', async (interaction: ButtonInteraction) => {
         if (interaction?.customId === 'navigation.delete') {
@@ -137,7 +136,7 @@ class Navigation {
     });
   }
 
-  async update(interaction: ButtonInteraction, inc: number = 0) {
+  async update(interaction: ButtonInteraction, inc = 0) {
     let response: Message | null = null;
     const page = await new Promise<Page>((resolve, reject) => {
       const promise = this.pageCallback(this.page.currentIndex + inc);
@@ -161,7 +160,7 @@ class Navigation {
     }
   }
 
-  stop(reason: string = 'ok') {
+  stop(reason = 'ok') {
     this.stopped = true;
     if (this.collector) this.collector.stop(reason);
   }
@@ -170,7 +169,7 @@ class Navigation {
     return Navigation.buildMessage(this.page.message, {
       currentPage: this.page.currentIndex,
       pageCount: this.page.pageCount,
-      disabled,
+      disabled
     });
   }
 }

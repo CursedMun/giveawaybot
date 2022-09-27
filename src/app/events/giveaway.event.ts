@@ -43,7 +43,6 @@ export class GiveawayEvents {
         button.member as GuildMember,
         giveawayID
       );
-      (button.member as GuildMember).roles.cache.has();
       await button
         .followUp({
           embeds: [
