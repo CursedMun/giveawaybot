@@ -32,7 +32,7 @@ const en: BaseTranslation = {
       reaction: 'Нажатие реакции',
       reactionVoice: 'Нажатие реакции + зайти в войс',
       button: 'Нажатие кнопки',
-      buttonVoice: 'Нажатие кнопки + зайтие войс'
+      buttonVoice: 'Нажатие кнопки + зайти войс'
     },
     response: {
       title: 'Для начала',

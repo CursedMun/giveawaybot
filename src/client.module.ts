@@ -44,7 +44,6 @@ import { ClientGateway } from './app/events/client.gateaway.event';
           failIfNotExists: true,
           intents: [
             GatewayIntentBits.Guilds,
-            GatewayIntentBits.GuildMembers,
             GatewayIntentBits.GuildMessages,
             GatewayIntentBits.GuildVoiceStates,
             GatewayIntentBits.DirectMessages,
