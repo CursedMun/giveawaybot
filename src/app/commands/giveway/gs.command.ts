@@ -23,7 +23,13 @@ import locale from 'src/i18n/i18n-node';
 @Injectable()
 @Command({
   name: 'gs',
-  description: 'Начать розыгрыш?/Start a giveaway?'
+  dmPermission: false,
+  descriptionLocalizations: {
+    ru: 'Начать розыгрыш?',
+    'en-US': 'Start a giveaway?'
+  },
+  defaultMemberPermissions: ['Administrator'],
+  description: 'Start a giveaway?'
 })
 export class GiveawayStartCommand implements DiscordCommand {
   private readonly logger = new Logger(GiveawayStartCommand.name);
@@ -55,7 +61,21 @@ export class GiveawayStartCommand implements DiscordCommand {
           ephemeral: true
         };
       }
-
+      if (!interaction.guild) return;
+      const giveaways = await this.giveawayService.getServerGiveaways(
+        interaction.guild.id
+      );
+      if (giveaways.length >= 2) {
+        return {
+          embeds: [
+            {
+              color: config.meta.defaultColor,
+              description: locale.en.errors.maxGiveaways()
+            }
+          ],
+          ephemeral: true
+        };
+      }
       await interaction.showModal({
         customId: this.gsModalID,
         title: locale.en.giveaway.modal.title(),
@@ -124,8 +144,6 @@ export class GiveawayStartCommand implements DiscordCommand {
   @On('interactionCreate')
   @UseGuards(IsModalInteractionGuard)
   async onModuleSubmit(modal: ModalSubmitInteraction) {
-    this.logger.log(`Modal ${modal.customId} submit`);
-
     if (modal.customId !== this.gsModalID || !modal.guild) return;
     const reply = async (text: string) => {
       return await modal.reply({
@@ -161,7 +179,8 @@ export class GiveawayStartCommand implements DiscordCommand {
       return await reply(locale.en.errors.noSendMessagePerm());
     if (
       typeof winnersCount !== 'number' ||
-      winnersCount > 20 ||
+      winnersCount >= 10 ||
+      winnersCount <= 0 ||
       isNaN(winnersCount)
     )
       return await reply(locale.en.errors.noInput.winnersCount());

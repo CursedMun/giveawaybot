@@ -47,6 +47,10 @@ type RootTranslation = {
 			 */
 			winnersCount: string
 		}
+		/**
+		 * Превышено максимальное кол-во розыгрышей на сервере
+		 */
+		maxGiveaways: string
 	}
 	giveaway: {
 		modal: {
@@ -63,7 +67,7 @@ type RootTranslation = {
 			 */
 			duration: string
 			/**
-			 * Кол-во победителей (максимум 20)
+			 * Кол-во победителей (максимум 10)
 			 */
 			winnersCount: string
 			/**
@@ -97,7 +101,7 @@ type RootTranslation = {
 			 */
 			button: string
 			/**
-			 * Нажатие кнопки + зайтие войс
+			 * Нажатие кнопки + зайти войс
 			 */
 			buttonVoice: string
 		}
@@ -230,6 +234,10 @@ export type TranslationFunctions = {
 			 */
 			winnersCount: () => LocalizedString
 		}
+		/**
+		 * Превышено максимальное кол-во розыгрышей на сервере
+		 */
+		maxGiveaways: () => LocalizedString
 	}
 	giveaway: {
 		modal: {
@@ -246,7 +254,7 @@ export type TranslationFunctions = {
 			 */
 			duration: () => LocalizedString
 			/**
-			 * Кол-во победителей (максимум 20)
+			 * Кол-во победителей (максимум 10)
 			 */
 			winnersCount: () => LocalizedString
 			/**
@@ -278,7 +286,7 @@ export type TranslationFunctions = {
 			 */
 			button: () => LocalizedString
 			/**
-			 * Нажатие кнопки + зайтие войс
+			 * Нажатие кнопки + зайти войс
 			 */
 			buttonVoice: () => LocalizedString
 		}

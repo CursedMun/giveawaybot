@@ -8,7 +8,12 @@ import { CommandInteraction, ComponentType, Message } from 'discord.js';
 @Injectable()
 @Command({
   name: 'notify',
-  description: 'Включить/Выключить уведомления о розыгрышах'
+  dmPermission: true,
+  descriptionLocalizations: {
+    ru: 'Включить/Выключить уведомления о розыгрышах',
+    'en-US': 'Turn on/off giveaway notifications'
+  },
+  description: 'Turn on/off giveaway notifications'
 })
 export class NotificationsCmd implements DiscordCommand {
   private logger = new Logger(NotificationsCmd.name);
@@ -22,6 +27,7 @@ export class NotificationsCmd implements DiscordCommand {
       .editReply({
         embeds: [
           {
+            color: config.meta.defaultColor,
             title: locale.en.notification.title(),
             thumbnail: {
               url: command.user.displayAvatarURL() || ''
@@ -66,6 +72,7 @@ export class NotificationsCmd implements DiscordCommand {
         componentType: ComponentType.SelectMenu
       })
       .catch((err) => this.logger.error(err));
+
     if (!response) return;
     await response.deferUpdate({}).catch((err) => this.logger.error(err));
     const selected = response.values;
@@ -73,39 +80,48 @@ export class NotificationsCmd implements DiscordCommand {
       (a, v) => ({ ...a, [v]: !user.settings[v] }),
       {} as UserSettings
     );
+    console.log(selected, options[selected[0]]);
     await this.usersService.UserModel.updateOne(
       { ID: command.user.id },
       { settings: items }
     );
-    response
-      .update({
+    await response
+      .editReply({
         embeds: [
           {
-            description: [
-              locale.en.notification.response.description.text(),
-              `${locale.en.notification.response.description.was()}:`,
-              selected
-                .map(
-                  (v) =>
-                    `${options[v]}: ${
-                      user.settings[v]
-                        ? locale.en.default.on()
-                        : locale.en.default.off()
-                    }`
-                )
-                .join('\n'),
-              `${locale.en.notification.response.description.is()}:`,
-              selected
-                .map(
-                  (v) =>
-                    `${options[v]}: ${
-                      items[v]
-                        ? locale.en.default.on()
-                        : locale.en.default.off()
-                    }`
-                )
-                .join('\n')
-            ].join('\n')
+            thumbnail: {
+              url: command.user.displayAvatarURL() || ''
+            },
+            color: config.meta.defaultColor,
+            title: locale.en.notification.response.description.text(),
+            fields: [
+              {
+                name: locale.en.notification.response.description.was(),
+                value: selected
+                  .map(
+                    (v) =>
+                      `${options[v]()}: **${
+                        user.settings[v]
+                          ? locale.en.default.on()
+                          : locale.en.default.off()
+                      }**`
+                  )
+                  .join('\n')
+              },
+              {
+                name: locale.en.notification.response.description.is(),
+                value: selected
+                  .map(
+                    (v) =>
+                      `**${options[v]()}: ${
+                        items[v]
+                          ? locale.en.default.on()
+                          : locale.en.default.off()
+                      }**`
+                  )
+                  .join('\n')
+              }
+            ]
           }
         ],
         components: []

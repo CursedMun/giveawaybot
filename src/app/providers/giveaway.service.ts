@@ -2,7 +2,7 @@ import { InjectDiscordClient } from '@discord-nestjs/core';
 import {
   Giveaway,
   GiveawayAccessСondition,
-  GiveawayCondition,
+  GiveawayCondition
 } from '@mongo/giveaway/giveaway.schema';
 import { MongoGiveawayService } from '@mongo/giveaway/giveaway.service';
 import { MongoUserService } from '@mongo/user/user.service';
@@ -15,7 +15,7 @@ import {
   GuildMember,
   Message,
   SnowflakeUtil,
-  TextChannel,
+  TextChannel
 } from 'discord.js';
 import fetch from 'node-fetch';
 import { config } from '../utils/config';
@@ -38,7 +38,7 @@ export class GiveawayService {
     @InjectDiscordClient()
     private readonly client: Client,
     public readonly userService: MongoUserService,
-    public readonly giveawayService: MongoGiveawayService,
+    public readonly giveawayService: MongoGiveawayService
   ) {}
   //global
   async check() {
@@ -66,7 +66,7 @@ export class GiveawayService {
           await this.giveawayService.deleteOne({ ID: doc.ID });
           continue;
         }
-        var interval = setInterval(() => {
+        const interval = setInterval(() => {
           this.updateTimer(message, doc.endDate, doc.ID);
         }, config.ticks.tenSeconds * 3);
         this.timers.set(
@@ -77,15 +77,13 @@ export class GiveawayService {
               clearInterval(interval);
               this.endGiveaway(doc.ID);
             },
-            config.ticks.oneHour,
-          ),
+            config.ticks.oneHour
+          )
         );
       } catch (err) {
         const deleted = await this.giveawayService.deleteOne({ ID: doc.ID });
         if (deleted) this.logger.warn(err);
         this.logger.error(err);
-      } finally {
-        continue;
       }
     }
   }
@@ -95,7 +93,7 @@ export class GiveawayService {
     const fetchRandomApi = async (
       min: number,
       max: number,
-      count: number,
+      count: number
     ): Promise<number[]> => {
       if (min == max) return [min];
       const request = await fetch(
@@ -103,9 +101,9 @@ export class GiveawayService {
         {
           method: 'GET',
           headers: {
-            Authorization: `Bearer 1d7d7744-cfd9-4746-bb45-52d118209528`,
-          },
-        },
+            Authorization: `Bearer 1d7d7744-cfd9-4746-bb45-52d118209528`
+          }
+        }
       );
       const response = await request.text();
       return response.split('\n').filter(Boolean).map(Number);
@@ -141,27 +139,29 @@ export class GiveawayService {
       const func = this.timers.get(message.id);
       try {
         if (func) func.destroy();
-        const giveaway = await this.giveawayService.GiveawayModel.findOne({
-          messageID: message.id,
-        }).lean();
-        if (!giveaway) return;
-        const prevValuesFromCache = ((await this.giveawayService.getCache(
-          message.guild!.id,
-        )) || '') as string;
-        let prevValues = prevValuesFromCache.split('|') as string[];
-        const newValues = prevValues
-          .filter(Boolean)
-          .filter((x) => x != giveaway.ID);
-        Promise.all([
-          this.giveawayService.setCacheForGuild(
-            message.guild!.id,
-            newValues.join('|'),
-          ),
-          this.giveawayService.GiveawayModel.updateOne(
-            { ID: giveaway.ID },
-            { ended: true },
-          ),
-        ]);
+        await this.endGiveaway(docID);
+        //TODO verify if this works in future
+        // const giveaway = await this.giveawayService.GiveawayModel.findOne({
+        //   messageID: message.id
+        // }).lean();
+        // if (!giveaway) return;
+        // const prevValuesFromCache = ((await this.giveawayService.getCache(
+        //   message.guild?.id ?? ''
+        // )) || '') as string;
+        // const prevValues = prevValuesFromCache.split('|') as string[];
+        // const newValues = prevValues
+        //   .filter(Boolean)
+        //   .filter((x) => x != giveaway.ID);
+        // Promise.all([
+        //   this.giveawayService.setCacheForGuild(
+        //     message.guild?.id ?? '',
+        //     newValues.join('|')
+        //   ),
+        //   this.giveawayService.GiveawayModel.updateOne(
+        //     { ID: giveaway.ID },
+        //     { ended: true }
+        //   )
+        // ]);
       } catch (err) {
         this.logger.error(err);
       }
@@ -170,17 +170,21 @@ export class GiveawayService {
     try {
       const fields = message.embeds[0].fields;
       fields[0].value = `\`\`\`\n${parseFilteredTimeArray(
-        endTime - Date.now(),
+        endTime - Date.now()
       ).join(' ')}\`\`\``;
       const newEmbed = {
         ...message.embeds[0].data,
-        fields: fields,
+        fields: fields
       };
       message
         .edit({
-          embeds: [newEmbed],
+          embeds: [newEmbed]
         })
-        .catch(() => {});
+        .catch(async () => {
+          const timer = this.timers.get(message.id);
+          if (timer) timer.destroy();
+          await this.endGiveaway(docID);
+        });
     } catch (err) {
       this.logger.error(err);
     }
@@ -204,9 +208,9 @@ export class GiveawayService {
       if (!embed) return;
       if (embed.fields) delete embed.fields[0];
       const winners = await this.getWinners(
-        message.guild!,
+        message.guild,
         doc,
-        doc.winnerCount,
+        doc.winnerCount
       );
       const fields = [
         {
@@ -214,10 +218,10 @@ export class GiveawayService {
           value: [
             `<a:tochka:980106660733399070>Участвовало: **${doc.participants.length}**`,
             `<a:tochka:980106660733399070>Длительность: **${parseFilteredTimeArray(
-              Date.now() - doc.createdTick,
-            ).join(' ')}**`,
+              Date.now() - doc.createdTick
+            ).join(' ')}**`
           ].join('\n'),
-          inline: true,
+          inline: true
         },
         {
           name: 'ᅠ',
@@ -231,15 +235,15 @@ export class GiveawayService {
                 : winners
                     .map((id) => `<:background:980765434414522398><@${id}>`)
                     .join('\n')
-            }`,
+            }`
           ].join('\n'),
-          inline: true,
-        },
+          inline: true
+        }
       ];
       const prevValuesFromCache = ((await this.giveawayService.getCache(
-        message.guild!.id,
+        message.guild.id
       )) || '') as string;
-      let prevValues = prevValuesFromCache.split('|') as string[];
+      const prevValues = prevValuesFromCache.split('|') as string[];
       const newValues = prevValues.filter(Boolean).filter((x) => x != doc.ID);
       await Promise.allSettled([
         winners.map(async (winner) => {
@@ -254,24 +258,24 @@ export class GiveawayService {
                     color: config.meta.defaultColor,
                     description: [
                       `Вы выиграли в розыгрыше на **${doc.prize}**, отпишите в лс организатору`,
-                      `розыгрыша за получением награды.`,
-                    ].join('\n'),
-                  },
-                ],
+                      `розыгрыша за получением награды.`
+                    ].join('\n')
+                  }
+                ]
               })
               .catch(() =>
                 this.logger.log(
-                  `Не удалось отправить сообщение победителю у ${winner} оказался закрытый дм`,
-                ),
+                  `Не удалось отправить сообщение победителю у ${winner} оказался закрытый дм`
+                )
               );
         }),
         this.giveawayService.GiveawayModel.updateOne(
           { ID },
-          { winners: winners },
+          { winners: winners }
         ),
         this.giveawayService.setCacheForGuild(
-          message.guild!.id,
-          newValues.join('|'),
+          message.guild.id,
+          newValues.join('|')
         ),
         message.edit({
           embeds: [
@@ -282,22 +286,22 @@ export class GiveawayService {
               url: 'https://www.random.org',
               fields: fields,
               thumbnail: {
-                url: 'https://media.discordapp.net/attachments/980765606364205056/992518849171816588/d9b3274479f17669.png',
-              },
-            },
+                url: 'https://media.discordapp.net/attachments/980765606364205056/992518849171816588/d9b3274479f17669.png'
+              }
+            }
           ],
-          components: [],
+          components: []
         }),
         doc.accessCondition == 'reaction'
-          ? message.reactions.removeAll()
-          : null,
+          ? await message.reactions.removeAll()
+          : null
       ]);
     } catch (err) {
       this.logger.error(err);
     } finally {
       await this.giveawayService.GiveawayModel.updateOne(
         { ID },
-        { ended: true },
+        { ended: true }
       );
     }
   }
@@ -309,7 +313,7 @@ export class GiveawayService {
       channel,
       access_condition,
       condition,
-      creatorID,
+      creatorID
     } = data;
     const id = SnowflakeUtil.generate().toString();
     let doc = {
@@ -324,7 +328,7 @@ export class GiveawayService {
       participants: [],
       guildID: channel.guild.id,
       winnerCount: winnersCount,
-      createdTick: Date.now(),
+      createdTick: Date.now()
     };
     const message = await channel
       .send({
@@ -341,19 +345,19 @@ export class GiveawayService {
               {
                 name: 'Длительность:',
                 value: `\`\`\`\n${parseFilteredTimeArray(
-                  doc.endDate - Date.now(),
+                  doc.endDate - Date.now()
                 ).join(' ')}\`\`\``,
-                inline: true,
-              },
+                inline: true
+              }
             ],
             footer: {
-              text: 'Включить уведомления /notify',
+              text: 'Включить уведомления /notify'
             },
             url: `https://www.random.org`,
             thumbnail: {
-              url: 'https://media.discordapp.net/attachments/980765606364205056/992518848974696488/838fa81d4869b0fb.png',
-            },
-          },
+              url: 'https://media.discordapp.net/attachments/980765606364205056/992518848974696488/838fa81d4869b0fb.png'
+            }
+          }
         ],
         components:
           access_condition == 'button'
@@ -365,38 +369,38 @@ export class GiveawayService {
                       customId: `giveaway.join.${id}`,
                       type: ComponentType.Button,
                       label: 'Участвовать',
-                      style: ButtonStyle.Success,
+                      style: ButtonStyle.Success
                     },
                     {
                       customId: `giveaway.list.${id}`,
                       type: ComponentType.Button,
                       label: 'Участники - 0',
-                      style: ButtonStyle.Primary,
-                    },
-                  ],
-                },
+                      style: ButtonStyle.Primary
+                    }
+                  ]
+                }
               ]
-            : undefined,
+            : undefined
       })
-      .catch((err) => null);
+      .catch(() => null);
     if (!message) return;
     if (access_condition === 'reaction')
       await message.react(config.emojis.giveaway);
     doc = {
       ...doc,
-      messageID: message.id,
+      messageID: message.id
     };
     const prevValuesFromCache = ((await this.giveawayService.getCache(
-      message.guild!.id,
+      message.guild.id
     )) || '') as string;
-    let prevValues = [...prevValuesFromCache.split('|'), doc.ID] as string[];
+    const prevValues = [...prevValuesFromCache.split('|'), doc.ID] as string[];
     await Promise.allSettled([
       access_condition === 'reaction'
         ? message.react(config.emojis.giveaway)
         : undefined,
       this.giveawayService.setCacheForGuild(
         channel.guild.id,
-        prevValues.filter(Boolean).join('|'),
+        prevValues.filter(Boolean).join('|')
       ),
       this.giveawayService.create(doc),
       (
@@ -416,18 +420,18 @@ export class GiveawayService {
                 `Доступ: **${access_condition}**/${condition}`,
                 `Количество победителей: **${doc.winnerCount}**`,
                 `Создатель: <@${doc.creatorID}>`,
-                `Ссылка: https://discordapp.com/channels/${channel.guild.id}/${channel.id}/${message.id}`,
+                `Ссылка: https://discordapp.com/channels/${channel.guild.id}/${channel.id}/${message.id}`
               ].join('\n'),
               timestamp: new Date().toISOString(),
               thumbnail: {
-                url: channel.guild.iconURL() || '',
-              },
-            },
-          ],
+                url: channel.guild.iconURL() || ''
+              }
+            }
+          ]
         })
-        .catch((err) => this.logger.error(err.message)),
+        .catch((err) => this.logger.error(err.message))
     ]);
-    var interval = setInterval(() => {
+    const interval = setInterval(() => {
       this.updateTimer(message, doc.endDate, doc.ID);
     }, config.ticks.tenSeconds * 3);
     new Timer(
@@ -436,14 +440,14 @@ export class GiveawayService {
         clearInterval(interval);
         this.endGiveaway(doc.ID);
       },
-      config.ticks.oneHour,
+      config.ticks.oneHour
     );
   }
   //DataBase communication
   async getGiveaway(
     ID: string,
     force?: boolean,
-    ttl?: number,
+    ttl?: number
   ): Promise<Giveaway | null> {
     const giveaway = await this.giveawayService.findOne({ ID }, force, ttl);
     return giveaway;
@@ -452,12 +456,12 @@ export class GiveawayService {
     guildID: string | null,
     channelID: string,
     force?: boolean,
-    ttl?: number,
+    ttl?: number
   ): Promise<Giveaway | null> {
     const giveaways = await this.giveawayService.findOne(
       { channelID, guildID: guildID ?? '' },
       force,
-      ttl,
+      ttl
     );
     return giveaways ? giveaways : null;
   }
@@ -465,12 +469,12 @@ export class GiveawayService {
     guildID: string | null,
     messageID: string,
     force?: boolean,
-    ttl?: number,
+    ttl?: number
   ): Promise<Giveaway | null> {
     const giveaways = await this.giveawayService.findOne(
       { messageID, guildID: guildID ?? '' },
       force,
-      ttl,
+      ttl
     );
     return giveaways ? giveaways : null;
   }
@@ -484,26 +488,26 @@ export class GiveawayService {
   //Giveaway handler
   async onJoin(
     member: GuildMember,
-    ID: string,
+    ID: string
   ): Promise<{
     reason: string;
     success: boolean;
     condition?: GiveawayCondition;
     totalParticipants?: number;
   }> {
-    let doc = await this.getGiveaway(ID, true);
+    const doc = await this.getGiveaway(ID, true);
     if (!doc) return { reason: 'Розыгрыш не найден', success: false };
     if (doc.condition === 'voice' && !member.voice.channel)
       return {
         reason:
           '**Условие участия:** Зайдите в любой голосовой канал на сервере',
-        success: false,
+        success: false
       };
     if (doc.participants.includes(member.id))
       return { reason: 'Вы уже участвуете', success: false };
     await this.giveawayService.GiveawayModel.updateOne(
       { ID },
-      { $addToSet: { participants: member } },
+      { $addToSet: { participants: member } }
     );
     doc.participants.push(member.id);
     return {
@@ -511,19 +515,19 @@ export class GiveawayService {
         doc.condition === 'voice'
           ? [
               'При выходе из голосового канала, **вам придет уведомление** и вы ',
-              'автоматические будете сняты с участия в розыгрыше',
+              'автоматические будете сняты с участия в розыгрыше'
             ].join('\n')
           : 'Пусть удача будет на вашей стороне',
       success: true,
       condition: doc.condition,
-      totalParticipants: doc.participants.length,
+      totalParticipants: doc.participants.length
     };
   }
   async onLeave(
     member: GuildMember,
-    ID: string,
+    ID: string
   ): Promise<{ reason: string; success: boolean }> {
-    let doc = await this.getGiveaway(ID, true);
+    const doc = await this.getGiveaway(ID, true);
     if (!doc) return { reason: '', success: false };
     if (!doc.participants.includes(member.id))
       return { reason: '', success: false };
@@ -533,7 +537,7 @@ export class GiveawayService {
     console.log(doc.participants);
     await this.giveawayService.GiveawayModel.updateOne(
       { ID },
-      { $pull: { participants: member.id } },
+      { $pull: { participants: member.id } }
     );
     return { reason: '', success: true };
   }
