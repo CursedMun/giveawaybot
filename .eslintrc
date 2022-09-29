@@ -13,6 +13,7 @@
     "prettier/prettier": 2, // Means error
     "no-empty-function": 0,
     "@typescript-eslint/no-explicit-any": 0,
-    "@typescript-eslint/no-empty-function": 0
+    "@typescript-eslint/no-empty-function": 0,
+    "no-useless-escape": 0
   }
 }

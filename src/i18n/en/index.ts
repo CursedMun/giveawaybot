@@ -13,7 +13,8 @@ const en: BaseTranslation = {
       time: 'Неверно указано время',
       channel: 'Неверно указан канал',
       winnersCount: 'Неверно указано кол-во победителей'
-    }
+    },
+    maxGiveaways: 'Превышено максимальное кол-во розыгрышей на сервере'
   },
   //gs Command
   giveaway: {
@@ -21,7 +22,7 @@ const en: BaseTranslation = {
       title: 'Запрос на участие',
       prize: 'Приз',
       duration: 'Длительность розыгрыша (1d|1h|1m|1s)',
-      winnersCount: 'Кол-во победителей (максимум 20)',
+      winnersCount: 'Кол-во победителей (максимум 10)',
       channel: 'Название или id канала'
     },
     modalReply: {
