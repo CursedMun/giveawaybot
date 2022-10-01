@@ -383,8 +383,26 @@ export class GiveawayService {
       })
       .catch(() => null);
     if (!message) return;
-    if (access_condition === 'reaction')
-      await message.react(config.emojis.giveaway);
+    if (access_condition === 'reaction') {
+      const reaction = await message
+        .react(config.emojis.giveaway)
+        .catch(async () => {
+          await message.delete().catch(() => null);
+          await message.channel
+            .send({
+              embeds: [
+                {
+                  title: 'Ошибка',
+                  color: config.meta.defaultColor,
+                  description: 'Не удалось добавить реакцию к сообщению'
+                }
+              ]
+            })
+            .catch(() => null);
+          return null;
+        });
+      if (!reaction) return;
+    }
     doc = {
       ...doc,
       messageID: message.id
