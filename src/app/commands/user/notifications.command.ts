@@ -71,7 +71,10 @@ export class NotificationsCmd implements DiscordCommand {
         time: config.ticks.oneMinute,
         componentType: ComponentType.SelectMenu
       })
-      .catch((err) => this.logger.error(err));
+      .catch((err) => {
+        this.logger.error(err);
+        return null;
+      });
 
     if (!response) return;
     await response.deferUpdate({}).catch((err) => this.logger.error(err));
@@ -80,11 +83,12 @@ export class NotificationsCmd implements DiscordCommand {
       (a, v) => ({ ...a, [v]: !user.settings[v] }),
       {} as UserSettings
     );
-    console.log(selected, options[selected[0]]);
+
     await this.usersService.UserModel.updateOne(
       { ID: command.user.id },
       { settings: items }
     );
+
     await response
       .editReply({
         embeds: [

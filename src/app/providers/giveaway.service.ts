@@ -180,12 +180,11 @@ export class GiveawayService {
         .edit({
           embeds: [newEmbed]
         })
-        .catch(async () => {
-          const timer = this.timers.get(message.id);
-          if (timer) timer.destroy();
-          await this.endGiveaway(docID);
-        });
+        .catch(async () => {});
     } catch (err) {
+      const timer = this.timers.get(message.id);
+      if (timer) timer.destroy();
+      await this.endGiveaway(docID);
       this.logger.error(err);
     }
   }
