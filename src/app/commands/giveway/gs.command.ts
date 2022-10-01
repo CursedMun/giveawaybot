@@ -280,15 +280,17 @@ export class GiveawayStartCommand implements DiscordCommand {
           }
         ]
       });
-      const conditionResponse = await message.awaitMessageComponent({
-        filter: (interaction: MessageComponentInteraction<CacheType>) => {
-          if (interaction.message.id != message.id) return false;
-          if (interaction.member?.user.id != modal.user.id) return false;
-          return true;
-        },
-        componentType: ComponentType.SelectMenu,
-        time: config.ticks.oneMinute * 10
-      });
+      const conditionResponse = await message
+        .awaitMessageComponent({
+          filter: (interaction: MessageComponentInteraction<CacheType>) => {
+            if (interaction.message.id != message.id) return false;
+            if (interaction.member?.user.id != modal.user.id) return false;
+            return true;
+          },
+          componentType: ComponentType.SelectMenu,
+          time: config.ticks.oneMinute * 10
+        })
+        .catch(() => null);
       if (!conditionResponse) return;
       this.giveawayService.createGiveaway({
         prize,
