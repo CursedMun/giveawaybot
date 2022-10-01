@@ -59,15 +59,17 @@ export class HelpCmd implements DiscordCommand {
       })
       .catch(() => null);
     if (!message) return;
-    const response = await message.awaitMessageComponent({
-      filter: (interaction: MessageComponentInteraction<CacheType>) => {
-        if (interaction.message.id != message.id) return false;
-        if (interaction.member?.user.id != command.user.id) return false;
-        return true;
-      },
-      componentType: ComponentType.Button,
-      time: config.ticks.oneMinute * 10
-    });
+    const response = await message
+      .awaitMessageComponent({
+        filter: (interaction: MessageComponentInteraction<CacheType>) => {
+          if (interaction.message.id != message.id) return false;
+          if (interaction.member?.user.id != command.user.id) return false;
+          return true;
+        },
+        componentType: ComponentType.Button,
+        time: config.ticks.oneMinute * 10
+      })
+      .catch(() => null);
     if (!response) return;
     //TODO buttons
     return;
