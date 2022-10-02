@@ -33,7 +33,10 @@ export interface GiveawayCreationData {
 @Injectable()
 export class GiveawayService {
   private readonly logger = new Logger(GiveawayService.name);
-  private readonly timers = new Map<string, Timer>();
+  private readonly timers = new Map<
+    string,
+    { giveawayTimer: Timer; updateMessageInterval: NodeJS.Timer }
+  >();
   constructor(
     @InjectDiscordClient()
     private readonly client: Client,
@@ -69,17 +72,17 @@ export class GiveawayService {
         const interval = setInterval(() => {
           this.updateTimer(message, doc.endDate, doc.ID);
         }, config.ticks.tenSeconds * 3);
-        this.timers.set(
-          message.id,
-          new Timer(
+        this.timers.set(message.id, {
+          giveawayTimer: new Timer(
             doc.endDate,
             () => {
               clearInterval(interval);
               this.endGiveaway(doc.ID);
             },
             config.ticks.oneHour
-          )
-        );
+          ),
+          updateMessageInterval: interval
+        });
       } catch (err) {
         const deleted = await this.giveawayService.deleteOne({ ID: doc.ID });
         if (deleted) this.logger.warn(err);
@@ -136,9 +139,12 @@ export class GiveawayService {
     const guildGiveaways = await this.getServerGiveaways(message.guildId ?? '');
     if (!guildGiveaways.includes(docID)) return;
     if (!message || !message.editable) {
-      const func = this.timers.get(message.id);
+      const timer = this.timers.get(message.id);
       try {
-        if (func) func.destroy();
+        if (timer) {
+          timer.giveawayTimer.destroy();
+          clearInterval(timer.updateMessageInterval);
+        }
         await this.endGiveaway(docID);
         //TODO verify if this works in future
         // const giveaway = await this.giveawayService.GiveawayModel.findOne({
@@ -183,7 +189,10 @@ export class GiveawayService {
         .catch(async () => {});
     } catch (err) {
       const timer = this.timers.get(message.id);
-      if (timer) timer.destroy();
+      if (timer) {
+        timer.giveawayTimer.destroy();
+        clearInterval(timer.updateMessageInterval);
+      }
       await this.endGiveaway(docID);
       this.logger.error(err);
     }
@@ -448,17 +457,21 @@ export class GiveawayService {
         })
         .catch((err) => this.logger.error(err.message))
     ]);
+    //HERE
     const interval = setInterval(() => {
       this.updateTimer(message, doc.endDate, doc.ID);
     }, config.ticks.tenSeconds * 3);
-    new Timer(
-      doc.endDate,
-      () => {
-        clearInterval(interval);
-        this.endGiveaway(doc.ID);
-      },
-      config.ticks.oneHour
-    );
+    this.timers.set(doc.messageID, {
+      giveawayTimer: new Timer(
+        doc.endDate,
+        () => {
+          clearInterval(interval);
+          this.endGiveaway(doc.ID);
+        },
+        config.ticks.oneHour
+      ),
+      updateMessageInterval: interval
+    });
   }
   //DataBase communication
   async getGiveaway(
