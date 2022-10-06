@@ -94,7 +94,6 @@ const embeds = {
             },
             {
               label: 'Ko-fi (Support me)',
-              customId: 'help.support',
               type: ComponentType.Button,
               style: ButtonStyle.Link,
               url: 'https://ko-fi.com/giveawaybot'
