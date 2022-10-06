@@ -82,8 +82,7 @@ const embeds = {
               label: 'Активные розыгрыши',
               customId: `help.giveaways.${userID}`,
               type: ComponentType.Button,
-              style: ButtonStyle.Secondary,
-              disabled: true
+              style: ButtonStyle.Secondary
             },
             {
               label: 'Оставить отзыв',
