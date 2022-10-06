@@ -223,7 +223,8 @@ export class HelpCmd implements DiscordCommand {
       case 'giveaways': {
         if (!guildID) return;
         const documents = await this.giveawayService.getServerGiveawayObjects(
-          guildID ?? ''
+          guildID ?? '',
+          false
         );
         return {
           color: config.meta.defaultColor,
@@ -239,14 +240,11 @@ export class HelpCmd implements DiscordCommand {
               ]
             : documents.map((document) => {
                 return {
-                  name: `Приз ${document.prize}
-              } (${new Date(document.endDate).toLocaleString('en-GB', {
-                timeZone: 'UTC'
-              })})`,
+                  name: `Приз ${document.prize}`,
                   value: [
                     `Количество участников: ${document.participants.length}`,
                     `Организатор: <@${document.creatorID}>`,
-                    `Окончание: <t:${document.endDate}:R>`
+                    `Окончание: <t:${Math.round(document.endDate / 1000)}:R>`
                   ].join('\n'),
                   inline: false
                 };
