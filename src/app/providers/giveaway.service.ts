@@ -511,8 +511,11 @@ export class GiveawayService {
   async getServerGiveaways(guildID: string): Promise<string[]> {
     return (await this.giveawayService.getCache(guildID))?.split('|') ?? [];
   }
-  async getServerGiveawayObjects(guildID: string): Promise<Giveaway[]> {
-    const giveaways = await this.giveawayService.find({ guildID });
+  async getServerGiveawayObjects(
+    guildID: string,
+    ended?: boolean
+  ): Promise<Giveaway[]> {
+    const giveaways = await this.giveawayService.find({ guildID, ended });
     return giveaways;
   }
   //Giveaway handler

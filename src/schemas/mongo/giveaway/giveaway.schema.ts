@@ -1,7 +1,7 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
-export type GiveawayAccessСondition = "reaction" | "button";
-export type GiveawayCondition = "novoice" | "voice";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+export type GiveawayAccessСondition = 'reaction' | 'button';
+export type GiveawayCondition = 'novoice' | 'voice' | 'invite';
 export type GiveawayDocument = Giveaway & Document;
 @Schema()
 export class Giveaway {
@@ -25,9 +25,9 @@ export class Giveaway {
   winnerCount: number;
   @Prop()
   winners: string[];
-  @Prop({default: Date.now()})
+  @Prop({ default: Date.now() })
   endDate: number;
-  @Prop({default: false})
+  @Prop({ default: false })
   ended: boolean;
   @Prop()
   createdTick: number;
