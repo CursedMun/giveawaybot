@@ -18,61 +18,6 @@ export class Info {
     @InjectDiscordClient() private readonly client: Client,
     private readonly giveawayService: GiveawayService
   ) {}
-  //test
-  @PrefixCommand({
-    name: 'info'
-  })
-  @UsePipes(PrefixCommandTransformPipe)
-  onMessage(message: Message): any {
-    //all the info about my discord bot in an embed
-    const info = {
-      'Название:': `${this.client.user?.tag}`,
-      'Сервера:': `${this.client.guilds.cache.size}`,
-      'Пользователи:': `${this.client.guilds.cache.reduce(
-        (a, b) => a + b?.memberCount,
-        0
-      )}`,
-      'Node.js:': `${process.version}`,
-      'Платформа:': `${process.platform} ${process.arch}`,
-      'Память:': `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(
-        2
-      )} MB / ${(process.memoryUsage().heapTotal / 1024 / 1024).toFixed(2)} MB`,
-      'Онлайн:': `${parseFilteredTimeArray(process.uptime() * 1000).join(':')}`
-    };
-    message
-      .reply({
-        embeds: [
-          {
-            color: config.meta.defaultColor,
-            title: 'Информация',
-            description:
-              'Разработчик: <@423946555872116758>\n`423946555872116758`',
-            fields: Object.entries(info).map(([key, value]) => {
-              return {
-                name: key,
-                value: value,
-                inline: true
-              };
-            })
-          }
-        ],
-        components: [
-          {
-            type: ComponentType.ActionRow,
-            components: [
-              {
-                type: ComponentType.Button,
-                style: ButtonStyle.Link,
-                url: `https://cursedmun.com`,
-                label: `Website`
-              }
-            ]
-          }
-        ]
-      })
-      .catch(() => {});
-    return;
-  }
 
   @PrefixCommand({
     name: 'server',

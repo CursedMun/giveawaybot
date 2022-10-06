@@ -10,6 +10,8 @@ import {
 import { Injectable, Logger } from '@nestjs/common';
 import { GiveawayService } from '@src/app/providers/giveaway.service';
 import { config } from '@src/app/utils/config';
+import { pluralNoun } from '@src/app/utils/utils';
+import locale from '@src/i18n/i18n-node';
 class RerollDto {
   // @Transform(({ value }) => value.toUpperCase())
   @Param({
@@ -64,7 +66,7 @@ export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
       }
     };
     if (!messageID) {
-      reply('Не указали ID сообщение');
+      reply(locale.en.errors.noInput.messageID());
       return;
     }
     const giveaway = await this.giveawayService.getGiveawayByMessage(
@@ -73,12 +75,12 @@ export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
       true
     );
     if (!giveaway || !giveaway.ended) {
-      reply('Розыгрыш не найден или ещё не закончен');
+      reply(locale.en.errors.noFoundGiveaways());
       return;
     }
 
     if (giveaway.participants.length <= 1) {
-      reply('Недостаточно участников');
+      reply(locale.en.errors.notEnoughMembers());
       return;
     }
 
@@ -91,13 +93,17 @@ export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
       { ID: giveaway.ID },
       { winners: winners }
     );
+    pluralNoun(2, 'победитель', 'победителя', 'победителей');
     await interaction.followUp({
       embeds: [
         {
-          description: `Победител${giveaway.winnerCount > 1 ? 'и' : 'ь'}: ${
+          description: `${pluralNoun(
+            giveaway.winnerCount,
+            ...Object.values(locale.en.default.winnersNouns).map((x) => x())
+          )}: ${
             winners.length > 0
               ? winners.map((w) => `<@${w}>`).join(', ')
-              : ' Ошибка'
+              : ` ${locale.en.default.error()}`
           }`
         }
       ],

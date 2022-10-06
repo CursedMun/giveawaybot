@@ -10,6 +10,7 @@ import {
 import { Injectable, Logger } from '@nestjs/common';
 import { GiveawayService } from '@src/app/providers/giveaway.service';
 import { config } from '@src/app/utils/config';
+import locale from '@src/i18n/i18n-node';
 class EndDto {
   // @Transform(({ value }) => value.toUpperCase())
   @Param({
@@ -67,7 +68,7 @@ export class EndCmd implements DiscordTransformedCommand<EndDto> {
     );
     let giveawayID = '';
     if (!guildGiveaways.length) {
-      reply('На сервере нет активных розыгрышей');
+      reply(locale.en.errors.noServerGiveaways());
       return;
     }
     if (!messageID) giveawayID = guildGiveaways[0];
@@ -79,14 +80,14 @@ export class EndCmd implements DiscordTransformedCommand<EndDto> {
         )
       : await this.giveawayService.getGiveaway(giveawayID);
     if (!giveaway || giveaway.ended) {
-      reply('Розыгрыш не найден или уже закончен');
+      reply(locale.en.errors.noFoundGiveaways());
       return;
     }
     await this.giveawayService.endGiveaway(giveaway.ID);
     await interaction.followUp({
       embeds: [
         {
-          description: 'Розыгрыш успешно закончен'
+          description: locale.en.giveaway.end.response()
         }
       ],
       ephemeral: false

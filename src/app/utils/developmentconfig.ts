@@ -59,50 +59,53 @@ const embeds = {
       }
     ]
   } as InteractionUpdateOptions,
-  helpEmbed: {
-    components: [
-      {
-        type: ComponentType.ActionRow,
-        components: [
-          {
-            label: 'Команды',
-            customId: 'commands',
-            type: ComponentType.Button,
-            style: ButtonStyle.Primary,
-            disabled: true
-          },
-          {
-            label: 'Информация',
-            customId: 'information',
-            type: ComponentType.Button,
-            style: ButtonStyle.Secondary,
-            disabled: true
-          },
-          {
-            label: 'Активные розыгрыши',
-            customId: 'giveaways',
-            type: ComponentType.Button,
-            style: ButtonStyle.Secondary,
-            disabled: true
-          },
-          {
-            label: 'Оставить отзыв',
-            customId: 'feedback',
-            type: ComponentType.Button,
-            style: ButtonStyle.Secondary,
-            disabled: true
-          },
-          {
-            label: 'Поддержать бота',
-            customId: 'support',
-            type: ComponentType.Button,
-            style: ButtonStyle.Secondary,
-            disabled: true
-          }
-        ]
-      }
-    ]
-  } as InteractionUpdateOptions
+  helpEmbed: (userID: string) =>
+    ({
+      components: [
+        {
+          type: ComponentType.ActionRow,
+          components: [
+            {
+              label: 'Команды',
+              customId: `help.commands.${userID}`,
+              type: ComponentType.Button,
+              style: ButtonStyle.Primary
+            },
+            {
+              label: 'Информация',
+              customId: `help.information.${userID}`,
+              type: ComponentType.Button,
+              style: ButtonStyle.Secondary
+            },
+            {
+              label: 'Активные розыгрыши',
+              customId: `help.giveaways.${userID}`,
+              type: ComponentType.Button,
+              style: ButtonStyle.Secondary
+            },
+            {
+              label: 'Оставить отзыв',
+              customId: `help.feedback.${userID}`,
+              type: ComponentType.Button,
+              style: ButtonStyle.Secondary,
+              disabled: true
+            },
+            {
+              label: 'Ko-fi (Support me)',
+              type: ComponentType.Button,
+              style: ButtonStyle.Link,
+              url: 'https://ko-fi.com/giveawaybot'
+            }
+          ]
+        }
+      ]
+    } as InteractionUpdateOptions),
+  defaultHelpEmbed: {
+    color: meta.defaultColor,
+    image: {
+      url: 'https://cdn.discordapp.com/attachments/980765606364205056/980765731966832640/3.png'
+    }
+  }
 };
 
 const ticks = {

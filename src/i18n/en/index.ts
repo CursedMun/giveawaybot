@@ -8,13 +8,17 @@ const en: BaseTranslation = {
       field: 'Нужные права',
       value: '` ⚪ {perm:string} ` ` Вкл `'
     },
-    noSendMessagePerm: 'Недостаточно прав для отправки сообщений в канал',
     noInput: {
       time: 'Неверно указано время',
       channel: 'Неверно указан канал',
-      winnersCount: 'Неверно указано кол-во победителей'
+      winnersCount: 'Неверно указано кол-во победителей',
+      messageID: 'Неверно указан ID сообщение'
     },
-    maxGiveaways: 'Превышено максимальное кол-во розыгрышей на сервере'
+    notEnoughMembers: 'Недостаточно участников',
+    noSendMessagePerm: 'Недостаточно прав для отправки сообщений в канал',
+    maxGiveaways: 'Превышено максимальное кол-во розыгрышей на сервере',
+    noServerGiveaways: 'На сервере нет активных розыгрышей',
+    noFoundGiveaways: 'Розыгрыш не найден или уже закончен'
   },
   //gs Command
   giveaway: {
@@ -40,6 +44,9 @@ const en: BaseTranslation = {
       description:
         'Чтобы продолжить **создание розыгрыша** выберите ниже **одно** из **условий**.',
       options: 'Варианты условий'
+    },
+    end: {
+      response: 'Розыгрыш успешно закончен'
     }
   },
   default: {
@@ -50,7 +57,9 @@ const en: BaseTranslation = {
     option: 'вариант',
     notification: 'Уведомления',
     on: 'Вкл',
-    off: 'Выкл'
+    off: 'Выкл',
+    winnersNouns: ['победитель', 'победителя', 'победителей'],
+    error: 'Ошибка'
   },
   //notification Command
   notification: {
@@ -67,6 +76,14 @@ const en: BaseTranslation = {
         was: 'Было',
         is: 'Стало'
       }
+    }
+  },
+  help: {
+    giveaway: {
+      title: 'Розыгрыш'
+    },
+    others: {
+      title: 'Другое'
     }
   },
   admin: 'Администратор'
