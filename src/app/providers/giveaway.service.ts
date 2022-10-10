@@ -45,7 +45,7 @@ export class GiveawayService {
   ) {}
   //global
   async check() {
-    const docs = await this.giveawayService.find({ ended: false });
+    const docs = await this.giveawayService.find({ ended: false }, true);
     for (const doc of docs) {
       try {
         const guild =
