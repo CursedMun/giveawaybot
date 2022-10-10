@@ -52,7 +52,7 @@ export class MongoGiveawayService {
     return await this.cache.wrap(
       cacheKey,
       async () => {
-        let giveaway = await this.GiveawayModel.findOne(data).lean();
+        const giveaway = await this.GiveawayModel.findOne(data).lean();
         return giveaway;
       },
       { ttl: ttl ?? this.defaulttl }
@@ -63,7 +63,7 @@ export class MongoGiveawayService {
     return await this.cache.wrap(
       cacheKey,
       async () => {
-        let giveaway = await this.GiveawayModel.findOne(data)
+        const giveaway = await this.GiveawayModel.findOne(data)
           .lean()
           .countDocuments();
         return giveaway > 0;
@@ -90,13 +90,15 @@ export class MongoGiveawayService {
   }
   async find(
     data: FilterQuery<GiveawayDocument>,
+    force?: boolean,
     ttl?: number
   ): Promise<Giveaway[]> {
     const cacheKey = `find_giveaways`;
+    if (force) return await this.GiveawayModel.find(data).lean();
     return await this.cache.wrap(
       cacheKey,
       async () => {
-        let giveaways = await this.GiveawayModel.find(data).lean();
+        const giveaways = await this.GiveawayModel.find(data).lean();
         return giveaways;
       },
       { ttl: 10 }
