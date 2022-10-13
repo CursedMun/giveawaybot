@@ -63,26 +63,27 @@ export class EndCmd implements DiscordTransformedCommand<EndDto> {
         this.logger.warn(err);
       }
     };
-    const guildGiveaways = await this.giveawayService.getServerGiveaways(
-      guild.id ?? ''
+    const guildGiveaways = await this.giveawayService.giveawayService.find(
+      {
+        guildID: guild.id,
+        ended: false
+      },
+      true
     );
-    let giveawayID = '';
     if (!guildGiveaways.length) {
       reply(locale.en.errors.noServerGiveaways());
       return;
     }
-    if (!messageID) giveawayID = guildGiveaways[0];
     const giveaway = messageID
-      ? await this.giveawayService.getGiveawayByMessage(
-          guild.id,
-          messageID,
-          true
-        )
-      : await this.giveawayService.getGiveaway(giveawayID);
+      ? guildGiveaways.find((g) => g.messageID === messageID) ??
+        guildGiveaways.find((g) => g.channelID === messageID)
+      : guildGiveaways[0];
+
     if (!giveaway || giveaway.ended) {
       reply(locale.en.errors.noFoundGiveaways());
       return;
     }
+
     await this.giveawayService.endGiveaway(giveaway.ID);
     await interaction.followUp({
       embeds: [
