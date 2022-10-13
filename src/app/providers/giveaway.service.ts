@@ -29,6 +29,7 @@ export interface GiveawayCreationData {
   access_condition: GiveawayAccessСondition;
   condition: GiveawayCondition;
   creatorID: string;
+  message: Message;
 }
 @Injectable()
 export class GiveawayService {
@@ -321,7 +322,8 @@ export class GiveawayService {
       channel,
       access_condition,
       condition,
-      creatorID
+      creatorID,
+      message
     } = data;
     const id = SnowflakeUtil.generate().toString();
     let doc = {
@@ -338,9 +340,8 @@ export class GiveawayService {
       winnerCount: winnersCount,
       createdTick: Date.now()
     };
-    console.log(channel.permissionsFor(channel.client.user || '')?.toArray());
-    const message = await channel
-      .send({
+    const giveawayMessage = await message
+      .edit({
         embeds: [
           {
             title: `Приз: ${prize}`,
@@ -405,8 +406,9 @@ export class GiveawayService {
           .catch(() => null);
         this.logger.error(err);
         console.log(err);
+        return null;
       });
-    if (!message) return;
+    if (!giveawayMessage) return;
     if (access_condition === 'reaction') {
       const reaction = await message
         .react(config.emojis.giveaway)
@@ -432,7 +434,7 @@ export class GiveawayService {
       messageID: message.id
     };
     const prevValuesFromCache = ((await this.giveawayService.getCache(
-      message.guild.id
+      giveawayMessage.guild?.id ?? ''
     )) || '') as string;
     const prevValues = [...prevValuesFromCache.split('|'), doc.ID] as string[];
     await Promise.allSettled([
