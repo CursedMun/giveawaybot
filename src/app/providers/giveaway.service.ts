@@ -390,7 +390,20 @@ export class GiveawayService {
               ]
             : undefined
       })
-      .catch(() => null);
+      .catch(async (err) => {
+        await channel
+          .send({
+            embeds: [
+              {
+                title: 'Ошибка',
+                color: config.meta.defaultColor,
+                description: JSON.stringify(err).slice(0, 2000)
+              }
+            ]
+          })
+          .catch(() => null);
+        this.logger.error(err);
+      });
     if (!message) return;
     if (access_condition === 'reaction') {
       const reaction = await message
