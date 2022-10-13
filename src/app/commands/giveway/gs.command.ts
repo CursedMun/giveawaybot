@@ -53,11 +53,12 @@ export class GiveawayStartCommand implements DiscordCommand {
   async handler(interaction: CommandInteraction) {
     try {
       if (!interaction.guild) return;
-      const guild = interaction.guild;
       const channel = interaction.channel as TextChannel;
-      const clientMember = guild.members.cache.get(this.client.user?.id ?? '');
-      if (!clientMember) return;
-      if (channel.permissionsFor(clientMember)?.has('SendMessages') === false) {
+      if (
+        channel
+          .permissionsFor(this.client.user?.id ?? '')
+          ?.has('SendMessages') === false
+      ) {
         return {
           embeds: [
             {
@@ -69,7 +70,7 @@ export class GiveawayStartCommand implements DiscordCommand {
                   value: locale.en.errors.noPerms.value({
                     perm:
                       channel
-                        .permissionsFor(clientMember)
+                        .permissionsFor(this.client.user?.id ?? '')
                         ?.has('SendMessages') === false
                         ? locale.en.errors.noSendMessagePerm()
                         : locale.en.admin()

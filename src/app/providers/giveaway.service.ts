@@ -338,6 +338,7 @@ export class GiveawayService {
       winnerCount: winnersCount,
       createdTick: Date.now()
     };
+    console.log(channel.permissionsFor(this.client.user?.id ?? ''));
     const message = await channel
       .send({
         embeds: [
@@ -403,6 +404,7 @@ export class GiveawayService {
           })
           .catch(() => null);
         this.logger.error(err);
+        console.log(err);
       });
     if (!message) return;
     if (access_condition === 'reaction') {
