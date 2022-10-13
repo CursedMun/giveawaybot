@@ -319,6 +319,7 @@ export class GiveawayStartCommand implements DiscordCommand {
         winnersCount,
         creatorID: modal.user.id,
         channel: giveawayChannel,
+        message,
         ...optionsJson[conditionResponse.values[0]]
       });
     } catch (err) {
