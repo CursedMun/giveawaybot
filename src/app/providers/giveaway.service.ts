@@ -338,7 +338,7 @@ export class GiveawayService {
       winnerCount: winnersCount,
       createdTick: Date.now()
     };
-    console.log(channel.permissionsFor(this.client.user?.id ?? ''));
+    console.log(channel.permissionsFor(channel.client.user || '')?.toArray());
     const message = await channel
       .send({
         embeds: [

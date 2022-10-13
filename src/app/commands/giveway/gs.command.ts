@@ -325,7 +325,7 @@ export class GiveawayStartCommand implements DiscordCommand {
       this.logger.error(err);
     } finally {
       message?.delete().catch(() => {
-        this.logger.error('Не удалось удалить сообщение');
+        this.logger.error("Couldn't delete message");
       });
     }
   }
