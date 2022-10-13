@@ -1,4 +1,9 @@
-import { Command, DiscordCommand, On } from '@discord-nestjs/core';
+import {
+  Command,
+  DiscordCommand,
+  InjectDiscordClient,
+  On
+} from '@discord-nestjs/core';
 import {
   GiveawayAccessСondition,
   GiveawayCondition
@@ -10,6 +15,7 @@ import { IsModalInteractionGuard } from '@utils/guards/is-modal-interaction.guar
 import { msConvert } from '@utils/utils';
 import {
   CacheType,
+  Client,
   CommandInteraction,
   ComponentType,
   Message,
@@ -38,11 +44,20 @@ export class GiveawayStartCommand implements DiscordCommand {
   private readonly timeModalID = 'time';
   private readonly winnerscountModalID = 'winnerscount';
   private readonly channelModalID = 'channel';
-  constructor(private readonly giveawayService: GiveawayService) {}
+  constructor(
+    @InjectDiscordClient()
+    private readonly client: Client,
+    private readonly giveawayService: GiveawayService
+  ) {}
 
   async handler(interaction: CommandInteraction) {
     try {
-      if (!interaction.memberPermissions?.has('Administrator')) {
+      if (!interaction.guild) return;
+      const guild = interaction.guild;
+      const channel = interaction.channel as TextChannel;
+      const clientMember = guild.members.cache.get(this.client.user?.id ?? '');
+      if (!clientMember) return;
+      if (channel.permissionsFor(clientMember)?.has('SendMessages') === false) {
         return {
           embeds: [
             {
@@ -52,7 +67,12 @@ export class GiveawayStartCommand implements DiscordCommand {
                 {
                   name: locale.en.errors.noPerms.field(),
                   value: locale.en.errors.noPerms.value({
-                    perm: locale.en.admin()
+                    perm:
+                      channel
+                        .permissionsFor(clientMember)
+                        ?.has('SendMessages') === false
+                        ? locale.en.errors.noSendMessagePerm()
+                        : locale.en.admin()
                   })
                 }
               ]
