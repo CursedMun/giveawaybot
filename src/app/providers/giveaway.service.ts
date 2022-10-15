@@ -349,6 +349,10 @@ export class GiveawayService {
               doc.accessCondition == 'reaction'
                 ? `на реакцию \"${config.emojis.giveaway}\"`
                 : 'на кнопку "**Участвовать**"'
+            } ${
+              doc.condition == 'voice'
+                ? '\n> и присоединиться к голосовому каналу'
+                : ''
             }`,
             fields: [
               {
