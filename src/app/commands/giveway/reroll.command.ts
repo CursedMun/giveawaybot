@@ -93,7 +93,6 @@ export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
       { ID: giveaway.ID },
       { winners: winners }
     );
-    pluralNoun(2, 'победитель', 'победителя', 'победителей');
     await interaction.followUp({
       embeds: [
         {

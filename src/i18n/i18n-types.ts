@@ -2,6 +2,8 @@
 /* eslint-disable */
 import type { BaseTranslation as BaseTranslationType, LocalizedString, RequiredParams } from 'typesafe-i18n'
 
+import type { [{name } from './custom-types'
+
 export type BaseTranslation = BaseTranslationType
 export type BaseLocale = 'en'
 
@@ -235,18 +237,11 @@ type RootTranslation = {
 		}
 	}
 	help: {
-		giveaway: {
-			/**
-			 * Р​о​з​ы​г​р​ы​ш
-			 */
-			title: string
-		}
-		others: {
-			/**
-			 * Д​р​у​г​о​е
-			 */
-			title: string
-		}
+		/**
+		 * {​f​i​e​l​d​s​}
+		 * @param {[{name} fields
+		 */
+		commands: RequiredParams<'fields'>
 	}
 	/**
 	 * А​д​м​и​н​и​с​т​р​а​т​о​р
@@ -474,18 +469,10 @@ export type TranslationFunctions = {
 		}
 	}
 	help: {
-		giveaway: {
-			/**
-			 * Розыгрыш
-			 */
-			title: () => LocalizedString
-		}
-		others: {
-			/**
-			 * Другое
-			 */
-			title: () => LocalizedString
-		}
+		/**
+		 * {fields}
+		 */
+		commands: (arg: { fields: [{name }) => LocalizedString
 	}
 	/**
 	 * Администратор
