@@ -121,28 +121,11 @@ export class HelpCmd implements DiscordCommand {
   ): Promise<APIEmbed | JSONEncodable<APIEmbed> | undefined> {
     switch (action) {
       case 'commands': {
-        const background = '<:background:980765434414522398>';
-        const otherCommands = {
-          help: 'это сообщение.',
-          info: 'показать, информацию о боте.',
-          invite: 'показать, ссылку для приглашения бота.',
-          fb: ' оставить своё предложение.'
-        };
-        const mainCommands = {
-          gs: 'Запустить розыгрыш',
-          notify: `Включить \\ Выключить уведомления о розыгрыше в \n${background}${background}личных сообщениях`,
-          end: {
-            opt: 'messageID',
-            desc: `Завершает (выбирает победителя) указанную или \n${background}${background}последний розыгрыш в текущем канале.`
-          },
-          reroll: {
-            opt: 'messageID',
-            desc: `Переигрывает указанный или последний розыгрыш в \n${background}${background}текущем канале.`
-          }
-        };
-
         return {
           color: config.meta.defaultColor,
+          description: locale.en.help.commands.embed.description({
+            botID: this.client.user?.id ?? ''
+          }),
           image: {
             url: 'https://cdn.discordapp.com/attachments/980765606364205056/980765983155318805/222.png'
           },
@@ -151,11 +134,17 @@ export class HelpCmd implements DiscordCommand {
               name: locale.en.help.others.title(),
               value:
                 this.client.application?.commands.cache
-                  .filter((x) => otherCommands[x.name])
+                  .filter((x) =>
+                    Object.keys(
+                      locale.en.help.commands.descriptions.others
+                    ).some((k) => k === x.name)
+                  )
                   .map((x) => {
-                    return `</${x.name}:${x.applicationId}> - ${
-                      otherCommands[x.name]
-                    }`;
+                    console.log(x.name);
+
+                    return locale.en.help.commands.descriptions.others[x.name]({
+                      commandID: `${x.name}:${x.applicationId}`
+                    });
                   })
                   .join('\n') ?? '',
               inline: false
@@ -164,14 +153,19 @@ export class HelpCmd implements DiscordCommand {
               name: locale.en.help.giveaway.title(),
               value:
                 this.client.application?.commands.cache
-                  .filter((x) => mainCommands[x.name])
+                  .filter((x) =>
+                    Object.keys(
+                      locale.en.help.commands.descriptions.giveaway
+                    ).some((k) => k === x.name)
+                  )
                   .map((x) => {
-                    const command = mainCommands[x.name];
-                    return `</${x.name}:${x.applicationId}> ${
-                      typeof command === 'object' ? `+ \`${command.opt}\`` : ''
-                    }\n${background}┗ ${
-                      typeof command === 'object' ? command.desc : command
-                    }`;
+                    console.log(x.name);
+                    return (
+                      '<:background:980765434414522398>' +
+                      locale.en.help.commands.descriptions.giveaway[x.name]({
+                        commandID: `${x.name}:${x.applicationId}`
+                      })
+                    );
                   })
                   .join('\n\n') ?? '',
               inline: false

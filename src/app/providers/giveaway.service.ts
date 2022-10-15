@@ -338,7 +338,6 @@ export class GiveawayService {
       winnerCount: winnersCount,
       createdTick: Date.now()
     };
-
     const message = await channel
       .send({
         embeds: [
@@ -408,7 +407,6 @@ export class GiveawayService {
           })
           .catch(() => null);
         this.logger.error(err);
-        console.log(err);
       });
     if (!message) return;
     if (access_condition === 'reaction') {
@@ -532,9 +530,14 @@ export class GiveawayService {
   }
   async getServerGiveawayObjects(
     guildID: string,
+    force?: boolean,
     ended?: boolean
   ): Promise<Giveaway[]> {
-    const giveaways = await this.giveawayService.find({ guildID, ended });
+    const giveaways = await this.giveawayService.find({
+      guildID,
+      ended,
+      force
+    });
     return giveaways;
   }
   //Giveaway handler

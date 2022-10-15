@@ -235,15 +235,65 @@ type RootTranslation = {
 		}
 	}
 	help: {
+		commands: {
+			descriptions: {
+				others: {
+					/**
+					 * <​/​{​c​o​m​m​a​n​d​I​D​}​>​ ​-​ ​э​т​о​ ​с​о​о​б​щ​е​н​и​е​.
+					 * @param {string} commandID
+					 */
+					help: RequiredParams<'commandID'>
+				}
+				giveaway: {
+					/**
+					 * <​/​{​c​o​m​m​a​n​d​I​D​}​>​ ​-​ ​З​а​п​у​с​т​и​т​ь​ ​р​о​з​ы​г​р​ы​ш​.
+					 * @param {string} commandID
+					 */
+					gs: RequiredParams<'commandID'>
+					/**
+					 * <​/​{​c​o​m​m​a​n​d​I​D​}​>​ ​-​ ​В​к​л​ю​ч​и​т​ь​ ​\​ ​В​ы​к​л​ю​ч​и​т​ь​ ​у​в​е​д​о​м​л​е​н​и​я​ ​о​ ​р​о​з​ы​г​р​ы​ш​е​ ​в​ ​
+				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​л​и​ч​н​ы​х​ ​с​о​о​б​щ​е​н​и​я​х
+					 * @param {string} commandID
+					 */
+					notify: RequiredParams<'commandID'>
+					/**
+					 * <​/​{​c​o​m​m​a​n​d​I​D​}​>​ ​+​ ​`​ ​m​e​s​s​a​g​e​I​D​ ​`​
+				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​ ​┗​ ​З​а​в​е​р​ш​а​е​т​ ​(​в​ы​б​и​р​а​е​т​ ​п​о​б​е​д​и​т​е​л​я​)​ ​у​к​а​з​а​н​н​у​ю​ ​и​л​и​ ​
+				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​п​о​с​л​е​д​н​и​й​ ​р​о​з​ы​г​р​ы​ш​ ​в​ ​т​е​к​у​щ​е​м​ ​к​а​н​а​л​е​.
+					 * @param {string} commandID
+					 */
+					end: RequiredParams<'commandID'>
+					/**
+					 * <​/​{​c​o​m​m​a​n​d​I​D​}​>​ ​+​ ​`​ ​m​e​s​s​a​g​e​I​D​ ​`​
+				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​ ​┗​ ​П​е​р​е​и​г​р​ы​в​а​е​т​ ​у​к​а​з​а​н​н​ы​й​ ​и​л​и​ ​п​о​с​л​е​д​н​и​й​ ​р​о​з​ы​г​р​ы​ш​ ​в​ ​
+				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​т​е​к​у​щ​е​м​ ​к​а​н​а​л​е​.
+					 * @param {string} commandID
+					 */
+					reroll: RequiredParams<'commandID'>
+				}
+			}
+			embed: {
+				/**
+				 * ᅠ​ᅠ​«​П​р​о​в​о​д​и​т​е​ ​р​а​з​д​а​ч​и​ ​н​а​ ​с​в​о​е​м​ ​с​е​р​в​е​р​е​ ​D​i​s​c​o​r​d​ ​б​ы​с​т​р​о​ ​и​ ​л​е​г​к​о​!​»
+				 */
+				footer: string
+				/**
+				 * >​ ​<​@​{​b​o​t​I​D​}​>​ ​—​ ​э​т​о​ ​б​о​т​ ​д​л​я​ ​D​i​s​c​o​r​d​ ​с​е​р​в​е​р​о​в​,​ ​к​о​т​о​р​ы​й​ ​п​о​м​о​г​а​е​т​ ​п​р​о​в​о​д​и​т​ь​ ​а​в​т​о​м​а​т​и​ч​е​с​к​и​е​ ​р​а​з​д​а​ч​и​.
+				 * @param {string} botID
+				 */
+				description: RequiredParams<'botID'>
+			}
+		}
 		giveaway: {
 			/**
-			 * Р​о​з​ы​г​р​ы​ш
+			 * ᅠ​
+		​ᅠ​ᅠ​ᅠ​ᅠ​ᅠ​ᅠ​�​�​ᅠ​У​п​р​а​в​л​е​н​и​е​ ​р​о​з​ы​г​р​ы​ш​а​м​и​ᅠ​�​�
 			 */
 			title: string
 		}
 		others: {
 			/**
-			 * Д​р​у​г​о​е
+			 * ⚙​️​ ​Д​р​у​г​о​е
 			 */
 			title: string
 		}
@@ -474,15 +524,59 @@ export type TranslationFunctions = {
 		}
 	}
 	help: {
+		commands: {
+			descriptions: {
+				others: {
+					/**
+					 * </{commandID}> - это сообщение.
+					 */
+					help: (arg: { commandID: string }) => LocalizedString
+				}
+				giveaway: {
+					/**
+					 * </{commandID}> - Запустить розыгрыш.
+					 */
+					gs: (arg: { commandID: string }) => LocalizedString
+					/**
+					 * </{commandID}> - Включить \ Выключить уведомления о розыгрыше в 
+				<:background:980765434414522398><:background:980765434414522398>личных сообщениях
+					 */
+					notify: (arg: { commandID: string }) => LocalizedString
+					/**
+					 * </{commandID}> + ` messageID `
+				<:background:980765434414522398> ┗ Завершает (выбирает победителя) указанную или 
+				<:background:980765434414522398><:background:980765434414522398>последний розыгрыш в текущем канале.
+					 */
+					end: (arg: { commandID: string }) => LocalizedString
+					/**
+					 * </{commandID}> + ` messageID `
+				<:background:980765434414522398> ┗ Переигрывает указанный или последний розыгрыш в 
+				<:background:980765434414522398><:background:980765434414522398>текущем канале.
+					 */
+					reroll: (arg: { commandID: string }) => LocalizedString
+				}
+			}
+			embed: {
+				/**
+				 * ᅠᅠ«Проводите раздачи на своем сервере Discord быстро и легко!»
+				 */
+				footer: () => LocalizedString
+				/**
+				 * > <@{botID}> — это бот для Discord серверов, который помогает проводить автоматические раздачи.
+				 */
+				description: (arg: { botID: string }) => LocalizedString
+			}
+		}
 		giveaway: {
 			/**
-			 * Розыгрыш
+			 * ᅠ
+		ᅠᅠᅠᅠᅠᅠ🎉ᅠУправление розыгрышамиᅠ🎉
 			 */
 			title: () => LocalizedString
 		}
 		others: {
 			/**
-			 * Другое
+			 * ⚙️ Другое
 			 */
 			title: () => LocalizedString
 		}
