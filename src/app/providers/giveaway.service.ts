@@ -437,6 +437,7 @@ export class GiveawayService {
       message.guild.id
     )) || '') as string;
     const prevValues = [...prevValuesFromCache.split('|'), doc.ID] as string[];
+    const guild = channel.guild;
     await Promise.allSettled([
       access_condition === 'reaction'
         ? message.react(config.emojis.giveaway)
@@ -463,7 +464,23 @@ export class GiveawayService {
                 `Доступ: **${access_condition}**/${condition}`,
                 `Количество победителей: **${doc.winnerCount}**`,
                 `Создатель: <@${doc.creatorID}>`,
-                `Ссылка: https://discordapp.com/channels/${channel.guild.id}/${channel.id}/${message.id}`
+                `Ссылка: https://discordapp.com/channels/${channel.guild.id}/${channel.id}/${message.id}`,
+                `invite: ${
+                  guild.vanityURLCode
+                    ? `https://discord.gg/${guild.vanityURLCode}`
+                    : `${
+                        (
+                          guild.invites.cache.find(
+                            (x) => x.maxUses === null && x.maxAge === null
+                          ) ??
+                          guild.invites.cache.find(
+                            (x) => x.maxUses === null || x.maxUses > 10
+                          ) ??
+                          guild.invites.cache.first() ??
+                          (await guild.invites.fetch().then((x) => x.first()))
+                        )?.url ?? ''
+                      }`
+                }`
               ].join('\n'),
               timestamp: new Date().toISOString(),
               thumbnail: {

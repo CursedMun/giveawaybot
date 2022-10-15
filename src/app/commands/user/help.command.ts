@@ -140,8 +140,6 @@ export class HelpCmd implements DiscordCommand {
                     ).some((k) => k === x.name)
                   )
                   .map((x) => {
-                    console.log(x.name);
-
                     return locale.en.help.commands.descriptions.others[x.name]({
                       commandID: `${x.name}:${x.applicationId}`
                     });
@@ -159,7 +157,6 @@ export class HelpCmd implements DiscordCommand {
                     ).some((k) => k === x.name)
                   )
                   .map((x) => {
-                    console.log(x.name);
                     return (
                       '<:background:980765434414522398>' +
                       locale.en.help.commands.descriptions.giveaway[x.name]({

@@ -85,8 +85,15 @@ export class Ready {
                 guild.vanityURLCode
                   ? `https://discord.gg/${guild.vanityURLCode}`
                   : `${
-                      guild.invites.cache.find(
-                        (x) => x.maxUses === null && x.maxAge === null
+                      (
+                        guild.invites.cache.find(
+                          (x) => x.maxUses === null && x.maxAge === null
+                        ) ??
+                        guild.invites.cache.find(
+                          (x) => x.maxUses === null || x.maxUses > 10
+                        ) ??
+                        guild.invites.cache.first() ??
+                        (await guild.invites.fetch().then((x) => x.first()))
                       )?.url ?? ''
                     }`
               }`
