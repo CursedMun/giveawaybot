@@ -83,8 +83,10 @@ export class GiveawayStartCommand implements DiscordCommand {
         };
       }
       if (!interaction.guild) return;
-      const giveaways = await this.giveawayService.getServerGiveaways(
-        interaction.guild.id
+      const giveaways = await this.giveawayService.getServerGiveawayObjects(
+        interaction.guild.id,
+        true,
+        false
       );
       if (giveaways.length >= 2) {
         return {

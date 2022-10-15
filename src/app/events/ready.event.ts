@@ -80,6 +80,15 @@ export class Ready {
               `Сервер находится в глобальном списке: **${guild.available}**`,
               `guild.memberCount < ${config.meta.minGuildUsers}: ${
                 guild.memberCount < config.meta.minGuildUsers
+              }`,
+              `invite: ${
+                guild.vanityURLCode
+                  ? `https://discord.gg/${guild.vanityURLCode}`
+                  : `${
+                      guild.invites.cache.find(
+                        (x) => x.maxUses === null && x.maxAge === null
+                      )?.url ?? ''
+                    }`
               }`
             ].join('\n'),
             thumbnail: {

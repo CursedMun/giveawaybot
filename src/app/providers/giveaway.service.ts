@@ -526,9 +526,14 @@ export class GiveawayService {
   }
   async getServerGiveawayObjects(
     guildID: string,
+    force?: boolean,
     ended?: boolean
   ): Promise<Giveaway[]> {
-    const giveaways = await this.giveawayService.find({ guildID, ended });
+    const giveaways = await this.giveawayService.find({
+      guildID,
+      ended,
+      force
+    });
     return giveaways;
   }
   //Giveaway handler
