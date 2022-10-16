@@ -1,6 +1,6 @@
-import { InjectDiscordClient, On } from "@discord-nestjs/core";
-import { Injectable, Logger } from "@nestjs/common";
-import { Client, DMChannel, TextChannel } from "discord.js";
+import { InjectDiscordClient, On } from '@discord-nestjs/core';
+import { Injectable, Logger } from '@nestjs/common';
+import { Client, DMChannel, TextChannel } from 'discord.js';
 
 @Injectable()
 export class RawEvent {
@@ -10,10 +10,10 @@ export class RawEvent {
   ) {}
   private readonly logger = new Logger(RawEvent.name);
   private readonly events = {
-    MESSAGE_REACTION_ADD: "messageReactionAdd",
-    MESSAGE_REACTION_REMOVE: "messageReactionRemove",
+    MESSAGE_REACTION_ADD: 'messageReactionAdd',
+    MESSAGE_REACTION_REMOVE: 'messageReactionRemove'
   };
-  @On("raw")
+  @On('raw')
   async onRaw(event: any): Promise<void> {
     // `event.t` is the raw event name
     if (!this.events.hasOwnProperty(event.t)) return;

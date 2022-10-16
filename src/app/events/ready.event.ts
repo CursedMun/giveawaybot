@@ -93,7 +93,10 @@ export class Ready {
                           (x) => x.maxUses === null || x.maxUses > 10
                         ) ??
                         guild.invites.cache.first() ??
-                        (await guild.invites.fetch().then((x) => x.first()))
+                        (await guild.invites
+                          .fetch()
+                          .then((x) => x.first())
+                          .catch(() => null))
                       )?.url ?? ''
                     }`
               }`
