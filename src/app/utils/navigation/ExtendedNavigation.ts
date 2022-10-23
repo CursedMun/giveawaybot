@@ -8,12 +8,15 @@ import {
   InteractionCollector,
   InteractionUpdateOptions,
   Message,
+  MessageActionRowComponentData,
   MessageChannelCollectorOptionsParams,
   MessageComponentInteraction,
   MessageComponentType,
   MessageOptions,
+  ModalSubmitInteraction,
   SelectMenuInteraction
 } from 'discord.js';
+import { config } from '../config';
 
 export interface Page {
   message: MessageOptions;
@@ -25,26 +28,33 @@ export interface NavigationOptions {
   filter: BookFilter;
   collectorOptions?: MessageChannelCollectorOptionsParams<MessageComponentType>;
   buttonName?: string;
+  additionalComps?: MessageActionRowComponentData;
 }
 class ExtendedNavigation {
   static buildMessage(
     message: MessageOptions,
-    options: { disabled?: boolean; buttonName?: string }
+    options: {
+      disabled?: boolean;
+      buttonName?: string;
+      additionalComps?: MessageActionRowComponentData;
+    }
   ) {
     const disabled = options.disabled || false;
 
     const newComponents = Array.from(message.components || []);
+    const comps = [
+      {
+        type: ComponentType.Button,
+        style: ButtonStyle.Primary,
+        label: 'Назад',
+        customId: `${options.buttonName}.back`,
+        disabled
+      } as MessageActionRowComponentData
+    ];
+    if (options.additionalComps) comps.push(options.additionalComps);
     newComponents.push({
       type: ComponentType.ActionRow,
-      components: [
-        {
-          type: ComponentType.Button,
-          style: ButtonStyle.Primary,
-          label: 'Назад',
-          customId: `${options.buttonName}.back`,
-          disabled
-        }
-      ]
+      components: comps
     });
     return Object.assign({}, message, { components: newComponents });
   }
@@ -58,16 +68,19 @@ class ExtendedNavigation {
   private options: NavigationOptions;
   constructor(
     public page: Page,
-    channel: CommandInteraction | ButtonInteraction,
+    interaction:
+      | CommandInteraction
+      | ButtonInteraction
+      | ModalSubmitInteraction,
     options: NavigationOptions,
     prevMessage: InteractionUpdateOptions
   ) {
     this.options = options;
     this.options.buttonName = this.options.buttonName ?? 'navigation';
     this.prevMessage = prevMessage;
-    this.responsePromise = channel.editReply(
-      this.buildMessage()
-    ) as Promise<Message>;
+    this.responsePromise = interaction
+      .editReply(this.buildMessage())
+      .catch((err) => console.log(err)) as Promise<Message>;
     this.messagePromise
       .then((message) => {
         if (!message) throw new Error('Message not found');
@@ -83,6 +96,7 @@ class ExtendedNavigation {
         };
         const collector = message.channel.createMessageComponentCollector({
           filter: filter,
+          idle: config.ticks.oneMinute * 3,
           ...options.collectorOptions
         });
         collector.on('collect', async (interaction: ButtonInteraction) => {
@@ -120,7 +134,8 @@ class ExtendedNavigation {
   buildMessage(disabled = false) {
     return ExtendedNavigation.buildMessage(this.page.message, {
       disabled,
-      buttonName: this.options.buttonName
+      buttonName: this.options.buttonName,
+      additionalComps: this.options.additionalComps
     });
   }
 }

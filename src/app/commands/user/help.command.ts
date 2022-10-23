@@ -42,7 +42,15 @@ export class HelpCmd implements DiscordCommand {
       .editReply({
         embeds: [
           config.embeds.defaultHelpEmbed,
-          (await this.getEmbed('commands')) ?? {}
+          {
+            ...(await this.getEmbed('commands')),
+            footer: {
+              text: locale.en.help.commands.embed.footer()
+            },
+            image: {
+              url: 'https://cdn.discordapp.com/attachments/980765606364205056/1027880626466070578/give_bot_ru.png'
+            }
+          } ?? {}
         ],
         components: config.embeds.helpEmbed(command.user.id).components
       })
@@ -71,7 +79,6 @@ export class HelpCmd implements DiscordCommand {
     if (currentlySelected?.customId?.split('.')[1] === action) return;
     if (actions.includes(action)) {
       try {
-        // await button.deferUpdate().catch((err) => this.logger.error('two'));
         const embed = await this.getEmbed(action, button.guild?.id);
         if (!embed) return;
         const newComponents = button.message.components[0].components.map(
@@ -98,22 +105,31 @@ export class HelpCmd implements DiscordCommand {
         );
         await button
           .update({
-            embeds: [config.embeds.defaultHelpEmbed, embed],
+            embeds: [
+              config.embeds.defaultHelpEmbed,
+              {
+                ...embed,
+                footer: {
+                  text: locale.en.help.commands.embed.footer()
+                },
+                image: {
+                  url: 'https://cdn.discordapp.com/attachments/980765606364205056/1027880626466070578/give_bot_ru.png'
+                }
+              }
+            ],
             components: [
               {
                 type: ComponentType.ActionRow,
                 components: newComponents as any
-              }
+              },
+              button.message.components[1]
             ]
           })
           .catch((err) => this.logger.error(err));
       } catch (e) {
-        console.error('five');
+        this.logger.error(e);
       }
     }
-    // const action = button.customId;
-    // const availableActions =
-    //   (config.embeds.helpEmbed as any).components[0].components.map((x) => x.customId);
   }
   async getEmbed(
     action: string,
@@ -127,7 +143,7 @@ export class HelpCmd implements DiscordCommand {
             botID: this.client.user?.id ?? ''
           }),
           image: {
-            url: 'https://cdn.discordapp.com/attachments/980765606364205056/980765983155318805/222.png'
+            url: 'https://cdn.discordapp.com/attachments/980765606364205056/1027880626466070578/give_bot_ru.png'
           },
           fields: [
             {
@@ -171,40 +187,46 @@ export class HelpCmd implements DiscordCommand {
         };
       }
       case 'information': {
+        const devID = '423946555872116758';
         const developerTag =
-          this.client.users.cache.get('423946555872116758')?.tag ??
-          (await this.client.users
-            .fetch('423946555872116758')
-            .then((x) => x.tag));
+          this.client.users.cache.get(devID)?.tag ??
+          (await this.client.users.fetch(devID).then((x) => x.tag));
         const info = {
-          'Название:': `${this.client.user?.tag}`,
-          'Сервера:': `${this.client.guilds.cache.size}`,
-          'Пользователи:': `${this.client.guilds.cache.reduce(
+          [locale.en.help.information.embed.fields.name()]: `${this.client.user?.tag}`,
+          [locale.en.help.information.embed.fields.servers()]: `${this.client.guilds.cache.size}`,
+          [locale.en.help.information.embed.fields.users()]: `${this.client.guilds.cache.reduce(
             (a, b) => a + b?.memberCount,
             0
           )}`,
-          'Node.js:': `${process.version}`,
-          'Платформа:': `${process.platform} ${process.arch}`,
-          'Память:': `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(
-            2
-          )} MB / ${(process.memoryUsage().heapTotal / 1024 / 1024).toFixed(
-            2
-          )} MB`,
-          'Онлайн:': `${parseFilteredTimeArray(process.uptime() * 1000).join(
-            ':'
-          )}`
+          'Node.js': `${process.version}`,
+          [locale.en.help.information.embed.fields.platform()]: `${process.platform} ${process.arch}`,
+          [locale.en.help.information.embed.fields.memory()]: `**${(
+            process.memoryUsage().heapUsed /
+            1024 /
+            1024
+          ).toFixed(2)}** MB / **${(
+            process.memoryUsage().heapTotal /
+            1024 /
+            1024
+          ).toFixed(2)}** MB`,
+          [locale.en.help.information.embed.fields.active()]: `${parseFilteredTimeArray(
+            process.uptime() * 1000,
+            { bold: true }
+          ).join('. ')}`
         };
         return {
           color: config.meta.defaultColor,
-          title: 'Информация',
-          description: [
-            '\n\nРазработчик <@423946555872116758>',
-            '[`423946555872116758`]',
-            developerTag ?? ''
-          ].join('\n'),
+          title: locale.en.help.information.embed.title(),
+          description: locale.en.help.information.embed.description({
+            devID,
+            devTag: developerTag ?? ''
+          }),
+          footer: {
+            text: locale.en.help.information.embed.footer()
+          },
           fields: Object.entries(info).map(([key, value]) => {
             return {
-              name: key,
+              name: key + ':',
               value: value,
               inline: true
             };
@@ -219,24 +241,28 @@ export class HelpCmd implements DiscordCommand {
         );
         return {
           color: config.meta.defaultColor,
-          title: `Активные розыгрыши`,
-          description: `Количество розыгрешей: ${documents.length}\n\n`,
+          title: locale.en.help.giveaways.title(),
+          description: locale.en.help.giveaways.description({
+            count: documents.length
+          }),
           fields: !documents.length
             ? [
                 {
-                  name: 'Пусто',
-                  value:
-                    'Активных розгрышей нет начните новой с помощью команды /gs'
+                  name: locale.en.help.giveaways.fields.noGiveaways.name(),
+                  value: locale.en.help.giveaways.fields.noGiveaways.value()
                 }
               ]
             : documents.map((document) => {
                 return {
-                  name: `Приз ${document.prize}`,
-                  value: [
-                    `Количество участников: ${document.participants.length}`,
-                    `Организатор: <@${document.creatorID}>`,
-                    `Окончание: <t:${Math.round(document.endDate / 1000)}:R>`
-                  ].join('\n'),
+                  name: locale.en.help.giveaways.fields.activeGiveaways.name({
+                    prize: document.prize
+                  }),
+                  value: locale.en.help.giveaways.fields.activeGiveaways.value({
+                    accessCondition: document.accessCondition,
+                    count: document.participants.length,
+                    creatorID: document.creatorID,
+                    ending: Math.round(document.endDate / 1000)
+                  }),
                   inline: false
                 };
               })

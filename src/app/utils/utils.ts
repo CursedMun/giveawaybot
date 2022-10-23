@@ -274,10 +274,12 @@ export function parseFilteredTimeArray(
   time: number,
   {
     nouns = config.meta.timeSpelling,
-    limit = 'd'
+    limit = 'd',
+    bold = false
   }: {
     nouns?: { [key in keyof ParsedTime]: string | string[] };
     limit?: keyof ParsedTime;
+    bold?: boolean;
   } = {}
 ) {
   const parsed = parseTime(time, limit);
@@ -289,9 +291,9 @@ export function parseFilteredTimeArray(
 
   return filteredEntries.map(([k, v]) => {
     const noun = nouns[k as keyof ParsedTime];
-    return `${(v || 0).toLocaleString('ru-RU')}${
-      Array.isArray(noun) ? pluralNoun(v || 0, ...noun) : noun
-    }`;
+    return `${bold ? '**' : ''}${(v || 0).toLocaleString('ru-RU')}${
+      bold ? '**' : ''
+    }${Array.isArray(noun) ? pluralNoun(v || 0, ...noun) : noun}`;
   });
 }
 

@@ -20,7 +20,7 @@ class EndDto {
       ru: 'ID сообщения для завершения розыгрыша'
     },
     description: 'The message ID to end the giveaway',
-    required: true
+    required: false
   })
   messageID: string;
 }

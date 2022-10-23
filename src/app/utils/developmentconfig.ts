@@ -28,37 +28,13 @@ const emojis = {
   giveaway: '🎉',
   confirmEmojis: ['Подтвердить', 'Отменить']
 };
+const roles = {
+  premium: {
+    golden: '1032432761878880297',
+    silver: '1032432725094846515'
+  }
+};
 const embeds = {
-  confirmEmbed: {
-    ephemeral: true,
-    embeds: [
-      {
-        color: meta.defaultColor,
-        author: {
-          name: 'Подтвердите действие'
-        }
-      }
-    ],
-    components: [
-      {
-        type: ComponentType.ActionRow,
-        components: [
-          {
-            label: 'Подтвердить',
-            customId: 'confirm',
-            type: ComponentType.Button,
-            style: ButtonStyle.Success
-          },
-          {
-            label: 'Отменить',
-            customId: 'reject',
-            type: ComponentType.Button,
-            style: ButtonStyle.Danger
-          }
-        ]
-      }
-    ]
-  } as InteractionUpdateOptions,
   helpEmbed: (userID: string) =>
     ({
       components: [
@@ -82,12 +58,17 @@ const embeds = {
               customId: `help.giveaways.${userID}`,
               type: ComponentType.Button,
               style: ButtonStyle.Secondary
-            },
+            }
+          ]
+        },
+        {
+          type: ComponentType.ActionRow,
+          components: [
             {
               label: 'Оставить отзыв',
               customId: `help.feedback.${userID}`,
               type: ComponentType.Button,
-              style: ButtonStyle.Secondary,
+              style: ButtonStyle.Danger,
               disabled: true
             },
             {
@@ -103,11 +84,10 @@ const embeds = {
   defaultHelpEmbed: {
     color: meta.defaultColor,
     image: {
-      url: 'https://cdn.discordapp.com/attachments/980765606364205056/980765731966832640/3.png'
+      url: 'https://cdn.discordapp.com/attachments/980765606364205056/1027937842455924767/give_bot_ru_.png'
     }
   }
 };
-
 const ticks = {
   tenSeconds: 10 * 1000, //10 seconds in milliseconds
   oneMinute: 6e4, // 1 minute in milliseconds
@@ -118,9 +98,10 @@ const ticks = {
 
 export const developmentconfig = {
   meta,
-  embeds,
+  roles,
   ticks,
   emojis,
+  embeds,
   ids: {
     devs: ['423946555872116758', '597601244365848585'],
     devGuild: '905552166348009503',
