@@ -21,6 +21,7 @@ export class User {
   settings: UserSettings;
   @Prop({ default: 'default', type: String })
   tier: Tier;
+  tierTick: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

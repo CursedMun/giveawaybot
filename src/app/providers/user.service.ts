@@ -76,7 +76,13 @@ export class UserService {
       ];
       for (const user of IDs) {
         const member = members.get(user);
-        if (!member) return;
+        if (!member) {
+          // await this.userService.UserModel.updateOne(
+          //   { ID: member.id },
+          //   { tier: role?.name ?? '' }
+          // );
+          return;
+        }
         const role =
           member.roles.cache.get(config.roles.premium.golden) ??
           member.roles.cache.get(config.roles.premium.silver) ??
