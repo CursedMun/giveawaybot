@@ -21,7 +21,6 @@ import { TInteractionCreateActionString } from '@src/types/gs';
 import { config } from '@utils/config';
 import { IsButtonInteractionGuard } from '@utils/guards/is-button-interaction.guard';
 import { IsModalInteractionGuard } from '@utils/guards/is-modal-interaction.guard';
-import { IsSelectMenuInteractionGuard } from '@utils/guards/is-selectMenu-interaction.guard';
 import ExtendedNavigation from '@utils/navigation/ExtendedNavigation';
 import { msConvert } from '@utils/utils';
 import {
@@ -482,7 +481,6 @@ export class GiveawayStartCommand implements DiscordCommand {
   }
   //Select menu
   @On('interactionCreate')
-  @UseGuards(IsSelectMenuInteractionGuard)
   async onSelectMenu(interaction: SelectMenuInteraction) {
     if (!interaction.guild || !interaction.isSelectMenu()) return;
     if (!interaction.customId.startsWith('select.')) return;
