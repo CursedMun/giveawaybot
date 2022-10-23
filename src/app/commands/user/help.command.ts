@@ -48,7 +48,7 @@ export class HelpCmd implements DiscordCommand {
               text: locale.en.help.commands.embed.footer()
             },
             image: {
-              url: 'https://cdn.discordapp.com/attachments/980765606364205056/1027880626466070578/give_bot_ru.png'
+              url: 'https://cdn.discordapp.com/attachments/980765606364205056/980765983155318805/222.png'
             }
           } ?? {}
         ],
@@ -113,7 +113,7 @@ export class HelpCmd implements DiscordCommand {
                   text: locale.en.help.commands.embed.footer()
                 },
                 image: {
-                  url: 'https://cdn.discordapp.com/attachments/980765606364205056/1027880626466070578/give_bot_ru.png'
+                  url: 'https://cdn.discordapp.com/attachments/980765606364205056/980765983155318805/222.png'
                 }
               }
             ],
@@ -142,9 +142,6 @@ export class HelpCmd implements DiscordCommand {
           description: locale.en.help.commands.embed.description({
             botID: this.client.user?.id ?? ''
           }),
-          image: {
-            url: 'https://cdn.discordapp.com/attachments/980765606364205056/1027880626466070578/give_bot_ru.png'
-          },
           fields: [
             {
               name: locale.en.help.others.title(),
@@ -245,6 +242,7 @@ export class HelpCmd implements DiscordCommand {
           description: locale.en.help.giveaways.description({
             count: documents.length
           }),
+
           fields: !documents.length
             ? [
                 {

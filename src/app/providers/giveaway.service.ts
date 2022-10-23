@@ -86,7 +86,38 @@ export class GiveawayService {
       }
     }
   }
+  async checkNotEndedGiveaways(guildID: string) {
+    const docs = await this.giveawayService.find(
+      { guildID, ended: false },
+      true
+    );
+    const guild =
+      this.client.guilds.cache.get(guildID) ??
+      (await this.client.guilds.fetch(guildID));
+    if (!guild) {
+      await this.giveawayService.deleteMany({ guildID: guild });
+    }
 
+    for (const doc of docs) {
+      const channel =
+        (guild.channels.cache.get(doc.channelID) as TextChannel) ??
+        ((await guild.channels.fetch(doc.channelID)) as TextChannel);
+      if (!channel) {
+        docs.slice(docs.indexOf(doc), 1);
+        await this.giveawayService.deleteOne({ ID: doc.ID });
+        continue;
+      }
+      const message =
+        channel.messages.cache.get(doc.messageID) ??
+        (await channel.messages.fetch(doc.messageID));
+      if (!message) {
+        docs.slice(docs.indexOf(doc), 1);
+        await this.giveawayService.deleteOne({ ID: doc.ID });
+        continue;
+      }
+    }
+    return docs;
+  }
   //funcs
   async getWinners(guild: Guild, doc: Giveaway, winnerCount: number) {
     const fetchRandomApi = async (

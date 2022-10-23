@@ -79,7 +79,7 @@ const embeds = {
   defaultHelpEmbed: {
     color: meta.defaultColor,
     image: {
-      url: 'https://cdn.discordapp.com/attachments/980765606364205056/1027937842455924767/give_bot_ru_.png'
+      url: 'https://cdn.discordapp.com/attachments/980765606364205056/1027880626466070578/give_bot_ru.png'
     }
   }
 };
