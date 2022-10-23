@@ -36,58 +36,58 @@ export class UserService {
     });
     client.once('ready', async (client) => {
       this.logger.log('Second client ready');
-      // setInterval(async () => {
-      this.logger.log('Fetching premium users...');
-      const result = {
-        deleted: 0,
-        newUsers: 0
-      };
-      try {
-        const guild = client.guilds.cache.get(config.ids.devGuild);
-        if (!guild) return;
-        const members = await guild.members.fetch({}).catch(() => null);
-        if (!members) return;
-        const premiumUsers = members.filter((member) => {
-          return Object.values(config.roles.premium).some((x) =>
-            member.roles.cache
-              .sort((x) => {
-                return x.id === config.roles.premium.golden ? 1 : -1;
-              })
-              .find((role) => role.id === x)
-          );
-        });
-        const premUsers = await this.userService.findAll();
-        for (const user of premiumUsers) {
-          const role =
-            user[1].roles.cache.get(config.roles.premium.golden) ??
-            user[1].roles.cache.get(config.roles.premium.silver) ??
-            null;
-          if (
-            premUsers.find(
-              (x) => x.ID === user[1].id && x.tier == (role?.name ?? '')
-            )
-          )
-            continue;
-          const exist = await this.userService.has({ ID: user[1].id });
-          result[!role ? 'deleted' : 'newUsers']++;
-
-          if (exist) {
-            await this.userService.UserModel.updateOne(
-              { ID: user[1].id },
-              { tier: role?.name ?? '' }
+      setInterval(async () => {
+        this.logger.log('Fetching premium users...');
+        const result = {
+          deleted: 0,
+          newUsers: 0
+        };
+        try {
+          const guild = client.guilds.cache.get(config.ids.devGuild);
+          if (!guild) return;
+          const members = await guild.members.fetch({}).catch(() => null);
+          if (!members) return;
+          const premiumUsers = members.filter((member) => {
+            return Object.values(config.roles.premium).some((x) =>
+              member.roles.cache
+                .sort((x) => {
+                  return x.id === config.roles.premium.golden ? 1 : -1;
+                })
+                .find((role) => role.id === x)
             );
-          } else {
-            await this.userService.UserModel.create({
-              ID: user[1].id,
-              tier: role?.name
-            });
+          });
+          const premUsers = await this.userService.findAll();
+          for (const user of premiumUsers) {
+            const role =
+              user[1].roles.cache.get(config.roles.premium.golden) ??
+              user[1].roles.cache.get(config.roles.premium.silver) ??
+              null;
+            if (
+              premUsers.find(
+                (x) => x.ID === user[1].id && x.tier == (role?.name ?? '')
+              )
+            )
+              continue;
+            const exist = await this.userService.has({ ID: user[1].id });
+            result[!role ? 'deleted' : 'newUsers']++;
+
+            if (exist) {
+              await this.userService.UserModel.updateOne(
+                { ID: user[1].id },
+                { tier: role?.name ?? '' }
+              );
+            } else {
+              await this.userService.UserModel.create({
+                ID: user[1].id,
+                tier: role?.name
+              });
+            }
           }
+          this.logger.log(`New users ${result.newUsers}`);
+        } catch (err) {
+          this.logger.error(err);
         }
-        this.logger.log(`New users ${result.newUsers}`);
-      } catch (err) {
-        this.logger.error(err);
-      }
-      // }, config.ticks.oneMinute);
+      }, config.ticks.oneMinute * 10);
     });
     //TODO change path to env file
     await client.login(process.env.ALTTOKEN);
