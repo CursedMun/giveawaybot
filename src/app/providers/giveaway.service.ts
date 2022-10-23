@@ -338,7 +338,6 @@ export class GiveawayService {
             }
           ] as JsonComponents)
         : undefined;
-    console.log(doc);
     const message = await channel
       .send({
         embeds: [
