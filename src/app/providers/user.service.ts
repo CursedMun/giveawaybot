@@ -90,7 +90,7 @@ export class UserService {
       // }, config.ticks.oneMinute);
     });
     //TODO change path to env file
-    await client.login(process.env.TOKEN);
+    await client.login(process.env.ALTTOKEN);
   }
   async verifyPremium(ownerID: string) {
     const user = await this.userService.findOne({ ID: ownerID });
