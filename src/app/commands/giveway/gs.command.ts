@@ -104,26 +104,28 @@ export class GiveawayStartCommand implements DiscordCommand {
 
       const [premium, giveaways] = await Promise.all([
         this.userService.verifyPremium(interaction.guild.ownerId),
-        this.giveawayService.getServerGiveawayObjects(
-          interaction.guild.id,
-          true,
-          false
+        this.giveawayService.giveawayService.countDocuments(
+          { guildID: interaction.guild.id },
+          5
         )
       ]);
       this.tempCache[interaction.user.id] = {
-        ...this.tempCache[interaction.user.id],
         premium
       };
-      if (giveaways.length >= config.premiumAccess[premium].maxGiveaways) {
-        return {
-          embeds: [
-            {
-              color: config.meta.defaultColor,
-              description: locale.en.errors.maxGiveaways()
-            }
-          ],
-          ephemeral: true
-        };
+      if (giveaways >= config.premiumAccess[premium].maxGiveaways) {
+        const docs = await this.giveawayService.checkNotEndedGiveaways(
+          interaction.guild.id
+        );
+        if (docs.length >= config.premiumAccess[premium].maxGiveaways)
+          return {
+            embeds: [
+              {
+                color: config.meta.defaultColor,
+                description: locale.en.errors.maxGiveaways()
+              }
+            ],
+            ephemeral: true
+          };
       }
       await interaction.showModal({
         customId: this.gsModalID,

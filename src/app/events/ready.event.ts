@@ -31,12 +31,12 @@ export class Ready {
       )} MB / ${(process.memoryUsage().rss / 1024 / 1024).toFixed(2)} MB`
     };
     await this.giveawayService.check();
-    // await this.userService.getPremiumUsers();
     this.logger.log(
       Object.entries(stats)
         .map(([key, value]) => `${key} ${value}`)
         .join('\n')
     );
+    // this.userService.getPremiumUsers();
   }
   @On('guildCreate')
   async onGuildJoin(guild: Guild): Promise<void> {

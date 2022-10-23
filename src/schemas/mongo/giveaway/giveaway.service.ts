@@ -110,4 +110,7 @@ export class MongoGiveawayService {
   async deleteOne(data: FilterQuery<GiveawayDocument>): Promise<any> {
     return this.GiveawayModel.deleteOne(data);
   }
+  async deleteMany(data: FilterQuery<GiveawayDocument>): Promise<any> {
+    return this.GiveawayModel.deleteMany(data);
+  }
 }
