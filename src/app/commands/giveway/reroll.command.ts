@@ -55,14 +55,15 @@ export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
     { interaction }: TransformedCommandExecutionContext
   ) {
     if (!interaction.isCommand()) return;
-    await interaction
-      .deferReply({ ephemeral: true })
-      .catch((err) => this.logger.error(err));
+
     const { messageID, count } = dto;
 
     const guild = interaction.guild;
     if (!guild) return;
     const reply = async (text: string) => {
+      await interaction
+        .deferReply({ ephemeral: true })
+        .catch((err) => this.logger.error(err));
       try {
         return await interaction.editReply({
           embeds: [
@@ -94,7 +95,7 @@ export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
       reply(locale.en.errors.notEnoughMembers());
       return;
     }
-
+    await interaction.deferReply({}).catch((err) => this.logger.error(err));
     const winners = await this.giveawayService.getWinners(
       guild,
       giveaway,
