@@ -61,23 +61,30 @@ class Book {
         {
           type: ComponentType.Button,
           style: ButtonStyle.Secondary,
-          emoji: '⬅',
+          emoji: '1028463411731898418',
+          customId: 'book.page_first',
+          disabled: disabled || options.currentPage < 1 || options.pageCount < 2
+        },
+        {
+          type: ComponentType.Button,
+          style: ButtonStyle.Secondary,
+          emoji: '1028460718703509564',
           customId: 'book.page_prev',
           disabled: disabled || options.currentPage < 1 || options.pageCount < 2
         },
         {
           type: ComponentType.Button,
-          style: ButtonStyle.Danger,
-          emoji: '❌',
-          customId: 'book.delete',
-          disabled
+          style: ButtonStyle.Secondary,
+          emoji: '1028460720599355433',
+          customId: 'book.page_next',
+          disabled: disabled || options.currentPage >= options.pageCount - 1
         },
         {
           type: ComponentType.Button,
           style: ButtonStyle.Secondary,
-          emoji: '➡',
-          customId: 'book.page_next',
-          disabled: disabled || options.currentPage >= options.pageCount - 1
+          emoji: '1028463413355085885',
+          customId: 'book.page_last',
+          disabled: disabled || options.currentPage < 1 || options.pageCount < 2
         }
       ]
     });
@@ -133,13 +140,20 @@ class Book {
             return;
           }
           if (interaction?.customId === 'book.last_page') {
-            await this.update(interaction, 0, this.lastPage).catch(() => null);
+            await this.update(interaction, this.page.pageCount).catch(
+              () => null
+            );
+            this.lastPage = !this.lastPage;
+          } else if (interaction?.customId === 'book.first_page') {
+            await this.update(interaction, 0).catch(() => null);
             this.lastPage = !this.lastPage;
           } else {
             const inc = interaction?.customId === 'book.page_next' ? 1 : -1;
-            await this.update(interaction, inc).catch((err) => {
-              console.log(err);
-            });
+            await this.update(interaction, this.page.currentIndex + inc).catch(
+              (err) => {
+                console.log(err);
+              }
+            );
           }
         });
         collector.on('end', (reason: string) => {
@@ -162,10 +176,10 @@ class Book {
       .catch(() => null);
   }
 
-  async update(interaction: ButtonInteraction, inc = 0, lastPage = false) {
+  async update(interaction: ButtonInteraction, pageIndex = 0) {
     const response: Message | null = null;
     const page = await new Promise<Page>((resolve, reject) => {
-      const promise = this.pageCallback(this.page.currentIndex + inc, lastPage);
+      const promise = this.pageCallback(pageIndex);
       if (promise instanceof Promise) {
         promise.then(resolve).catch(reject);
       } else {

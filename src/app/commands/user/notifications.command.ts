@@ -20,7 +20,7 @@ export class NotificationsCmd implements DiscordCommand {
   constructor(private readonly usersService: MongoUserService) {}
   async handler(command: CommandInteraction) {
     await command.deferReply({}).catch((err) => this.logger.error(err));
-    const user = await this.usersService.get(command.user.id, 0);
+    const user = await this.usersService.get(command.user.id, 5);
     const options = locale.en.notification.options;
 
     const message = await command
@@ -83,7 +83,6 @@ export class NotificationsCmd implements DiscordCommand {
       (a, v) => ({ ...a, [v]: !user.settings[v] }),
       {} as UserSettings
     );
-
     await this.usersService.UserModel.updateOne(
       { ID: command.user.id },
       { settings: items }

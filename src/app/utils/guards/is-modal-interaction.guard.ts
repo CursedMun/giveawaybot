@@ -4,7 +4,7 @@ import { ClientEvents } from 'discord.js';
 export class IsModalInteractionGuard implements DiscordGuard {
   canActive(
     event: keyof ClientEvents,
-    [interaction]: EventArgs<'interactionCreate'>,
+    [interaction]: EventArgs<'interactionCreate'>
   ): boolean | Promise<boolean> {
     return event === 'interactionCreate' && interaction.isModalSubmit();
   }

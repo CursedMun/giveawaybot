@@ -1,7 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import {
+  GiveawayAccessСondition,
+  GiveawayAdditionalCondition,
+  GiveawayVoiceCondition
+} from '@src/types/global';
 import { Document } from 'mongoose';
-export type GiveawayAccessСondition = 'reaction' | 'button';
-export type GiveawayCondition = 'novoice' | 'voice' | 'invite';
+export interface IParticipant {
+  ID: string;
+  number?: number;
+}
 export type GiveawayDocument = Giveaway & Document;
 @Schema()
 export class Giveaway {
@@ -20,7 +27,14 @@ export class Giveaway {
   @Prop()
   accessCondition: GiveawayAccessСondition;
   @Prop()
-  condition: GiveawayCondition;
+  voiceCondition: GiveawayVoiceCondition;
+  @Prop()
+  additionalCondition: GiveawayAdditionalCondition;
+  //Little clarification it will be the number to guess, the number that is need to invite and the number of messages
+  @Prop()
+  number: string;
+  @Prop()
+  prompt: string;
   @Prop()
   winnerCount: number;
   @Prop()
@@ -32,7 +46,7 @@ export class Giveaway {
   @Prop()
   createdTick: number;
   @Prop()
-  participants: string[];
+  participants: IParticipant[];
 }
 
 export const GiveawaySchema = SchemaFactory.createForClass(Giveaway);

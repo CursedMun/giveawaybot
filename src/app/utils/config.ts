@@ -30,36 +30,6 @@ const emojis = {
   confirmEmojis: ['✅', '❌']
 };
 const embeds = {
-  confirmEmbed: {
-    ephemeral: true,
-    embeds: [
-      {
-        color: meta.defaultColor,
-        author: {
-          name: 'Подтвердите действие'
-        }
-      }
-    ],
-    components: [
-      {
-        type: ComponentType.ActionRow,
-        components: [
-          {
-            label: 'Подтвердить',
-            customId: 'confirm',
-            type: ComponentType.Button,
-            style: ButtonStyle.Success
-          },
-          {
-            label: 'Отменить',
-            customId: 'reject',
-            type: ComponentType.Button,
-            style: ButtonStyle.Danger
-          }
-        ]
-      }
-    ]
-  } as InteractionUpdateOptions,
   helpEmbed: (userID: string) =>
     ({
       components: [
@@ -83,12 +53,17 @@ const embeds = {
               customId: `help.giveaways.${userID}`,
               type: ComponentType.Button,
               style: ButtonStyle.Secondary
-            },
+            }
+          ]
+        },
+        {
+          type: ComponentType.ActionRow,
+          components: [
             {
               label: 'Оставить отзыв',
               customId: `help.feedback.${userID}`,
               type: ComponentType.Button,
-              style: ButtonStyle.Secondary,
+              style: ButtonStyle.Danger,
               disabled: true
             },
             {
@@ -104,8 +79,15 @@ const embeds = {
   defaultHelpEmbed: {
     color: meta.defaultColor,
     image: {
-      url: 'https://cdn.discordapp.com/attachments/980765606364205056/980765731966832640/3.png'
+      url: 'https://cdn.discordapp.com/attachments/980765606364205056/1027937842455924767/give_bot_ru_.png'
     }
+  }
+};
+
+const roles = {
+  premium: {
+    golden: '1032432761878880297',
+    silver: '1032432725094846515'
   }
 };
 
@@ -116,10 +98,25 @@ const ticks = {
   oneWeek: 6.048e8, // 1 week in milliseconds
   oneMonth: 2.628e9 // one month in milliseconds
 };
-
+const premiumAccess = {
+  0: {
+    maxGiveaways: 2,
+    maxWinners: 10,
+    maxDuration: ticks.oneWeek
+  },
+  1: {
+    maxGiveaways: 3,
+    maxWinners: 15,
+    maxDuration: ticks.oneWeek * 2
+  },
+  2: {
+    maxGiveaways: 7,
+    maxWinners: 25,
+    maxDuration: ticks.oneWeek * 4
+  }
+};
 const conf = {
   meta,
-  embeds,
   ticks,
   emojis,
   ids: {
@@ -128,7 +125,12 @@ const conf = {
     giveawayChannel: '981546639695183953',
     newGuildChannel: '981153654356729866',
     feedbackChannel: '981656983230885899'
-  }
+  },
+  roles,
+  embeds,
+  premiumAccess
 };
 export const config =
-  process.env.NODE_ENV === 'development' ? developmentconfig : conf;
+  process.env.NODE_ENV === 'development'
+    ? { ...developmentconfig, ...conf }
+    : { ...conf, ...developmentconfig };

@@ -8,7 +8,7 @@ export default class Timer {
   constructor(
     date: number,
     fn: () => void,
-    checkInterval = config.ticks.tenSeconds,
+    checkInterval = config.ticks.tenSeconds
   ) {
     this.checkInterval = checkInterval;
     this.lastTick = Date.now();
@@ -31,7 +31,7 @@ export default class Timer {
       if (val.date <= this.nextTick) {
         this.timeout(
           val.fn,
-          val.date - Date.now() < 0 ? 0 : val.date - Date.now(),
+          val.date - Date.now() < 0 ? 0 : val.date - Date.now()
         );
         this.cache.delete(id);
       }

@@ -47,7 +47,7 @@ export class MongoUserService {
     return await this.cache.wrap(
       cacheKey,
       async () => {
-        let user = await this.UserModel.findOne(data).lean();
+        const user = await this.UserModel.findOne(data).lean();
         return user;
       },
       { ttl: ttl ?? this.defaulttl }
@@ -58,7 +58,7 @@ export class MongoUserService {
     return await this.cache.wrap(
       cacheKey,
       async () => {
-        let user = await this.UserModel.findOne(data).lean().countDocuments();
+        const user = await this.UserModel.findOne(data).lean().countDocuments();
         return user > 0;
       },
       { ttl: ttl ?? this.defaulttl }
@@ -86,7 +86,7 @@ export class MongoUserService {
     return await this.cache.wrap(
       cacheKey,
       async () => {
-        let user = await this.UserModel.find(data).lean();
+        const user = await this.UserModel.find(data).lean();
         return user;
       },
       { ttl: ttl ?? this.defaulttl }

@@ -1,7 +1,7 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
-export type UserAccessСondition = "reaction" | "button";
-export type UserCondition = "novoice" | "voice";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+export type Tier = 'default' | 'silver' | 'golden' | 'diamond';
+
 export type UserDocument = User & Document;
 export interface UserSettings {
   voiceNotifications: boolean;
@@ -9,16 +9,18 @@ export interface UserSettings {
 }
 @Schema()
 export class User {
-  @Prop({required: true})
+  @Prop({ required: true })
   ID: string;
   @Prop({
     default: {
       voiceNotifications: false,
-      winNotifications: false,
+      winNotifications: false
     },
     type: {}
   })
   settings: UserSettings;
+  @Prop({ default: 'default', type: String })
+  tier: Tier;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

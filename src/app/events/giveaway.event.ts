@@ -1,10 +1,14 @@
 import { On } from '@discord-nestjs/core';
 import { Injectable, Logger, UseGuards } from '@nestjs/common';
+import locale from '@src/i18n/i18n-node';
+import { ModalComponents } from '@src/types/global';
 import {
   ButtonInteraction,
   ComponentType,
   GuildMember,
   MessageReaction,
+  ModalSubmitInteraction,
+  TextInputStyle,
   User,
   VoiceState
 } from 'discord.js';
@@ -19,6 +23,9 @@ export class GiveawayEvents {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private tempItems = [] as any;
   private tempTimeout: NodeJS.Timeout | undefined;
+  private randomNumberModalID = 'randomnumbermodal';
+  private randomNumberID = 'randomnumber';
+  private timeoutUsers = {} as Record<string, number>;
   constructor(
     private readonly giveawayService: GiveawayService,
     private readonly userService: UserService
@@ -31,25 +38,75 @@ export class GiveawayEvents {
     if (!button.customId) return;
     const [name, action, giveawayID] = button.customId.split('.') as [
       string,
-      'join' | 'list',
+      'join' | 'list' | 'verify',
       string
     ];
     if (name != 'giveaway') return;
     if (action == 'join') {
-      await button
-        .deferUpdate({})
-        .catch((err) => this.logger.error(err.message));
+      if (
+        this.timeoutUsers[button.user.id] &&
+        this.timeoutUsers[button.user.id] > Date.now()
+      ) {
+        await button
+          .deferUpdate({})
+          .catch((err) => this.logger.error(err.message));
+        await button
+          .followUp({
+            embeds: [
+              {
+                title: locale.en.onJoinGiveaway.cooldown.title(),
+                color: config.meta.defaultColor,
+                description: locale.en.onJoinGiveaway.cooldown.description({
+                  time: Math.round(this.timeoutUsers[button.user.id] / 1e3)
+                })
+              }
+            ],
+            ephemeral: true
+          })
+          .catch((err) => this.logger.error(err.message));
+        return;
+      }
       const response = await this.giveawayService.onJoin(
         button.member as GuildMember,
         giveawayID
       );
+      if (response.number) {
+        const components = [
+          {
+            type: ComponentType.ActionRow,
+            components: [
+              {
+                type: ComponentType.TextInput,
+                customId: this.randomNumberID,
+                label: locale.en.onJoinGiveaway.guessNumber(),
+                placeholder: response.prompt ?? '',
+                style: TextInputStyle.Short,
+                required: true,
+                maxLength: 10
+              }
+            ]
+          }
+        ].filter(Boolean) as ModalComponents;
+
+        await button
+          .showModal({
+            customId: `${this.randomNumberModalID}.${button.user.id}.${response.number}.${giveawayID}`,
+            title: 'Giveaway',
+            components
+          })
+          .catch((err) => this.logger.error(err));
+        return;
+      }
+      await button
+        .deferUpdate({})
+        .catch((err) => this.logger.error(err.message));
       await button
         .followUp({
           embeds: [
             {
               title: response.success
-                ? 'Теперь вы участвуете в конкурсе'
-                : 'Ой что-то не так',
+                ? locale.en.onJoinGiveaway.join.title()
+                : locale.en.onJoinGiveaway.join.errorTitle(),
               color: config.meta.defaultColor,
               description: response.reason
             }
@@ -59,7 +116,7 @@ export class GiveawayEvents {
         .catch((err) => this.logger.error(err.message));
 
       if (response.totalParticipants) {
-        const newComponents = button.message.components?.[0].components?.map(
+        const newComponents = button.message?.components?.[0].components?.map(
           (component) => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const [_, action, __] = (component.customId ?? '1.1.1').split('.');
@@ -106,26 +163,44 @@ export class GiveawayEvents {
         const text =
           documents.length > 0
             ? documents
-                .map((doc, index) => `**${index + 1}.**<@${doc}>`)
+                .map((doc, index) =>
+                  typeof doc.number != 'number'
+                    ? locale.en.giveaway.list.text({
+                        index: index + 1,
+                        userID: doc.ID
+                      })
+                    : doc.number === parseInt(doc.need?.toString() ?? '0')
+                    ? locale.en.giveaway.list.completedText({
+                        index: index + 1,
+                        userID: doc.ID
+                      })
+                    : locale.en.giveaway.list.additionalText({
+                        index: index + 1,
+                        userID: doc.ID,
+                        current: doc.number,
+                        need: doc.need?.toString() ?? '0'
+                      })
+                )
                 .join('\n')
-            : 'Пусто...';
+            : locale.en.default.empty();
         return {
           currentIndex,
           message: {
             embeds: [
               {
-                title: 'Участники розыгрыша',
+                title: locale.en.giveaway.list.title(),
                 color: config.meta.defaultColor,
                 description: text,
-                thumbnail: {
-                  url: 'https://cdn.discordapp.com/attachments/974125927946665995/974185386056249404/1.png'
-                },
+                url: 'https://www.random.org/',
                 footer: {
-                  text: `${button.user.tag} | Страница ${
-                    currentIndex + 1
-                  }/${pageCount}`
-                },
-                fields: []
+                  text: locale.en.giveaway.list.footer({
+                    page:
+                      pageCount < currentIndex + 1
+                        ? pageCount
+                        : currentIndex + 1,
+                    pages: pageCount
+                  })
+                }
               }
             ]
           },
@@ -137,8 +212,65 @@ export class GiveawayEvents {
         filter: () => true,
         collectorOptions: { time: 60_000 }
       });
+    } else if (action == 'verify') {
+      await button
+        .deferReply({ ephemeral: true })
+        .catch((err) => this.logger.error(err.message));
+      const response = await this.giveawayService.verify(
+        giveawayID,
+        button.user.id
+      );
+      await button
+        .editReply({
+          embeds: [
+            {
+              title: locale.en.giveaway.verify.title(),
+              color: config.meta.defaultColor,
+              description: !response
+                ? locale.en.default.error()
+                : typeof response.current != 'number'
+                ? locale.en.giveaway.verify.notIn()
+                : `${
+                    response.current === parseInt(response.need)
+                      ? '<:__:1028466516531892224>'
+                      : ''
+                  }${locale.en.giveaway.verify.description({
+                    current: response.current,
+                    need: response.need.toString() ?? ''
+                  })}`
+            }
+          ]
+        })
+        .catch((err) => this.logger.error(err.message));
     }
   }
+  //on random number submit
+  @On('interactionCreate')
+  async onModalSubmit(modal: ModalSubmitInteraction): Promise<void> {
+    if (
+      !modal.isModalSubmit() ||
+      !modal.customId.startsWith(this.randomNumberModalID)
+    )
+      return;
+    this.timeoutUsers[modal.user.id] = Date.now() + config.ticks.oneMinute / 2;
+    await modal
+      .deferReply({ ephemeral: true })
+      .catch((err) => this.logger.error(err.message));
+
+    const [_, userID, correctResponse, giveawayID] = modal.customId.split(
+      '.'
+    ) as [string, string, string, string];
+    const userResponse = modal.fields.getTextInputValue(this.randomNumberID);
+    if (userResponse == correctResponse) {
+      await this.giveawayService.endGiveaway(giveawayID, userID);
+    }
+    await modal
+      .followUp({
+        embeds: []
+      })
+      .catch((err) => this.logger.error(err.message));
+  }
+
   //on emoji add
   @On('messageReactionAdd')
   async onReactionAdd(reaction: MessageReaction, user: User): Promise<void> {
@@ -169,7 +301,7 @@ export class GiveawayEvents {
           reaction.message.guild?.members.cache.get(user.id) ??
           (await reaction.message.guild?.members.fetch(user.id));
         if (!member) return;
-        if (giveaway.condition == 'voice' && !member.voice.channel) {
+        if (giveaway.voiceCondition == 'voice' && !member.voice.channel) {
           await reaction.users.remove(user.id);
           return;
         }
@@ -187,22 +319,43 @@ export class GiveawayEvents {
     oldState: VoiceState,
     newState: VoiceState
   ): Promise<void> {
-    if (oldState.channel && !newState.channel) {
+    if (
+      (oldState.channel && !newState.channel) ||
+      (oldState.channel &&
+        newState.channel &&
+        oldState.channel?.parentId != newState.channel?.parentId)
+    ) {
+      let category = false;
       const giveaways = await this.giveawayService.getServerGiveaways(
         newState.guild.id
       );
       if (!giveaways) return;
       const docs = await Promise.all(
         giveaways.map((id) =>
-          this.giveawayService.giveawayService.findOne({
-            ID: id,
-            ended: false
-          })
+          this.giveawayService.giveawayService.findOne(
+            {
+              ID: id,
+              ended: false
+            },
+            true
+          )
         )
       );
       if (!docs.length) return;
-      if (!docs.some((giveaway) => giveaway?.condition === 'voice')) return;
+      if (!docs.some((giveaway) => giveaway?.voiceCondition === 'voice'))
+        return;
+      if (!docs.some((x) => x?.participants.find((x) => x.ID === newState.id)))
+        return;
       if (!oldState.member) return;
+      if (
+        docs.some(
+          (x) =>
+            x?.additionalCondition === 'category' &&
+            x?.number === newState.channel?.parentId
+        )
+      )
+        return;
+      else category = true;
       const user = await this.userService.getUser(
         oldState.member.id,
         false,
@@ -213,10 +366,9 @@ export class GiveawayEvents {
           .send({
             embeds: [
               {
-                title: 'Участие в розыгрыше',
+                title: locale.en.giveaway.onLeave.title(),
                 color: config.meta.defaultColor,
-                description:
-                  'Покидая **голосовой канал**, вы отказываетесь от участия в розыгрыше\nУ вас есть **20 секунд** чтобы вернуться.'
+                description: locale.en.giveaway.onLeave.description()
               }
             ]
           })
@@ -226,19 +378,20 @@ export class GiveawayEvents {
           oldState.member?.id ?? ''
         );
         if (
-          user &&
-          user.settings.voiceNotifications &&
-          member &&
-          member.voice.channel
+          category
+            ? docs.every((x) => x?.number === member.voice.channel?.parentId)
+            : user &&
+              user.settings.voiceNotifications &&
+              member &&
+              member.voice.channel
         ) {
           await member
             .send({
               embeds: [
                 {
-                  title: 'Участие в розыгрыше',
+                  title: locale.en.giveaway.onReturn.title(),
                   color: config.meta.defaultColor,
-                  description:
-                    'О, вы вернулись, значит оставляем запись на участие в розыгрыше'
+                  description: locale.en.giveaway.onReturn.description()
                 }
               ]
             })
@@ -246,17 +399,22 @@ export class GiveawayEvents {
           return;
         }
         //remove this user from all the giveaways
-        await Promise.allSettled(
-          docs
-            .filter(Boolean)
-            .map(
-              (giveaway) =>
-                giveaway?.condition == 'voice' &&
-                oldState.member &&
-                this.giveawayService.onLeave(oldState.member, giveaway.ID)
+        const IDs = docs
+          .filter((x) => {
+            if (
+              x?.voiceCondition == 'voice' &&
+              x?.additionalCondition != 'category'
             )
-        );
+              return true;
+            if (x?.additionalCondition == 'category')
+              return x?.number !== member.voice.channel?.parentId;
+            return false;
+          })
+          .map((giveaway) => giveaway?.ID ?? '');
+        if (!IDs.length) return;
+        await this.giveawayService.onLeave(oldState.id, IDs);
       }, config.ticks.tenSeconds * 2);
     }
   }
+  //on message write
 }

@@ -2,6 +2,7 @@ import { InjectDiscordClient, On, Once } from '@discord-nestjs/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { Client, Guild, TextChannel } from 'discord.js';
 import { GiveawayService } from '../providers/giveaway.service';
+import { UserService } from '../providers/user.service';
 import { config } from '../utils/config';
 
 @Injectable()
@@ -9,21 +10,13 @@ export class Ready {
   constructor(
     @InjectDiscordClient()
     private readonly client: Client,
-    private readonly giveawayService: GiveawayService
+    private readonly giveawayService: GiveawayService,
+    private readonly userService: UserService
   ) {}
   private readonly logger = new Logger(Ready.name);
   @Once('ready')
   async onReady(client: Client): Promise<void> {
     this.logger.log('Started');
-    await Promise.allSettled(
-      client.guilds.cache
-        .filter(
-          (guild) =>
-            guild.memberCount < config.meta.minGuildUsers &&
-            guild.id != config.ids.devGuild
-        )
-        .map((guild) => guild.leave())
-    );
     const stats = {
       '\nBot User:': `${client.user?.tag}`,
       'Guild(s):': `${client.guilds.cache.size} Servers`,
@@ -38,7 +31,7 @@ export class Ready {
       )} MB / ${(process.memoryUsage().rss / 1024 / 1024).toFixed(2)} MB`
     };
     await this.giveawayService.check();
-    // client.user?.setActivity({ name: "!info",type: 'COMPETING',url: 'https://discord.gg/' });
+    await this.userService.getPremiumUsers();
     this.logger.log(
       Object.entries(stats)
         .map(([key, value]) => `${key} ${value}`)
