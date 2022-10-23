@@ -69,25 +69,29 @@ export class UserService {
             .find((role) => role.id === x)
         );
       });
-      const premUsers = await this.userService.findAll();
+      const premUsers = await this.userService.find(
+        {
+          tier: { $ne: 'default' }
+        },
+        10
+      );
       const IDs = [
         ...premUsers.map((x) => x.ID),
         ...premiumUsers.map((x) => x.id)
       ];
-      for (const user of IDs) {
-        const member = members.get(user);
+      for (const ID of IDs) {
+        const member = members.get(ID);
         if (!member) {
-          // await this.userService.UserModel.updateOne(
-          //   { ID: member.id },
-          //   { tier: role?.name ?? '' }
-          // );
+          await this.userService.UserModel.updateOne(
+            { ID: ID },
+            { tier: 'default' }
+          );
           return;
         }
         const role =
           member.roles.cache.get(config.roles.premium.golden) ??
           member.roles.cache.get(config.roles.premium.silver) ??
           null;
-        console.log(user[0], role?.name);
         if (
           premUsers.find(
             (x) => x.ID === member.id && x.tier == (role?.name ?? 'default')
