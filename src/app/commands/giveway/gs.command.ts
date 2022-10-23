@@ -455,11 +455,11 @@ export class GiveawayStartCommand implements DiscordCommand {
     const res = [
       { accessCondition: 'reaction' },
       { accessCondition: 'button' },
-      // {
-      //   accessCondition: 'button',
-      //   additionalCondition: 'type',
-      //   disabled: premium < 1
-      // },
+      {
+        accessCondition: 'button',
+        additionalCondition: 'type',
+        disabled: premium < 1
+      },
       voiceCondition === 'voice'
         ? {
             accessCondition: 'button',
