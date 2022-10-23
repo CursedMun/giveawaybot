@@ -28,7 +28,7 @@ export interface NavigationOptions {
   filter: BookFilter;
   collectorOptions?: MessageChannelCollectorOptionsParams<MessageComponentType>;
   buttonName?: string;
-  additionalComps?: MessageActionRowComponentData;
+  additionalComps?: MessageActionRowComponentData[];
 }
 class ExtendedNavigation {
   static buildMessage(
@@ -36,7 +36,7 @@ class ExtendedNavigation {
     options: {
       disabled?: boolean;
       buttonName?: string;
-      additionalComps?: MessageActionRowComponentData;
+      additionalComps?: MessageActionRowComponentData[];
     }
   ) {
     const disabled = options.disabled || false;
@@ -51,7 +51,7 @@ class ExtendedNavigation {
         disabled
       } as MessageActionRowComponentData
     ];
-    if (options.additionalComps) comps.push(options.additionalComps);
+    if (options.additionalComps) comps.push(...options.additionalComps);
     newComponents.push({
       type: ComponentType.ActionRow,
       components: comps

@@ -426,12 +426,20 @@ export class GiveawayStartCommand implements DiscordCommand {
               filter: (m) => m.user.id === userID,
               additionalComps:
                 premium < 2
-                  ? {
-                      type: ComponentType.Button,
-                      style: ButtonStyle.Link,
-                      label: locale.en.giveaway.response.donateString(),
-                      url: 'https://www.patreon.com/user?u=81586511&fan_landing=true'
-                    }
+                  ? [
+                      {
+                        type: ComponentType.Button,
+                        style: ButtonStyle.Link,
+                        emoji: '1033868901982937158',
+                        url: 'https://www.patreon.com/user?u=81586511&fan_landing=true'
+                      },
+                      {
+                        type: ComponentType.Button,
+                        style: ButtonStyle.Link,
+                        emoji: '1033868900720455680',
+                        url: 'https://boosty.to/giveaway'
+                      }
+                    ]
                   : undefined
             },
             {
