@@ -24,6 +24,16 @@ class RerollDto {
     required: true
   })
   messageID: string;
+  @Param({
+    name: 'count',
+    descriptionLocalizations: {
+      'en-US': 'Amount of users to reroll',
+      ru: 'Количество пользователей для реролла'
+    },
+    description: 'Amount of users to reroll',
+    required: false
+  })
+  count: string;
 }
 @Injectable()
 @Command({
@@ -48,7 +58,8 @@ export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
     await interaction
       .deferReply({ ephemeral: true })
       .catch((err) => this.logger.error(err));
-    const messageID = dto.messageID;
+    const { messageID, count } = dto;
+
     const guild = interaction.guild;
     if (!guild) return;
     const reply = async (text: string) => {
@@ -87,7 +98,7 @@ export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
     const winners = await this.giveawayService.getWinners(
       guild,
       giveaway,
-      giveaway.winnerCount
+      parseInt(count) ?? giveaway.winnerCount
     );
     await this.giveawayService.giveawayService.GiveawayModel.updateOne(
       { ID: giveaway.ID },
@@ -101,12 +112,11 @@ export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
             ...Object.values(locale.en.default.winnersNouns).map((x) => x())
           )}: ${
             winners.length > 0
-              ? winners.map((w) => `<@${w}>`).join(', ')
+              ? winners.map((w) => `<@${w.userID}>`).join(', ')
               : ` ${locale.en.default.error()}`
           }`
         }
-      ],
-      ephemeral: false
+      ]
     });
   }
 }
