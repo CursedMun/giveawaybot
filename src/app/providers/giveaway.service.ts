@@ -338,6 +338,7 @@ export class GiveawayService {
             }
           ] as JsonComponents)
         : undefined;
+    console.log(doc);
     const message = await channel
       .send({
         embeds: [
@@ -347,9 +348,9 @@ export class GiveawayService {
             description: locale.en.createGiveaway.description.default({
               rest: `${locale.en.createGiveaway.description.access[
                 doc.accessCondition
-              ]({ emoji: config.emojis.giveaway })}${
-                locale.en.createGiveaway.description.voice[doc.voiceCondition]
-              }${
+              ]({
+                emoji: config.emojis.giveaway
+              })}${locale.en.createGiveaway.description[doc.voiceCondition]()}${
                 doc.additionalCondition
                   ? locale.en.createGiveaway.description.additional[
                       doc.additionalCondition

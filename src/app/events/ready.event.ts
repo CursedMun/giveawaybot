@@ -36,7 +36,7 @@ export class Ready {
         .map(([key, value]) => `${key} ${value}`)
         .join('\n')
     );
-    // this.userService.getPremiumUsers();
+    this.userService.getPremiumUsers();
   }
   @On('guildCreate')
   async onGuildJoin(guild: Guild): Promise<void> {
