@@ -10,6 +10,8 @@ import { config } from '@src/app/utils/config';
 import { IsButtonInteractionGuard } from '@src/app/utils/guards/is-button-interaction.guard';
 import { parseFilteredTimeArray } from '@src/app/utils/utils';
 import locale from '@src/i18n/i18n-node';
+import { TranslationFunctions } from '@src/i18n/i18n-types';
+import { MongoGuildService } from '@src/schemas/mongo/guild/guild.service';
 import {
   APIEmbed,
   ButtonInteraction,
@@ -34,25 +36,83 @@ export class HelpCmd implements DiscordCommand {
   constructor(
     @InjectDiscordClient()
     private readonly client: Client,
-    private readonly giveawayService: GiveawayService
+    private readonly giveawayService: GiveawayService,
+    private readonly guildService: MongoGuildService
   ) {}
   async handler(command: CommandInteraction) {
     await command.deferReply().catch((err) => this.logger.error(err));
+    const guildDoc = await this.guildService.getLocalization(command.guildId);
+    const region = guildDoc
+      ? guildDoc
+      : command.guild?.preferredLocale == 'ru'
+      ? 'ru'
+      : 'en';
+    const userID = command.user.id;
     await command
       .editReply({
         embeds: [
-          config.embeds.defaultHelpEmbed,
           {
-            ...(await this.getEmbed('commands')),
+            ...config.embeds.defaultHelpEmbed,
+            image: {
+              url:
+                region === 'ru'
+                  ? 'https://cdn.discordapp.com/attachments/980765606364205056/1027880626466070578/give_bot_ru.png'
+                  : 'https://cdn.discordapp.com/attachments/980765606364205056/1027880626046640128/give_bot_en.png'
+            }
+          },
+          {
+            ...(await this.getEmbed('commands', locale[region])),
             footer: {
-              text: locale.en.help.commands.embed.footer()
+              text: locale[region].help.commands.embed.footer()
             },
             image: {
               url: 'https://cdn.discordapp.com/attachments/980765606364205056/980765983155318805/222.png'
             }
           } ?? {}
         ],
-        components: config.embeds.helpEmbed(command.user.id).components
+        components: [
+          {
+            type: ComponentType.ActionRow,
+            components: [
+              {
+                label: locale[region].help.buttons.commands(),
+                customId: `help.commands.${userID}`,
+                type: ComponentType.Button,
+                style: ButtonStyle.Primary
+              },
+              {
+                label: locale[region].help.buttons.information(),
+                customId: `help.information.${userID}`,
+                type: ComponentType.Button,
+                style: ButtonStyle.Secondary
+              },
+              {
+                label: locale[region].help.buttons.activeGiveaways(),
+                customId: `help.giveaways.${userID}`,
+                type: ComponentType.Button,
+                style: ButtonStyle.Secondary
+              }
+            ]
+          },
+          {
+            type: ComponentType.ActionRow,
+            components: [
+              {
+                label: locale[region].help.buttons.feedback(),
+                customId: `help.feedback.${userID}`,
+                type: ComponentType.Button,
+                style: ButtonStyle.Danger,
+                disabled: true
+              },
+              {
+                label: 'Ko-fi (Support me)',
+                type: ComponentType.Button,
+                style: ButtonStyle.Link,
+                url: 'https://ko-fi.com/giveawaybot'
+              }
+            ]
+          }
+        ]
       })
       .catch((err) => this.logger.error(err));
     return;
@@ -78,8 +138,18 @@ export class HelpCmd implements DiscordCommand {
       );
     if (currentlySelected?.customId?.split('.')[1] === action) return;
     if (actions.includes(action)) {
+      const guildDoc = await this.guildService.getLocalization(button.guildId);
+      const region = guildDoc
+        ? guildDoc
+        : button.guild?.preferredLocale == 'ru'
+        ? 'ru'
+        : 'en';
       try {
-        const embed = await this.getEmbed(action, button.guild?.id);
+        const embed = await this.getEmbed(
+          action,
+          locale[region],
+          button.guild?.id
+        );
         if (!embed) return;
         const newComponents = button.message.components[0].components.map(
           (component) => {
@@ -106,11 +176,19 @@ export class HelpCmd implements DiscordCommand {
         await button
           .update({
             embeds: [
-              config.embeds.defaultHelpEmbed,
+              {
+                ...config.embeds.defaultHelpEmbed,
+                image: {
+                  url:
+                    region === 'ru'
+                      ? 'https://cdn.discordapp.com/attachments/980765606364205056/1027880626466070578/give_bot_ru.png'
+                      : 'https://cdn.discordapp.com/attachments/980765606364205056/1027880626046640128/give_bot_en.png'
+                }
+              },
               {
                 ...embed,
                 footer: {
-                  text: locale.en.help.commands.embed.footer()
+                  text: locale[region].help.commands.embed.footer()
                 },
                 image: {
                   url: 'https://cdn.discordapp.com/attachments/980765606364205056/980765983155318805/222.png'
@@ -133,27 +211,28 @@ export class HelpCmd implements DiscordCommand {
   }
   async getEmbed(
     action: string,
+    locale: TranslationFunctions,
     guildID?: string
   ): Promise<APIEmbed | JSONEncodable<APIEmbed> | undefined> {
     switch (action) {
       case 'commands': {
         return {
           color: config.meta.defaultColor,
-          description: locale.en.help.commands.embed.description({
+          description: locale.help.commands.embed.description({
             botID: this.client.user?.id ?? ''
           }),
           fields: [
             {
-              name: locale.en.help.others.title(),
+              name: locale.help.others.title(),
               value:
                 this.client.application?.commands.cache
                   .filter((x) =>
-                    Object.keys(
-                      locale.en.help.commands.descriptions.others
-                    ).some((k) => k === x.name)
+                    Object.keys(locale.help.commands.descriptions.others).some(
+                      (k) => k === x.name
+                    )
                   )
                   .map((x) => {
-                    return locale.en.help.commands.descriptions.others[x.name]({
+                    return locale.help.commands.descriptions.others[x.name]({
                       commandID: `${x.name}:${x.applicationId}`
                     });
                   })
@@ -161,18 +240,18 @@ export class HelpCmd implements DiscordCommand {
               inline: false
             },
             {
-              name: locale.en.help.giveaway.title(),
+              name: locale.help.giveaway.title(),
               value:
                 this.client.application?.commands.cache
                   .filter((x) =>
                     Object.keys(
-                      locale.en.help.commands.descriptions.giveaway
+                      locale.help.commands.descriptions.giveaway
                     ).some((k) => k === x.name)
                   )
                   .map((x) => {
                     return (
                       '<:background:980765434414522398>' +
-                      locale.en.help.commands.descriptions.giveaway[x.name]({
+                      locale.help.commands.descriptions.giveaway[x.name]({
                         commandID: `${x.name}:${x.applicationId}`
                       })
                     );
@@ -189,15 +268,15 @@ export class HelpCmd implements DiscordCommand {
           this.client.users.cache.get(devID)?.tag ??
           (await this.client.users.fetch(devID).then((x) => x.tag));
         const info = {
-          [locale.en.help.information.embed.fields.name()]: `${this.client.user?.tag}`,
-          [locale.en.help.information.embed.fields.servers()]: `${this.client.guilds.cache.size}`,
-          [locale.en.help.information.embed.fields.users()]: `${this.client.guilds.cache.reduce(
+          [locale.help.information.embed.fields.name()]: `${this.client.user?.tag}`,
+          [locale.help.information.embed.fields.servers()]: `${this.client.guilds.cache.size}`,
+          [locale.help.information.embed.fields.users()]: `${this.client.guilds.cache.reduce(
             (a, b) => a + b?.memberCount,
             0
           )}`,
           'Node.js': `${process.version}`,
-          [locale.en.help.information.embed.fields.platform()]: `${process.platform} ${process.arch}`,
-          [locale.en.help.information.embed.fields.memory()]: `**${(
+          [locale.help.information.embed.fields.platform()]: `${process.platform} ${process.arch}`,
+          [locale.help.information.embed.fields.memory()]: `**${(
             process.memoryUsage().heapUsed /
             1024 /
             1024
@@ -206,20 +285,20 @@ export class HelpCmd implements DiscordCommand {
             1024 /
             1024
           ).toFixed(2)}** MB`,
-          [locale.en.help.information.embed.fields.active()]: `${parseFilteredTimeArray(
+          [locale.help.information.embed.fields.active()]: `${parseFilteredTimeArray(
             process.uptime() * 1000,
             { bold: true }
           ).join('. ')}`
         };
         return {
           color: config.meta.defaultColor,
-          title: locale.en.help.information.embed.title(),
-          description: locale.en.help.information.embed.description({
+          title: locale.help.information.embed.title(),
+          description: locale.help.information.embed.description({
             devID,
             devTag: developerTag ?? ''
           }),
           footer: {
-            text: locale.en.help.information.embed.footer()
+            text: locale.help.information.embed.footer()
           },
           fields: Object.entries(info).map(([key, value]) => {
             return {
@@ -239,24 +318,24 @@ export class HelpCmd implements DiscordCommand {
         );
         return {
           color: config.meta.defaultColor,
-          title: locale.en.help.giveaways.title(),
-          description: locale.en.help.giveaways.description({
+          title: locale.help.giveaways.title(),
+          description: locale.help.giveaways.description({
             count: documents.length
           }),
 
           fields: !documents.length
             ? [
                 {
-                  name: locale.en.help.giveaways.fields.noGiveaways.name(),
-                  value: locale.en.help.giveaways.fields.noGiveaways.value()
+                  name: locale.help.giveaways.fields.noGiveaways.name(),
+                  value: locale.help.giveaways.fields.noGiveaways.value()
                 }
               ]
             : documents.map((document) => {
                 return {
-                  name: locale.en.help.giveaways.fields.activeGiveaways.name({
+                  name: locale.help.giveaways.fields.activeGiveaways.name({
                     prize: document.prize
                   }),
-                  value: locale.en.help.giveaways.fields.activeGiveaways.value({
+                  value: locale.help.giveaways.fields.activeGiveaways.value({
                     accessCondition: document.accessCondition,
                     count: document.participants.length,
                     creatorID: document.creatorID,

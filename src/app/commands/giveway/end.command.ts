@@ -11,6 +11,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { GiveawayService } from '@src/app/providers/giveaway.service';
 import { config } from '@src/app/utils/config';
 import locale from '@src/i18n/i18n-node';
+import { MongoGuildService } from '@src/schemas/mongo/guild/guild.service';
 class EndDto {
   // @Transform(({ value }) => value.toUpperCase())
   @Param({
@@ -38,20 +39,29 @@ class EndDto {
 @UsePipes(TransformPipe)
 export class EndCmd implements DiscordTransformedCommand<EndDto> {
   private logger = new Logger(EndCmd.name);
-  constructor(private readonly giveawayService: GiveawayService) {}
+  constructor(
+    private readonly giveawayService: GiveawayService,
+    private readonly guildService: MongoGuildService
+  ) {}
   async handler(
     @Payload() dto: EndDto,
-    { interaction }: TransformedCommandExecutionContext
+    { interaction: command }: TransformedCommandExecutionContext
   ) {
-    await interaction
+    await command
       .deferReply({ ephemeral: true })
       .catch((err) => this.logger.error(err));
+    const guildDoc = await this.guildService.getLocalization(command.guildId);
+    const region = guildDoc
+      ? guildDoc
+      : command.guild?.preferredLocale == 'ru'
+      ? 'ru'
+      : 'en';
     const messageID = dto.messageID;
-    const guild = interaction.guild;
+    const guild = command.guild;
     if (!guild) return;
     const reply = async (text: string) => {
       try {
-        return await interaction.editReply({
+        return await command.editReply({
           embeds: [
             {
               color: config.meta.defaultColor,
@@ -71,7 +81,7 @@ export class EndCmd implements DiscordTransformedCommand<EndDto> {
       true
     );
     if (!guildGiveaways.length) {
-      reply(locale.en.errors.noServerGiveaways());
+      reply(locale[region].errors.noServerGiveaways());
       return;
     }
     const giveaway = messageID
@@ -80,15 +90,15 @@ export class EndCmd implements DiscordTransformedCommand<EndDto> {
       : guildGiveaways[0];
 
     if (!giveaway || giveaway.ended) {
-      reply(locale.en.errors.noFoundGiveaways());
+      reply(locale[region].errors.noFoundGiveaways());
       return;
     }
 
     await this.giveawayService.endGiveaway(giveaway.ID);
-    await interaction.followUp({
+    await command.followUp({
       embeds: [
         {
-          description: locale.en.giveaway.end.response()
+          description: locale[region].giveaway.end.response()
         }
       ],
       ephemeral: false

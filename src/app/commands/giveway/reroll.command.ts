@@ -12,6 +12,7 @@ import { GiveawayService } from '@src/app/providers/giveaway.service';
 import { config } from '@src/app/utils/config';
 import { pluralNoun } from '@src/app/utils/utils';
 import locale from '@src/i18n/i18n-node';
+import { MongoGuildService } from '@src/schemas/mongo/guild/guild.service';
 class RerollDto {
   // @Transform(({ value }) => value.toUpperCase())
   @Param({
@@ -49,23 +50,32 @@ class RerollDto {
 @UsePipes(TransformPipe)
 export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
   private logger = new Logger(RerollCmd.name);
-  constructor(private readonly giveawayService: GiveawayService) {}
+  constructor(
+    private readonly giveawayService: GiveawayService,
+    private readonly guildService: MongoGuildService
+  ) {}
   async handler(
     @Payload() dto: RerollDto,
-    { interaction }: TransformedCommandExecutionContext
+    { interaction: command }: TransformedCommandExecutionContext
   ) {
-    if (!interaction.isCommand()) return;
+    if (!command.isCommand()) return;
+    const guildDoc = await this.guildService.getLocalization(command.guildId);
+    const region = guildDoc
+      ? guildDoc
+      : command.guild?.preferredLocale == 'ru'
+      ? 'ru'
+      : 'en';
 
     const { messageID, count } = dto;
 
-    const guild = interaction.guild;
+    const guild = command.guild;
     if (!guild) return;
     const reply = async (text: string) => {
-      await interaction
+      await command
         .deferReply({ ephemeral: true })
         .catch((err) => this.logger.error(err));
       try {
-        return await interaction.editReply({
+        return await command.editReply({
           embeds: [
             {
               color: config.meta.defaultColor,
@@ -78,7 +88,7 @@ export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
       }
     };
     if (!messageID) {
-      reply(locale.en.errors.noInput.messageID());
+      reply(locale[region].errors.noInput.messageID());
       return;
     }
     const giveaway = await this.giveawayService.getGiveawayByMessage(
@@ -87,15 +97,15 @@ export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
       true
     );
     if (!giveaway || !giveaway.ended) {
-      reply(locale.en.errors.noFoundGiveaways());
+      reply(locale[region].errors.noFoundGiveaways());
       return;
     }
 
     if (giveaway.participants.length <= 1) {
-      reply(locale.en.errors.notEnoughMembers());
+      reply(locale[region].errors.notEnoughMembers());
       return;
     }
-    await interaction.deferReply({}).catch((err) => this.logger.error(err));
+    await command.deferReply({}).catch((err) => this.logger.error(err));
     const winners = await this.giveawayService.getWinners(
       guild,
       giveaway,
@@ -105,16 +115,18 @@ export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
       { ID: giveaway.ID },
       { winners: winners }
     );
-    await interaction.followUp({
+    await command.followUp({
       embeds: [
         {
           description: `${pluralNoun(
             giveaway.winnerCount,
-            ...Object.values(locale.en.default.winnersNouns).map((x) => x())
+            ...Object.values(locale[region].default.winnersNouns).map((x) =>
+              x()
+            )
           )}: ${
             winners.length > 0
               ? winners.map((w) => `<@${w.userID}>`).join(', ')
-              : ` ${locale.en.default.error()}`
+              : ` ${locale[region].default.error()}`
           }`
         }
       ]

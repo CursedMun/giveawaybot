@@ -1,8 +1,3 @@
-import {
-  ButtonStyle,
-  ComponentType,
-  InteractionUpdateOptions
-} from 'discord.js';
 import { developmentconfig } from './developmentconfig';
 
 const meta = {
@@ -30,57 +25,8 @@ const emojis = {
   confirmEmojis: ['✅', '❌']
 };
 const embeds = {
-  helpEmbed: (userID: string) =>
-    ({
-      components: [
-        {
-          type: ComponentType.ActionRow,
-          components: [
-            {
-              label: 'Команды',
-              customId: `help.commands.${userID}`,
-              type: ComponentType.Button,
-              style: ButtonStyle.Primary
-            },
-            {
-              label: 'Информация',
-              customId: `help.information.${userID}`,
-              type: ComponentType.Button,
-              style: ButtonStyle.Secondary
-            },
-            {
-              label: 'Активные розыгрыши',
-              customId: `help.giveaways.${userID}`,
-              type: ComponentType.Button,
-              style: ButtonStyle.Secondary
-            }
-          ]
-        },
-        {
-          type: ComponentType.ActionRow,
-          components: [
-            {
-              label: 'Оставить отзыв',
-              customId: `help.feedback.${userID}`,
-              type: ComponentType.Button,
-              style: ButtonStyle.Danger,
-              disabled: true
-            },
-            {
-              label: 'Ko-fi (Support me)',
-              type: ComponentType.Button,
-              style: ButtonStyle.Link,
-              url: 'https://ko-fi.com/giveawaybot'
-            }
-          ]
-        }
-      ]
-    } as InteractionUpdateOptions),
   defaultHelpEmbed: {
-    color: meta.defaultColor,
-    image: {
-      url: 'https://cdn.discordapp.com/attachments/980765606364205056/1027880626466070578/give_bot_ru.png'
-    }
+    color: meta.defaultColor
   }
 };
 

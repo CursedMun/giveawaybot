@@ -1,6 +1,7 @@
 import { On } from '@discord-nestjs/core';
 import { Injectable, Logger, UseGuards } from '@nestjs/common';
 import locale from '@src/i18n/i18n-node';
+import { MongoGuildService } from '@src/schemas/mongo/guild/guild.service';
 import { ModalComponents } from '@src/types/global';
 import {
   ButtonInteraction,
@@ -28,7 +29,8 @@ export class GiveawayEvents {
   private timeoutUsers = {} as Record<string, number>;
   constructor(
     private readonly giveawayService: GiveawayService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly guildService: MongoGuildService
   ) {}
   private readonly logger = new Logger(GiveawayEvents.name);
 
@@ -42,6 +44,12 @@ export class GiveawayEvents {
       string
     ];
     if (name != 'giveaway') return;
+    const guildDoc = await this.guildService.getLocalization(button.guildId);
+    const region = guildDoc
+      ? guildDoc
+      : button.guild?.preferredLocale == 'ru'
+      ? 'ru'
+      : 'en';
     if (action == 'join') {
       if (
         this.timeoutUsers[button.user.id] &&
@@ -54,11 +62,13 @@ export class GiveawayEvents {
           .followUp({
             embeds: [
               {
-                title: locale.en.onJoinGiveaway.cooldown.title(),
+                title: locale[region].onJoinGiveaway.cooldown.title(),
                 color: config.meta.defaultColor,
-                description: locale.en.onJoinGiveaway.cooldown.description({
-                  time: Math.round(this.timeoutUsers[button.user.id] / 1e3)
-                })
+                description: locale[region].onJoinGiveaway.cooldown.description(
+                  {
+                    time: Math.round(this.timeoutUsers[button.user.id] / 1e3)
+                  }
+                )
               }
             ],
             ephemeral: true
@@ -68,7 +78,8 @@ export class GiveawayEvents {
       }
       const response = await this.giveawayService.onJoin(
         button.member as GuildMember,
-        giveawayID
+        giveawayID,
+        region
       );
       if (response.number) {
         const components = [
@@ -78,7 +89,7 @@ export class GiveawayEvents {
               {
                 type: ComponentType.TextInput,
                 customId: this.randomNumberID,
-                label: locale.en.onJoinGiveaway.guessNumber(),
+                label: locale[region].onJoinGiveaway.guessNumber(),
                 placeholder: response.prompt ?? '',
                 style: TextInputStyle.Short,
                 required: true,
@@ -105,8 +116,8 @@ export class GiveawayEvents {
           embeds: [
             {
               title: response.success
-                ? locale.en.onJoinGiveaway.join.title()
-                : locale.en.onJoinGiveaway.join.errorTitle(),
+                ? locale[region].onJoinGiveaway.join.title()
+                : locale[region].onJoinGiveaway.join.errorTitle(),
               color: config.meta.defaultColor,
               description: response.reason
             }
@@ -165,16 +176,16 @@ export class GiveawayEvents {
             ? documents
                 .map((doc, index) =>
                   typeof doc.number != 'number'
-                    ? locale.en.giveaway.list.text({
+                    ? locale[region].giveaway.list.text({
                         index: index + 1,
                         userID: doc.ID
                       })
                     : doc.number === parseInt(doc.need?.toString() ?? '0')
-                    ? locale.en.giveaway.list.completedText({
+                    ? locale[region].giveaway.list.completedText({
                         index: index + 1,
                         userID: doc.ID
                       })
-                    : locale.en.giveaway.list.additionalText({
+                    : locale[region].giveaway.list.additionalText({
                         index: index + 1,
                         userID: doc.ID,
                         current: doc.number,
@@ -182,18 +193,18 @@ export class GiveawayEvents {
                       })
                 )
                 .join('\n')
-            : locale.en.default.empty();
+            : locale[region].default.empty();
         return {
           currentIndex,
           message: {
             embeds: [
               {
-                title: locale.en.giveaway.list.title(),
+                title: locale[region].giveaway.list.title(),
                 color: config.meta.defaultColor,
                 description: text,
                 url: 'https://www.random.org/',
                 footer: {
-                  text: locale.en.giveaway.list.footer({
+                  text: locale[region].giveaway.list.footer({
                     page:
                       pageCount < currentIndex + 1
                         ? pageCount
@@ -224,17 +235,17 @@ export class GiveawayEvents {
         .editReply({
           embeds: [
             {
-              title: locale.en.giveaway.verify.title(),
+              title: locale[region].giveaway.verify.title(),
               color: config.meta.defaultColor,
               description: !response
-                ? locale.en.default.error()
+                ? locale[region].default.error()
                 : typeof response.current != 'number'
-                ? locale.en.giveaway.verify.notIn()
+                ? locale[region].giveaway.verify.notIn()
                 : `${
                     response.current === parseInt(response.need)
                       ? '<:__:1028466516531892224>'
                       : ''
-                  }${locale.en.giveaway.verify.description({
+                  }${locale[region].giveaway.verify.description({
                     current: response.current,
                     need: response.need.toString() ?? ''
                   })}`
@@ -306,8 +317,7 @@ export class GiveawayEvents {
           return;
         }
         const response = await this.giveawayService.onJoin(member, giveaway.ID);
-        if (response.reason == locale.en.onJoinGiveaway.alreadyParticipate())
-          return;
+        if (response.alreadyParticipant) return;
         if (!response.success) await reaction.users.remove(user.id);
       }
     } catch (err) {
@@ -357,19 +367,23 @@ export class GiveawayEvents {
       )
         return;
       else category = true;
-      const user = await this.userService.getUser(
-        oldState.member.id,
-        false,
-        20
-      );
+      const [user, guildLocal] = await Promise.all([
+        this.userService.getUser(oldState.member.id, false, 20),
+        this.guildService.getLocalization(oldState.guild.id)
+      ]);
+      const region = guildLocal
+        ? guildLocal
+        : oldState.guild?.preferredLocale == 'ru'
+        ? 'ru'
+        : 'en';
       if (user && user.settings.voiceNotifications)
         await oldState.member
           .send({
             embeds: [
               {
-                title: locale.en.giveaway.onLeave.title(),
+                title: locale[region].giveaway.onLeave.title(),
                 color: config.meta.defaultColor,
-                description: locale.en.giveaway.onLeave.description()
+                description: locale[region].giveaway.onLeave.description()
               }
             ]
           })
@@ -390,9 +404,9 @@ export class GiveawayEvents {
             .send({
               embeds: [
                 {
-                  title: locale.en.giveaway.onReturn.title(),
+                  title: locale[region].giveaway.onReturn.title(),
                   color: config.meta.defaultColor,
-                  description: locale.en.giveaway.onReturn.description()
+                  description: locale[region].giveaway.onReturn.description()
                 }
               ]
             })

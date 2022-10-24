@@ -3,6 +3,7 @@ import { UserSettings } from '@mongo/user/user.schema';
 import { MongoUserService } from '@mongo/user/user.service';
 import { Injectable, Logger } from '@nestjs/common';
 import locale from '@src/i18n/i18n-node';
+import { MongoGuildService } from '@src/schemas/mongo/guild/guild.service';
 import { config } from '@utils/config';
 import { CommandInteraction, ComponentType, Message } from 'discord.js';
 @Injectable()
@@ -17,22 +18,31 @@ import { CommandInteraction, ComponentType, Message } from 'discord.js';
 })
 export class NotificationsCmd implements DiscordCommand {
   private logger = new Logger(NotificationsCmd.name);
-  constructor(private readonly usersService: MongoUserService) {}
+  constructor(
+    private readonly usersService: MongoUserService,
+    private readonly guildService: MongoGuildService
+  ) {}
   async handler(command: CommandInteraction) {
     await command.deferReply({}).catch((err) => this.logger.error(err));
+    const guildDoc = await this.guildService.getLocalization(command.guildId);
+    const region = guildDoc
+      ? guildDoc
+      : command.guild?.preferredLocale == 'ru'
+      ? 'ru'
+      : 'en';
     const user = await this.usersService.get(command.user.id, 5);
-    const options = locale.en.notification.options;
+    const options = locale[region].notification.options;
 
     const message = await command
       .editReply({
         embeds: [
           {
             color: config.meta.defaultColor,
-            title: locale.en.notification.title(),
+            title: locale[region].notification.title(),
             thumbnail: {
               url: command.user.displayAvatarURL() || ''
             },
-            description: locale.en.notification.description()
+            description: locale[region].notification.description()
           }
         ],
         components: [
@@ -42,8 +52,8 @@ export class NotificationsCmd implements DiscordCommand {
               {
                 customId: 'notifications',
                 type: ComponentType.SelectMenu,
-                label: locale.en.default.notification(),
-                placeholder: locale.en.notification.placeholder(),
+                label: locale[region].default.notification(),
+                placeholder: locale[region].notification.placeholder(),
                 emoji: '<:point:1014108607098404925>',
                 options: Object.entries(options).map((item) => {
                   return {
@@ -96,30 +106,30 @@ export class NotificationsCmd implements DiscordCommand {
               url: command.user.displayAvatarURL() || ''
             },
             color: config.meta.defaultColor,
-            title: locale.en.notification.response.description.text(),
+            title: locale[region].notification.response.description.text(),
             fields: [
               {
-                name: locale.en.notification.response.description.was(),
+                name: locale[region].notification.response.description.was(),
                 value: selected
                   .map(
                     (v) =>
                       `${options[v]()}: **${
                         user.settings[v]
-                          ? locale.en.default.on()
-                          : locale.en.default.off()
+                          ? locale[region].default.on()
+                          : locale[region].default.off()
                       }**`
                   )
                   .join('\n')
               },
               {
-                name: locale.en.notification.response.description.is(),
+                name: locale[region].notification.response.description.is(),
                 value: selected
                   .map(
                     (v) =>
                       `**${options[v]()}: ${
                         items[v]
-                          ? locale.en.default.on()
-                          : locale.en.default.off()
+                          ? locale[region].default.on()
+                          : locale[region].default.off()
                       }**`
                   )
                   .join('\n')
