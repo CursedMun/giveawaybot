@@ -3,7 +3,9 @@ import { MongoGiveawayService } from '@mongo/giveaway/giveaway.service';
 import { MongoUserService } from '@mongo/user/user.service';
 import { Injectable, Logger } from '@nestjs/common';
 import locale from '@src/i18n/i18n-node';
+import { Locales } from '@src/i18n/i18n-types';
 import { Giveaway } from '@src/schemas/mongo/giveaway/giveaway.schema';
+import { MongoGuildService } from '@src/schemas/mongo/guild/guild.service';
 import {
   GiveawayAccessСondition,
   GiveawayAdditionalCondition,
@@ -42,7 +44,8 @@ export class GiveawayService {
     @InjectDiscordClient()
     private readonly client: Client,
     public readonly userService: MongoUserService,
-    public readonly giveawayService: MongoGiveawayService
+    public readonly giveawayService: MongoGiveawayService,
+    private readonly guildService: MongoGuildService
   ) {}
   //global
   async check() {
@@ -203,6 +206,12 @@ export class GiveawayService {
       )) || '') as string;
       const prevValues = prevValuesFromCache.split('|') as string[];
       const newValues = prevValues.splice(prevValues.indexOf(doc.ID), 1);
+      const guildDoc = await this.guildService.getLocalization(doc.guildID);
+      const region = guildDoc
+        ? guildDoc
+        : channel.guild?.preferredLocale == 'ru'
+        ? 'ru'
+        : 'en';
       await Promise.allSettled([
         winners.map(async (winner) => {
           const user = await this.userService.get(winner.userID);
@@ -212,12 +221,13 @@ export class GiveawayService {
               ?.send({
                 embeds: [
                   {
-                    title: locale.en.endGiveaway.winnersMessage.title(),
+                    title: locale[region].endGiveaway.winnersMessage.title(),
                     color: config.meta.defaultColor,
-                    description:
-                      locale.en.endGiveaway.winnersMessage.description({
-                        prize: doc.prize
-                      })
+                    description: locale[
+                      region
+                    ].endGiveaway.winnersMessage.description({
+                      prize: doc.prize
+                    })
                   }
                 ]
               })
@@ -238,13 +248,13 @@ export class GiveawayService {
         message.edit({
           embeds: [
             {
-              title: locale.en.endGiveaway.title(),
+              title: locale[region].endGiveaway.title(),
               color: config.meta.defaultColor,
-              description: locale.en.endGiveaway.description({
+              description: locale[region].endGiveaway.description({
                 creatorID: doc.creatorID,
                 prize: doc.prize,
                 winners: !winners.length
-                  ? locale.en.default.missing()
+                  ? locale[region].default.missing()
                   : winners.map((x) => `<@${x.userID}>`).join(' ')
               }),
               url: 'https://www.random.org',
@@ -252,7 +262,7 @@ export class GiveawayService {
                 url: 'https://media.discordapp.net/attachments/980765606364205056/992518849171816588/d9b3274479f17669.png'
               },
               footer: {
-                text: locale.en.endGiveaway.footer(),
+                text: locale[region].endGiveaway.footer(),
                 icon_url:
                   'https://is5-ssl.mzstatic.com/image/thumb/Purple114/v4/4c/b0/fe/4cb0fed2-2dd1-6813-1dbf-c397d2f9700e/AppIcon-1x_U007emarketing-0-5-0-0-85-220.png/400x400.png'
               }
@@ -273,7 +283,7 @@ export class GiveawayService {
       );
     }
   }
-  async createGiveaway(data: GiveawayCreationData) {
+  async createGiveaway(data: GiveawayCreationData, region: Locales) {
     const {
       prize,
       endTime,
@@ -313,14 +323,14 @@ export class GiveawayService {
                 {
                   customId: `giveaway.join.${id}`,
                   type: ComponentType.Button,
-                  label: locale.en.giveaway.updateEmbed.participate(),
+                  label: locale[region].giveaway.updateEmbed.participate(),
                   style: ButtonStyle.Success
                 },
                 additionalCondition !== 'guess'
                   ? {
                       customId: `giveaway.list.${id}`,
                       type: ComponentType.Button,
-                      label: locale.en.giveaway.updateEmbed.participants({
+                      label: locale[region].giveaway.updateEmbed.participants({
                         count: 0
                       }),
                       style: ButtonStyle.Primary
@@ -330,7 +340,7 @@ export class GiveawayService {
                   ? {
                       customId: `giveaway.verify.${id}`,
                       type: ComponentType.Button,
-                      label: locale.en.giveaway.updateEmbed.verify(),
+                      label: locale[region].giveaway.updateEmbed.verify(),
                       style: ButtonStyle.Primary
                     }
                   : undefined
@@ -342,25 +352,27 @@ export class GiveawayService {
       .send({
         embeds: [
           {
-            title: locale.en.createGiveaway.title({ prize }),
+            title: locale[region].createGiveaway.title({ prize }),
             color: config.meta.defaultColor,
-            description: locale.en.createGiveaway.description.default({
-              rest: `${locale.en.createGiveaway.description.access[
+            description: locale[region].createGiveaway.description.default({
+              rest: `${locale[region].createGiveaway.description.access[
                 doc.accessCondition
               ]({
                 emoji: config.emojis.giveaway
-              })}${locale.en.createGiveaway.description[doc.voiceCondition]()}${
+              })}${locale[region].createGiveaway.description[
+                doc.voiceCondition
+              ]()}${
                 doc.additionalCondition
-                  ? locale.en.createGiveaway.description.additional[
+                  ? locale[region].createGiveaway.description.additional[
                       doc.additionalCondition
                     ]({ count: number ?? '0' })
                   : ''
-              }${locale.en.createGiveaway.description.time({
+              }${locale[region].createGiveaway.description.time({
                 time: Math.round(doc.endDate / 1000)
               })} `
             }),
             footer: {
-              text: locale.en.createGiveaway.footer()
+              text: locale[region].createGiveaway.footer()
             },
             url: `https://www.random.org`,
             thumbnail: {
@@ -534,7 +546,8 @@ export class GiveawayService {
   //Giveaway handler
   async onJoin(
     member: GuildMember,
-    ID: string
+    ID: string,
+    region: Locales = 'en'
   ): Promise<{
     reason: string;
     success: boolean;
@@ -542,13 +555,17 @@ export class GiveawayService {
     prompt?: string;
     condition?: GiveawayVoiceCondition;
     totalParticipants?: number;
+    alreadyParticipant?: boolean;
   }> {
     const doc = await this.getGiveaway(ID, true);
     if (!doc)
-      return { reason: locale.en.errors.noFoundGiveaways(), success: false };
+      return {
+        reason: locale[region].errors.noFoundGiveaways(),
+        success: false
+      };
     if (doc.voiceCondition === 'voice' && !member.voice.channel)
       return {
-        reason: locale.en.onJoinGiveaway.noVoice(),
+        reason: locale[region].onJoinGiveaway.noVoice(),
         success: false
       };
     if (
@@ -557,19 +574,20 @@ export class GiveawayService {
         member.voice.channel.parent.id !== doc.number)
     )
       return {
-        reason: locale.en.onJoinGiveaway.noCategory({
+        reason: locale[region].onJoinGiveaway.noCategory({
           category: doc.number ?? ''
         }),
         success: false
       };
     if (doc.participants.find((x) => x.ID == member.id))
       return {
-        reason: locale.en.onJoinGiveaway.alreadyParticipate(),
+        reason: locale[region].onJoinGiveaway.alreadyParticipate(),
+        alreadyParticipant: true,
         success: false
       };
     if (doc.additionalCondition === 'guess') {
       return {
-        reason: locale.en.onJoinGiveaway.alreadyParticipate(),
+        reason: locale[region].onJoinGiveaway.alreadyParticipate(),
         number: doc.number,
         prompt: doc.prompt,
         success: true
@@ -582,13 +600,15 @@ export class GiveawayService {
     doc.participants.push({ ID: member.id });
     return {
       reason: `${
-        locale.en.createGiveaway.reason.additional[doc.additionalCondition]({
+        locale[region].createGiveaway.reason.additional[
+          doc.additionalCondition
+        ]({
           count: doc.number
         }) ?? ''
       }${
         doc.voiceCondition === 'voice'
-          ? locale.en.onJoinGiveaway.voiceCondition.voice()
-          : locale.en.onJoinGiveaway.joined()
+          ? locale[region].onJoinGiveaway.voiceCondition.voice()
+          : locale[region].onJoinGiveaway.joined()
       }`,
       success: true,
       condition: doc.voiceCondition,

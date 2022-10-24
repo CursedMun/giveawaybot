@@ -10,6 +10,8 @@ import {
   GiveawayService
 } from '@providers/giveaway.service';
 import { UserService } from '@src/app/providers/user.service';
+import { Locales } from '@src/i18n/i18n-types';
+import { MongoGuildService } from '@src/schemas/mongo/guild/guild.service';
 import {
   GiveawayAccessСondition,
   GiveawayAdditionalCondition,
@@ -59,19 +61,29 @@ export class GiveawayStartCommand implements DiscordCommand {
   private readonly promptID = 'prompt';
   private readonly tempCache = { premium: 0 } as Record<
     string,
-    Partial<GiveawayCreationData> & { premium?: 0 | 1 | 2 }
+    Partial<GiveawayCreationData> & {
+      premium?: 0 | 1 | 2;
+      region?: Locales;
+    }
   >;
   constructor(
     @InjectDiscordClient()
     private readonly client: Client,
     private readonly giveawayService: GiveawayService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly guildService: MongoGuildService
   ) {}
   //Send First Modal
-  async handler(interaction: CommandInteraction) {
+  async handler(command: CommandInteraction) {
     try {
-      if (!interaction.guild) return;
-      const channel = interaction.channel as TextChannel;
+      if (!command.guild) return;
+      const guildDoc = await this.guildService.getLocalization(command.guildId);
+      const region = guildDoc
+        ? guildDoc
+        : command.guild?.preferredLocale == 'ru'
+        ? 'ru'
+        : 'en';
+      const channel = command.channel as TextChannel;
       if (
         channel
           .permissionsFor(this.client.user?.id ?? '')
@@ -81,17 +93,17 @@ export class GiveawayStartCommand implements DiscordCommand {
           embeds: [
             {
               color: config.meta.defaultColor,
-              description: locale.en.errors.noPerms.description(),
+              description: locale[region].errors.noPerms.description(),
               fields: [
                 {
-                  name: locale.en.errors.noPerms.field(),
-                  value: locale.en.errors.noPerms.value({
+                  name: locale[region].errors.noPerms.field(),
+                  value: locale[region].errors.noPerms.value({
                     perm:
                       channel
                         .permissionsFor(this.client.user?.id ?? '')
                         ?.has('SendMessages') === false
-                        ? locale.en.errors.noSendMessagePerm()
-                        : locale.en.admin()
+                        ? locale[region].errors.noSendMessagePerm()
+                        : locale[region].admin()
                   })
                 }
               ]
@@ -100,34 +112,35 @@ export class GiveawayStartCommand implements DiscordCommand {
           ephemeral: true
         };
       }
-      if (!interaction.guild) return;
+      if (!command.guild) return;
 
       const [premium, giveaways] = await Promise.all([
-        this.userService.verifyPremium(interaction.guild.ownerId),
+        this.userService.verifyPremium(command.guild.ownerId),
         this.giveawayService.giveawayService.countDocuments(
-          { guildID: interaction.guild.id },
+          { guildID: command.guild.id },
           5
         )
       ]);
-      this.tempCache[interaction.user.id] = {
-        premium
+      this.tempCache[command.user.id] = {
+        premium,
+        region
       };
       if (giveaways >= config.premiumAccess[premium].maxGiveaways) {
         const docs = await this.giveawayService.checkNotEndedGiveaways(
-          interaction.guild.id
+          command.guild.id
         );
         if (docs.length >= config.premiumAccess[premium].maxGiveaways)
           return {
             embeds: [
               {
                 color: config.meta.defaultColor,
-                description: locale.en.errors.maxGiveaways()
+                description: locale[region].errors.maxGiveaways()
               }
             ],
             ephemeral: true
           };
       }
-      await interaction.showModal({
+      await command.showModal({
         customId: this.gsModalID,
         title: 'Giveaway',
         components: [
@@ -137,8 +150,8 @@ export class GiveawayStartCommand implements DiscordCommand {
               {
                 type: ComponentType.TextInput,
                 customId: this.prizeModalID,
-                label: locale.en.giveaway.modal.prize(),
-                placeholder: locale.en.giveaway.modal.prizePlaceholder(),
+                label: locale[region].giveaway.modal.prize(),
+                placeholder: locale[region].giveaway.modal.prizePlaceholder(),
                 style: TextInputStyle.Short,
                 required: true,
                 maxLength: 250
@@ -151,8 +164,8 @@ export class GiveawayStartCommand implements DiscordCommand {
               {
                 type: ComponentType.TextInput,
                 customId: this.timeModalID,
-                label: locale.en.giveaway.modal.duration(),
-                placeholder: locale.en.giveaway.modal.maxDuration({
+                label: locale[region].giveaway.modal.duration(),
+                placeholder: locale[region].giveaway.modal.maxDuration({
                   number: premium == 0 ? 1 : premium == 2 ? 2 : 4
                 }),
                 style: TextInputStyle.Short,
@@ -167,8 +180,10 @@ export class GiveawayStartCommand implements DiscordCommand {
               {
                 type: ComponentType.TextInput,
                 customId: this.winnerscountModalID,
-                label: locale.en.giveaway.modal.winnersCount(),
-                placeholder: locale.en.giveaway.modal.winnersCountPlaceholder({
+                label: locale[region].giveaway.modal.winnersCount(),
+                placeholder: locale[
+                  region
+                ].giveaway.modal.winnersCountPlaceholder({
                   max: config.premiumAccess[premium].maxWinners
                 }),
                 style: TextInputStyle.Short,
@@ -183,8 +198,8 @@ export class GiveawayStartCommand implements DiscordCommand {
               {
                 type: ComponentType.TextInput,
                 customId: this.channelModalID,
-                label: locale.en.giveaway.modal.channel(),
-                value: interaction.channelId,
+                label: locale[region].giveaway.modal.channel(),
+                value: command.channelId,
                 style: TextInputStyle.Short,
                 required: true,
                 maxLength: 100
@@ -197,7 +212,7 @@ export class GiveawayStartCommand implements DiscordCommand {
           //     {
           //       type: ComponentType.TextInput,
           //       customId: this.channelModalID + '10',
-          //       label: locale.en.giveaway.modal.channel(),
+          //       label: locale[region].giveaway.modal.channel(),
           //       value: interaction.channelId,
           //       style: TextInputStyle.Short,
           //       required: true,
@@ -221,18 +236,19 @@ export class GiveawayStartCommand implements DiscordCommand {
     await modal.deferReply({}).catch(() => {});
     const { prize, time, winnersCount, giveawayChannel, msduration } =
       correctContent;
+    const region = this.tempCache[modal.user.id].region ?? 'en';
     const confirmComponents = [
       {
         type: ComponentType.ActionRow,
         components: [
           {
-            label: locale.en.default.accept(),
+            label: locale[region].default.accept(),
             customId: `gs.${modal.user.id}.confirm`,
             type: ComponentType.Button,
             style: ButtonStyle.Success
           },
           {
-            label: locale.en.default.reject(),
+            label: locale[region].default.reject(),
             customId: `gs.${modal.user.id}.reject`,
             type: ComponentType.Button,
             style: ButtonStyle.Danger
@@ -244,23 +260,23 @@ export class GiveawayStartCommand implements DiscordCommand {
       .editReply({
         embeds: [
           {
-            title: locale.en.giveaway.modalReply.title(),
+            title: locale[region].giveaway.modalReply.title(),
             color: config.meta.defaultColor,
             description: [
-              locale.en.giveaway.modalReply.description({
-                type: locale.en.default.prize(),
+              locale[region].giveaway.modalReply.description({
+                type: locale[region].default.prize(),
                 description: `**${prize}**`
               }),
-              locale.en.giveaway.modalReply.description({
-                type: locale.en.default.duration(),
+              locale[region].giveaway.modalReply.description({
+                type: locale[region].default.duration(),
                 description: `**${time}**`
               }),
-              locale.en.giveaway.modalReply.description({
-                type: locale.en.default.winnersCount(),
+              locale[region].giveaway.modalReply.description({
+                type: locale[region].default.winnersCount(),
                 description: `**${winnersCount}**`
               }),
-              locale.en.giveaway.modalReply.description({
-                type: locale.en.default.channel(),
+              locale[region].giveaway.modalReply.description({
+                type: locale[region].default.channel(),
                 description: `${giveawayChannel}`
               })
             ].join('\n'),
@@ -301,14 +317,14 @@ export class GiveawayStartCommand implements DiscordCommand {
       await interaction.message?.delete().catch(() => {});
       return;
     }
-
+    const region = this.tempCache[interaction.user.id].region ?? 'en';
     switch (action) {
       case 'confirm': {
         try {
           await interaction.deferUpdate({}).catch(() => null);
-          const options = Object.entries(locale.en.giveaway.voiceCondition).map(
-            ([k, v]) => ({ name: v(), condition: k })
-          );
+          const options = Object.entries(
+            locale[region].giveaway.voiceCondition
+          ).map(([k, v]) => ({ name: v(), condition: k }));
           const components = [
             {
               type: ComponentType.ActionRow,
@@ -325,8 +341,8 @@ export class GiveawayStartCommand implements DiscordCommand {
               message: {
                 embeds: [
                   {
-                    title: locale.en.giveaway.response.title(),
-                    description: locale.en.giveaway.response.description({
+                    title: locale[region].giveaway.response.title(),
+                    description: locale[region].giveaway.response.description({
                       userID: interaction.user.id
                     }),
                     color: config.meta.defaultColor,
@@ -369,15 +385,17 @@ export class GiveawayStartCommand implements DiscordCommand {
               message: {
                 embeds: [
                   {
-                    title: `${locale.en.giveaway.response.titleTwo()} ${locale.en.giveaway.voiceCondition[
-                      voiceCondition
-                    ]()}`,
+                    title: `${locale[
+                      region
+                    ].giveaway.response.titleTwo()} ${locale[
+                      region
+                    ].giveaway.voiceCondition[voiceCondition]()}`,
                     description:
-                      locale.en.giveaway.response.descriptionTwo({
+                      locale[region].giveaway.response.descriptionTwo({
                         userID: interaction.user.id
                       }) +
                       (premium < 2
-                        ? locale.en.giveaway.response.noDonate()
+                        ? locale[region].giveaway.response.noDonate()
                         : ''),
                     color: config.meta.defaultColor,
                     thumbnail: {
@@ -392,23 +410,27 @@ export class GiveawayStartCommand implements DiscordCommand {
                       {
                         customId: `select.${interaction.user.id}.condition`,
                         type: ComponentType.SelectMenu,
-                        placeholder: locale.en.giveaway.response.options(),
+                        placeholder: locale[region].giveaway.response.options(),
                         emoji: '<:point:1014108607098404925>',
                         options: optionsJson
                           .filter((x) => !x.disabled)
                           .map((option, index) => {
                             return {
                               disabled: option.disabled,
-                              label: `${
-                                index + 1
-                              } ${locale.en.default.option()}`,
+                              label: `${index + 1} ${locale[
+                                region
+                              ].default.option()}`,
                               value: index.toString(),
-                              description: `${locale.en.giveaway.accessConditions[
+                              description: `${locale[
+                                region
+                              ].giveaway.accessConditions[
                                 option.accessCondition
                               ]()}
                               ${
                                 option.additionalCondition
-                                  ? ` (${locale.en.giveaway.additionalConditions[
+                                  ? ` (${locale[
+                                      region
+                                    ].giveaway.additionalConditions[
                                       option.additionalCondition
                                     ]()})`
                                   : ''
@@ -517,11 +539,11 @@ export class GiveawayStartCommand implements DiscordCommand {
     //       embeds: [
     //         {
     //           color: config.meta.defaultColor,
-    //           description: locale.en.errors.noPerms.description(),
+    //           description: locale[region].errors.noPerms.description(),
     //           fields: [
     //             {
-    //               name: locale.en.errors.noPerms.field(),
-    //               value: locale.en.errors.noPerms.value({
+    //               name: locale[region].errors.noPerms.field(),
+    //               value: locale[region].errors.noPerms.value({
     //                 perm: 'Manage Server'
     //               })
     //             }
@@ -536,6 +558,8 @@ export class GiveawayStartCommand implements DiscordCommand {
       ...this.tempCache[userID],
       ...option
     };
+    const region = this.tempCache[interaction.user.id].region ?? 'en';
+
     if (typeof option.additionalCondition === 'string') {
       const components = [
         {
@@ -545,7 +569,7 @@ export class GiveawayStartCommand implements DiscordCommand {
               type: ComponentType.TextInput,
               customId: this.numberID,
               label:
-                locale.en.giveaway.additionalQuestion[
+                locale[region].giveaway.additionalQuestion[
                   option.additionalCondition
                 ](),
               style: TextInputStyle.Short,
@@ -561,7 +585,8 @@ export class GiveawayStartCommand implements DiscordCommand {
                 {
                   type: ComponentType.TextInput,
                   customId: this.promptID,
-                  label: locale.en.giveaway.additionalQuestion.guessPrompt(),
+                  label:
+                    locale[region].giveaway.additionalQuestion.guessPrompt(),
                   style: TextInputStyle.Short,
                   required: true,
                   maxLength: 100
@@ -589,7 +614,7 @@ export class GiveawayStartCommand implements DiscordCommand {
             : this.tempCache[userID].winnersCount
       };
       await interaction.message.delete().catch(() => null);
-      this.giveawayService.createGiveaway(last as GiveawayCreationData);
+      this.giveawayService.createGiveaway(last as GiveawayCreationData, region);
     } catch (e) {
       this.logger.error(e);
     }
@@ -609,6 +634,7 @@ export class GiveawayStartCommand implements DiscordCommand {
       string,
       GiveawayAdditionalCondition
     ];
+    const region = this.tempCache[modal.user.id].region ?? 'en';
     const [number, prompt] = [
       condition == 'category'
         ? modal.fields.getTextInputValue(this.numberID)
@@ -630,6 +656,7 @@ export class GiveawayStartCommand implements DiscordCommand {
         ]
       });
     };
+
     if (
       (typeof number == 'number' &&
         number >= 10000 &&
@@ -637,13 +664,16 @@ export class GiveawayStartCommand implements DiscordCommand {
         isNaN(number)) ||
       !number
     ) {
-      await reply(locale.en.default.error());
+      await reply(locale[region].default.error());
       return null;
     }
     try {
       const last = { ...this.tempCache[userID], number, prompt };
       await modal.message?.delete().catch(() => null);
-      await this.giveawayService.createGiveaway(last as GiveawayCreationData);
+      await this.giveawayService.createGiveaway(
+        last as GiveawayCreationData,
+        region
+      );
     } catch (e) {
       this.logger.error(e);
     }
@@ -662,6 +692,7 @@ export class GiveawayStartCommand implements DiscordCommand {
         ]
       });
     };
+    const region = this.tempCache[modal.user.id].region ?? 'en';
     const [prize, time, winnersCount, channel] = [
       modal.fields.getTextInputValue(this.prizeModalID),
       modal.fields.getTextInputValue(this.timeModalID),
@@ -676,7 +707,7 @@ export class GiveawayStartCommand implements DiscordCommand {
         config.premiumAccess[this.tempCache[modal.user.id].premium ?? 0]
           .maxDuration
     ) {
-      await reply(locale.en.errors.noInput.time());
+      await reply(locale[region].errors.noInput.time());
       return null;
     }
     const giveawayChannel = (modal.guild?.channels.cache.get(channel) ||
@@ -684,7 +715,7 @@ export class GiveawayStartCommand implements DiscordCommand {
         (x) => x.name == channel
       )) as TextChannel;
     if (!giveawayChannel) {
-      await reply(locale.en.errors.noInput.channel());
+      await reply(locale[region].errors.noInput.channel());
       return null;
     }
     if (
@@ -692,7 +723,7 @@ export class GiveawayStartCommand implements DiscordCommand {
         .permissionsFor(modal.client.user?.id ?? '')
         ?.has('SendMessages')
     ) {
-      await reply(locale.en.errors.noSendMessagePerm());
+      await reply(locale[region].errors.noSendMessagePerm());
       return null;
     }
     if (
@@ -703,7 +734,7 @@ export class GiveawayStartCommand implements DiscordCommand {
       winnersCount <= 0 ||
       isNaN(winnersCount)
     ) {
-      await reply(locale.en.errors.noInput.winnersCount());
+      await reply(locale[region].errors.noInput.winnersCount());
       return null;
     }
 

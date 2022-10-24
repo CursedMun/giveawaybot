@@ -4,263 +4,272 @@ const en: BaseTranslation = {
   // TODO: your translations go here
   errors: {
     noPerms: {
-      description: 'Недостаточно прав для использования команды',
-      field: 'Нужные права',
-      value: '` ⚪ {perm:string} ` ` Вкл `'
+      description: 'Insufficient permissions to use the command',
+      field: 'Required rights',
+      value: '` ⚪ {perm:string} ` ` On `'
     },
     noInput: {
-      time: 'Неверно указано время',
-      channel: 'Неверно указан канал',
-      winnersCount: 'Неверно указано кол-во победителей',
-      messageID: 'Неверно указан ID сообщение'
+      time: 'The time is incorrect',
+      channel: 'The channel is specified incorrectly',
+      winnersCount: 'The number of winners is incorrect',
+      messageID: 'The message ID is specified incorrectly'
     },
-    notEnoughMembers: 'Недостаточно участников',
-    noSendMessagePerm: 'Недостаточно прав для отправки сообщений в канал',
-    maxGiveaways: 'Превышено максимальное кол-во розыгрышей на сервере',
-    noServerGiveaways: 'На сервере нет активных розыгрышей',
-    noFoundGiveaways: 'Розыгрыш не найден или уже закончен'
+    notEnoughMembers: 'Not enough participants',
+    noSendMessagePerm: 'Not enough rights to send messages to the channel',
+    maxGiveaways: 'Exceeded the maximum number of giveaways on the server',
+    noServerGiveaways: 'There are no active giveaways on the server',
+    noFoundGiveaways:
+      'The giveaways was not found or has already been completed'
   },
   //gs Command
   giveaway: {
     //max 45 chars
     modal: {
-      title: 'Запрос на участие',
-      prize: 'Приз',
-      prizePlaceholder: 'Серверная валюта',
-      duration: 'Длительность розыгрыша (1w|1d|1h|1m|1s)',
-      maxDuration: 'Максимальная длительность розыгрыша {number:number} недели',
-      winnersCount: 'Кол-во победителей',
-      winnersCountPlaceholder: 'Максимальное число победителей {max:number}',
-      channel: 'Название или id канала'
+      title: 'Request for participation',
+      prize: 'Prize',
+      prizePlaceholder: 'Server currency',
+      duration: 'Duration of the giveaway (1w|1d|1h|1m|1s)',
+      maxDuration: 'Maximum giveaway duration {number:number} weeks',
+      winnersCount: 'Number of winners',
+      winnersCountPlaceholder: 'Maximum number of winners {max:number}',
+      channel: 'Channel name or id channel'
     },
     modalReply: {
-      title: 'Уточним...',
+      title: 'Be clear...',
       description: '{type:string}: {description:string}'
     },
     voiceCondition: {
-      voice: 'С войсом',
-      novoice: 'Без войса'
+      voice: 'With voice',
+      novoice: 'Without voice'
     },
     accessConditions: {
-      reaction: 'Нажатие реакции',
-      reactionVoice: 'Нажатие реакции + зайти в войс',
-      button: 'Нажатие кнопки',
-      buttonVoice: 'Нажатие кнопки + зайти войс'
+      reaction: 'Pressing a reaction',
+      button: 'Pressing a button'
     },
     additionalConditions: {
-      type: 'Отправить "n" кол-во сообщений',
-      invite: 'Пригласить "n" кол-во пользователей',
-      guess: 'Угадать загаданное число',
-      category: 'Находится в определенной категории'
+      type: 'Send "n" number of messages',
+      invite: 'Invite "n" number of users',
+      guess: 'Guess the hidden number',
+      category: 'Located in a certain category'
     },
     response: {
-      title: 'Для начала',
-      titleTwo: 'Участие',
+      title: 'In the beginning...',
+      titleTwo: 'Participation',
       description:
-        '<@{userID:string}>, чтобы продолжить **создание розыгрыша**\nвыберите из **кнопок** ниже нужный вам **вариант**.',
+        '<@{userID:string}>, to continue **creating a giveaway**\nchoose one of the **buttons** below the one you need.',
       descriptionTwo:
-        '<@{userID:string}>,  чтобы продолжить **создание розыгрыша**\nвыберите ниже **одно** из **условий**.',
+        '<@{userID:string}>, to continue **creating a giveaway**\nchoose the below **one** from the available **conditions**.',
       noDonate:
-        '\n\n❗Некоторые условия доступны с подпиской <:patreon:1033868901982937158> & <:boosty:1033868900720455680>',
-      donateString: 'Недоступны условия?',
-      options: 'Варианты условий'
+        '\n\n❗Some conditions are available with a subscription <:patreon:1033868901982937158> & <:boosty:1033868900720455680>',
+      donateString: 'Are conditions not available??',
+      options: 'Variants of conditions'
     },
     additionalQuestion: {
-      title: 'Последний вопрос',
-      type: 'Укажите количество сообщений для участия',
+      title: 'Last question',
+      type: 'Specify the number of messages to participate ',
       //not OP
-      invite: 'Укажите количество приглашённых для участия',
-      category: 'Укажите ид категории',
-      guess: 'Загадайте число нужное для участия',
-      guessPrompt: 'Укажите подсказку'
+      invite: 'Specify the number of people invited to participate',
+      category: 'Specify the category ID',
+      guess: 'Guess the number you need to participate',
+      guessPrompt: 'Specify a hint'
     },
     end: {
-      response: 'Розыгрыш успешно закончен'
+      response: 'The giveaway has been successfully completed'
     },
     list: {
       text: '**{index:number}.** <@{userID:string}>',
       additionalText:
-        '**{index:number}.** <@{userID:string}> выполнено **{current:number}** из **{need:string}**',
+        '**{index:number}.** <@{userID:string}> done **{current:number}** from **{need:string}**',
       completedText:
         '**{index:number}.** <@{userID:string}> <:__:1028466516531892224>',
-      title: 'Участники розыгрыша',
-      footer: 'Страница {page:number} из {pages:number}'
+      title: 'Members of the giveaway',
+      footer: 'Page {page:number} from {pages:number}'
     },
     verify: {
-      title: 'Ваш прогресс',
-      description: 'Выполнено **{current:number}** из **{need:string}**',
-      notIn: 'Вы не участвуете в розыгрыше'
+      title: 'Your progress',
+      description: 'Done **{current:number}** from **{need:string}**',
+      notIn: 'You are not participating in the giveaway'
     },
     updateEmbed: {
-      participate: 'Участвовать',
-      participants: 'Участников - {count:number}',
-      verify: 'Проверить'
+      participate: 'Participate',
+      participants: 'Members - {count:number}',
+      verify: 'Verify'
     },
     onLeave: {
-      title: 'Участие в розыгрыше',
+      title: 'Participation in the giveaway',
       description:
-        'Покидая **голосовой канал**, вы отказываетесь от участия в розыгрыше\nУ вас есть **20 секунд** чтобы вернуться.'
+        "By leaving the **voice channel**, you're refusing to participate in the giveaway\nYou have **20 seconds** to return."
     },
     onReturn: {
-      title: 'Участие в розыгрыше',
+      title: 'Participation in the giveaway',
       description:
-        'О, вы вернулись, значит оставляем запись на участие в розыгрыше'
+        "Oh, you're back, so we're leaving an entry for participation in the giveaway"
     }
   },
   //Create giveaway
   createGiveaway: {
-    title: 'Приз: {prize:string}',
+    title: 'Prize: {prize:string}',
     description: {
-      default: '> Для участия нужно нажать {rest:string}',
+      default: '> To participate, you need to click {rest:string}',
       access: {
-        reaction: 'на реакцию "{emoji:string}"',
-        button: 'на кнопку "**Участвовать**"'
+        reaction: 'on the reaction "{emoji:string}"',
+        button: 'on the button "**Participate**"'
       },
-      voice: '\n> и присоединиться к голосовому каналу',
+      voice: '\n> and join the voice channel',
       additional: {
-        type: '\n> и отправить {count:string} сообщений',
-        invite: '\n> и пригласить {count:string} пользователей',
-        guess: '\n> и угадать загаданное число',
-        category: '\n> и находится в категории **<#{count:string}>**'
+        type: '\n> and send {count:string} messages',
+        invite: '\n> and invite {count:string} users',
+        guess: '\n> and guess the number',
+        category: '\n> and be located in the category **<#{count:string}>**'
       },
-      time: '\n\n**Заканчивается:** <t:{time:number}:R>'
+      time: '\n\n**Finish:** <t:{time:number}:R>'
     },
     reason: {
       additional: {
-        type: 'Ваша задача: отправить {count:number} сообщений\n\n',
-        invite: 'Ваша задача: пригласить **{count:number}** пользователяx',
-        guess: 'Ваша задача: угадать **загаданное** число'
+        type: 'Your task: to send  {count:number} messages\n\n',
+        invite: 'Your task: invite **{count:number}** user',
+        guess: 'Your task: guess the **hidden** number'
       }
     },
-    footer: 'Включить уведомления /notify'
+    footer: 'Enable notifications /notify'
   },
   onJoinGiveaway: {
-    alreadyParticipate: 'Вы уже участвуете в розыгрыше',
-    noVoice: '**Условие участия:** Зайдите в любой голосовой канал на сервере',
+    alreadyParticipate: 'You are already participating',
+    noVoice: '**Conditions:** Connect to any voice channel on the server',
     noCategory:
-      '**Условие участия:** Зайдите в любой голосовой канал в категории <#{category:string}>',
+      '**Conditions:** Connect to any voice channel in the category <#{category:string}>',
     voiceCondition: {
       voice:
-        'Примечание: При выходе из **голосового канала** вы\nавтоматические будете **сняты** с участия в **розыгрыше**'
+        "Note: When you exit the **voice channel**, you'll be\n**removed** automatically from participating in the **giveaway**"
     },
-    joined: 'Пусть удача будет на вашей стороне',
-    guessNumber: 'Угадайте загаданное число',
+    joined: 'May luck be on your side',
+    guessNumber: 'Guess the hidden number',
     cooldown: {
-      title: 'Не торопись..',
-      description: 'Подожди <t:${time:number}:R> и попробуй снова'
+      title: 'Do not rush..',
+      description: 'Wait <t:${time:number}:R> and try again'
     },
     join: {
-      title: 'Теперь вы участвуете в конкурсе',
-      errorTitle: 'Ой что-то не так'
+      title: 'Now you are participating in the giveaway',
+      errorTitle: "Oh, something's wrong"
     }
   },
   default: {
-    prize: 'Приз',
-    time: 'Время',
-    duration: 'Длительность',
-    winnersCount: 'Кол-во победителей',
-    channel: 'Канал',
-    option: 'вариант',
-    notification: 'Уведомления',
-    on: 'Вкл',
-    off: 'Выкл',
-    winnersNouns: ['победитель', 'победителя', 'победителей'],
-    error: 'Ошибка',
-    accept: 'Подтвердить',
-    reject: 'Отмена',
-    missing: 'Отсутствует',
-    empty: 'Пусто...'
+    prize: 'Prize',
+    time: 'Time',
+    duration: 'Duration',
+    winnersCount: 'Winners count',
+    channel: 'Channel',
+    option: 'Option',
+    notification: 'Notifications',
+    on: 'On',
+    off: 'Off',
+    winnersNouns: ['winner', 'winner', 'winners'],
+    error: 'Error',
+    accept: 'Accept',
+    reject: 'Reject',
+    missing: 'Missing',
+    empty: 'Empty...'
   },
   endGiveaway: {
-    title: 'Розыгрыш закончен.',
+    title: 'The giveaway is over.',
     description:
-      'Организатор: <@{creatorID:string}>\nПриз: **{prize:string}**\nПобедитель: {winners:string}',
-    footer: 'Победитель выбран с помощью: https://www.random.org/',
+      'Organizer: <@{creatorID:string}>\nPrize: **{prize:string}**\nWinner: {winners:string}',
+    footer: 'The winner was selected with help: https://www.random.org/',
     winnersMessage: {
-      title: 'Удача на вашей стороне',
+      title: 'Luck is on your side',
       description:
-        'Вы выиграли в розыгрыше на **{prize:string}**, отпишите в лс организатору\nрозыгрыша за получением награды.'
+        'You won in the giveaway **{prize:string}**, contact the organizer to receive your award.'
     }
   },
   //notification Command
   notification: {
     options: {
-      voiceNotifications: 'Войс оповещение',
-      winNotifications: 'Оповещение о выигрыше'
+      voiceNotifications: 'Voice notification',
+      winNotifications: 'Notification of a win'
     },
-    title: 'Управление уведомлениями',
-    description: `Выберите нужный пункт для **включения** или **отключения** уведомления о розыгрыше`,
-    placeholder: 'Нажимать сюда!',
+    title: 'Managing notifications',
+    description: `Select the required item to **enable** or **disable** giveaways notifications`,
+    placeholder: 'Click here!',
     response: {
       description: {
-        text: 'Вы успешно изменили ваши настройки',
-        was: 'Было',
-        is: 'Стало'
+        text: 'Settings has successfully been changed',
+        was: 'Was',
+        is: 'Has become'
       }
     }
   },
   help: {
+    buttons: {
+      information: 'Information',
+      commands: 'Commands',
+      activeGiveaways: 'Active giveaways',
+      feedback: 'Feedback'
+    },
     commands: {
       descriptions: {
         others: {
-          help: '</{commandID:string}> - Отображает общую информацию.'
+          help: '</{commandID:string}> - Displays general information.',
+          locale: '</{commandID:string}> - Change the bot language ru/en.'
         },
         giveaway: {
-          gs: '</{commandID:string}> - Запустить розыгрыш.',
+          gs: '</{commandID:string}> - Start the giveaway.',
           notify:
-            '</{commandID:string}> - Включить \\ Выключить уведомления о розыгрыше в \n<:background:980765434414522398><:background:980765434414522398>личных сообщениях',
-          end: '</{commandID:string}> + ` messageID `\n<:background:980765434414522398> ┗ Завершает (выбирает победителя) указанный или \n<:background:980765434414522398><:background:980765434414522398>последний розыгрыш в текущем канале.',
+            '</{commandID:string}> - Enable\\Disable giveaways notifications in \n<:background:980765434414522398><:background:980765434414522398>private messages',
+          end: '</{commandID:string}> + ` messageID `\n<:background:980765434414522398> ┗ Finishes (selects the winner) the specified or \n<:background:980765434414522398><:background:980765434414522398>the last giveaway in the current channel.',
           reroll:
-            '</{commandID:string}> + ` messageID `\n<:background:980765434414522398> ┗ Переигрывает указанный или последний розыгрыш в \n<:background:980765434414522398><:background:980765434414522398>текущем канале.'
+            '</{commandID:string}> + ` messageID `\n<:background:980765434414522398> ┗ Rerolls the specified or last giveaway in\n<:background:980765434414522398><:background:980765434414522398>the current channel.'
         }
       },
       embed: {
-        footer:
-          'ᅠᅠ«Проводите раздачи на своем сервере Discord быстро и легко!»',
+        footer: 'ᅠᅠ«Hold giveaways on your Discord server quickly and easily!»',
         description:
-          '> <@{botID:string}> — это бот для Discord серверов, который помогает проводить автоматические раздачи.'
+          '> <@{botID:string}> — a bot for Discord servers, which helps to produce automatic giveaways.'
       }
     },
     information: {
       embed: {
         fields: {
-          name: 'Название',
-          servers: 'Сервера',
-          users: 'Пользователи',
-          platform: 'Платформа',
-          memory: 'Память',
-          active: 'Активен'
+          name: 'Name',
+          servers: 'Servers',
+          users: 'Users',
+          platform: 'Platform',
+          memory: 'Memory',
+          active: 'Active'
         },
-        title: 'Информация о боте',
+        title: 'Information about the bot',
         description:
-          '>>> Разработчиком бота является <@{devID:string}>. \n **[**`{devTag:string}`**]**',
-        footer: 'ᅠᅠ«Проводите раздачи на своем сервере Discord быстро и легко!»'
+          '>>> The developer of the bot is <@{devID:string}>. \n **[**`{devTag:string}`**]**',
+        footer: 'ᅠᅠ«Hold giveaways on your Discord server quickly and easily!»'
       }
     },
     giveaways: {
       fields: {
         noGiveaways: {
-          name: 'На сервере - нет запущенных розыгрышей',
-          value: 'Начните розыгрыш с помощью команды </gs:1012088879379120148>'
+          name: 'There are no active giveaways on the server',
+          value: 'Start the giveaway with the command </gs:1012088879379120148>'
         },
         activeGiveaways: {
-          name: 'Приз {prize:string}',
+          name: 'Prize {prize:string}',
           value:
-            'Условия: **{accessCondition:string}**\nКоличество участников: **{count:number}**\nОрганизатор: <@{creatorID:string}>\nОкончание: <t:{ending:number}:R>'
+            'Conditions: **{accessCondition:string}**\nNumber of members: **{count:number}**\nOrganizer: <@{creatorID:string}>\nEnding: <t:{ending:number}:R>'
         }
       },
-      title: 'Активные розыгрыши',
-      description: '>>> Количество розыгрышей: **{count:number}**',
-      footer: 'ᅠᅠ«Проводите раздачи на своем сервере Discord быстро и легко!»'
+      title: 'Active giveaways',
+      description: '>>> Number of giveaway: **{count:number}**',
+      footer: 'ᅠᅠ«Hold giveaways on your Discord server quickly and easily!»'
     },
     giveaway: {
-      title: 'ᅠ\nᅠᅠᅠᅠᅠᅠ🎉ᅠУправление розыгрышамиᅠ🎉'
+      title: 'ᅠ\nᅠᅠᅠᅠᅠᅠ🎉ᅠManaging giveawaysᅠ🎉'
     },
     others: {
-      title: '⚙️ Другое'
+      title: '⚙️ Other'
     }
   },
-  admin: 'Администратор'
+  admin: 'Administrator',
+  locale: {
+    title: 'Changing the language',
+    description: '**Hi!** now I will be available in **English**!'
+  }
 };
 
 export default en;

@@ -7,6 +7,7 @@ export type BaseLocale = 'en'
 
 export type Locales =
 	| 'en'
+	| 'ru'
 
 export type Translation = RootTranslation
 
@@ -16,98 +17,98 @@ type RootTranslation = {
 	errors: {
 		noPerms: {
 			/**
-			 * Н​е​д​о​с​т​а​т​о​ч​н​о​ ​п​р​а​в​ ​д​л​я​ ​и​с​п​о​л​ь​з​о​в​а​н​и​я​ ​к​о​м​а​н​д​ы
+			 * I​n​s​u​f​f​i​c​i​e​n​t​ ​p​e​r​m​i​s​s​i​o​n​s​ ​t​o​ ​u​s​e​ ​t​h​e​ ​c​o​m​m​a​n​d
 			 */
 			description: string
 			/**
-			 * Н​у​ж​н​ы​е​ ​п​р​а​в​а
+			 * R​e​q​u​i​r​e​d​ ​r​i​g​h​t​s
 			 */
 			field: string
 			/**
-			 * `​ ​⚪​ ​{​p​e​r​m​}​ ​`​ ​`​ ​В​к​л​ ​`
+			 * `​ ​⚪​ ​{​p​e​r​m​}​ ​`​ ​`​ ​O​n​ ​`
 			 * @param {string} perm
 			 */
 			value: RequiredParams<'perm'>
 		}
 		noInput: {
 			/**
-			 * Н​е​в​е​р​н​о​ ​у​к​а​з​а​н​о​ ​в​р​е​м​я
+			 * T​h​e​ ​t​i​m​e​ ​i​s​ ​i​n​c​o​r​r​e​c​t
 			 */
 			time: string
 			/**
-			 * Н​е​в​е​р​н​о​ ​у​к​а​з​а​н​ ​к​а​н​а​л
+			 * T​h​e​ ​c​h​a​n​n​e​l​ ​i​s​ ​s​p​e​c​i​f​i​e​d​ ​i​n​c​o​r​r​e​c​t​l​y
 			 */
 			channel: string
 			/**
-			 * Н​е​в​е​р​н​о​ ​у​к​а​з​а​н​о​ ​к​о​л​-​в​о​ ​п​о​б​е​д​и​т​е​л​е​й
+			 * T​h​e​ ​n​u​m​b​e​r​ ​o​f​ ​w​i​n​n​e​r​s​ ​i​s​ ​i​n​c​o​r​r​e​c​t
 			 */
 			winnersCount: string
 			/**
-			 * Н​е​в​е​р​н​о​ ​у​к​а​з​а​н​ ​I​D​ ​с​о​о​б​щ​е​н​и​е
+			 * T​h​e​ ​m​e​s​s​a​g​e​ ​I​D​ ​i​s​ ​s​p​e​c​i​f​i​e​d​ ​i​n​c​o​r​r​e​c​t​l​y
 			 */
 			messageID: string
 		}
 		/**
-		 * Н​е​д​о​с​т​а​т​о​ч​н​о​ ​у​ч​а​с​т​н​и​к​о​в
+		 * N​o​t​ ​e​n​o​u​g​h​ ​p​a​r​t​i​c​i​p​a​n​t​s
 		 */
 		notEnoughMembers: string
 		/**
-		 * Н​е​д​о​с​т​а​т​о​ч​н​о​ ​п​р​а​в​ ​д​л​я​ ​о​т​п​р​а​в​к​и​ ​с​о​о​б​щ​е​н​и​й​ ​в​ ​к​а​н​а​л
+		 * N​o​t​ ​e​n​o​u​g​h​ ​r​i​g​h​t​s​ ​t​o​ ​s​e​n​d​ ​m​e​s​s​a​g​e​s​ ​t​o​ ​t​h​e​ ​c​h​a​n​n​e​l
 		 */
 		noSendMessagePerm: string
 		/**
-		 * П​р​е​в​ы​ш​е​н​о​ ​м​а​к​с​и​м​а​л​ь​н​о​е​ ​к​о​л​-​в​о​ ​р​о​з​ы​г​р​ы​ш​е​й​ ​н​а​ ​с​е​р​в​е​р​е
+		 * E​x​c​e​e​d​e​d​ ​t​h​e​ ​m​a​x​i​m​u​m​ ​n​u​m​b​e​r​ ​o​f​ ​g​i​v​e​a​w​a​y​s​ ​o​n​ ​t​h​e​ ​s​e​r​v​e​r
 		 */
 		maxGiveaways: string
 		/**
-		 * Н​а​ ​с​е​р​в​е​р​е​ ​н​е​т​ ​а​к​т​и​в​н​ы​х​ ​р​о​з​ы​г​р​ы​ш​е​й
+		 * T​h​e​r​e​ ​a​r​e​ ​n​o​ ​a​c​t​i​v​e​ ​g​i​v​e​a​w​a​y​s​ ​o​n​ ​t​h​e​ ​s​e​r​v​e​r
 		 */
 		noServerGiveaways: string
 		/**
-		 * Р​о​з​ы​г​р​ы​ш​ ​н​е​ ​н​а​й​д​е​н​ ​и​л​и​ ​у​ж​е​ ​з​а​к​о​н​ч​е​н
+		 * T​h​e​ ​g​i​v​e​a​w​a​y​s​ ​w​a​s​ ​n​o​t​ ​f​o​u​n​d​ ​o​r​ ​h​a​s​ ​a​l​r​e​a​d​y​ ​b​e​e​n​ ​c​o​m​p​l​e​t​e​d
 		 */
 		noFoundGiveaways: string
 	}
 	giveaway: {
 		modal: {
 			/**
-			 * З​а​п​р​о​с​ ​н​а​ ​у​ч​а​с​т​и​е
+			 * R​e​q​u​e​s​t​ ​f​o​r​ ​p​a​r​t​i​c​i​p​a​t​i​o​n
 			 */
 			title: string
 			/**
-			 * П​р​и​з
+			 * P​r​i​z​e
 			 */
 			prize: string
 			/**
-			 * С​е​р​в​е​р​н​а​я​ ​в​а​л​ю​т​а
+			 * S​e​r​v​e​r​ ​c​u​r​r​e​n​c​y
 			 */
 			prizePlaceholder: string
 			/**
-			 * Д​л​и​т​е​л​ь​н​о​с​т​ь​ ​р​о​з​ы​г​р​ы​ш​а​ ​(​1​w​|​1​d​|​1​h​|​1​m​|​1​s​)
+			 * D​u​r​a​t​i​o​n​ ​o​f​ ​t​h​e​ ​g​i​v​e​a​w​a​y​ ​(​1​w​|​1​d​|​1​h​|​1​m​|​1​s​)
 			 */
 			duration: string
 			/**
-			 * М​а​к​с​и​м​а​л​ь​н​а​я​ ​д​л​и​т​е​л​ь​н​о​с​т​ь​ ​р​о​з​ы​г​р​ы​ш​а​ ​{​n​u​m​b​e​r​}​ ​н​е​д​е​л​и
+			 * M​a​x​i​m​u​m​ ​g​i​v​e​a​w​a​y​ ​d​u​r​a​t​i​o​n​ ​{​n​u​m​b​e​r​}​ ​w​e​e​k​s
 			 * @param {number} number
 			 */
 			maxDuration: RequiredParams<'number'>
 			/**
-			 * К​о​л​-​в​о​ ​п​о​б​е​д​и​т​е​л​е​й
+			 * N​u​m​b​e​r​ ​o​f​ ​w​i​n​n​e​r​s
 			 */
 			winnersCount: string
 			/**
-			 * М​а​к​с​и​м​а​л​ь​н​о​е​ ​ч​и​с​л​о​ ​п​о​б​е​д​и​т​е​л​е​й​ ​{​m​a​x​}
+			 * M​a​x​i​m​u​m​ ​n​u​m​b​e​r​ ​o​f​ ​w​i​n​n​e​r​s​ ​{​m​a​x​}
 			 * @param {number} max
 			 */
 			winnersCountPlaceholder: RequiredParams<'max'>
 			/**
-			 * Н​а​з​в​а​н​и​е​ ​и​л​и​ ​i​d​ ​к​а​н​а​л​а
+			 * C​h​a​n​n​e​l​ ​n​a​m​e​ ​o​r​ ​i​d​ ​c​h​a​n​n​e​l
 			 */
 			channel: string
 		}
 		modalReply: {
 			/**
-			 * У​т​о​ч​н​и​м​.​.​.
+			 * B​e​ ​c​l​e​a​r​.​.​.
 			 */
 			title: string
 			/**
@@ -119,115 +120,107 @@ type RootTranslation = {
 		}
 		voiceCondition: {
 			/**
-			 * С​ ​в​о​й​с​о​м
+			 * W​i​t​h​ ​v​o​i​c​e
 			 */
 			voice: string
 			/**
-			 * Б​е​з​ ​в​о​й​с​а
+			 * W​i​t​h​o​u​t​ ​v​o​i​c​e
 			 */
 			novoice: string
 		}
 		accessConditions: {
 			/**
-			 * Н​а​ж​а​т​и​е​ ​р​е​а​к​ц​и​и
+			 * P​r​e​s​s​i​n​g​ ​a​ ​r​e​a​c​t​i​o​n
 			 */
 			reaction: string
 			/**
-			 * Н​а​ж​а​т​и​е​ ​р​е​а​к​ц​и​и​ ​+​ ​з​а​й​т​и​ ​в​ ​в​о​й​с
-			 */
-			reactionVoice: string
-			/**
-			 * Н​а​ж​а​т​и​е​ ​к​н​о​п​к​и
+			 * P​r​e​s​s​i​n​g​ ​o​f​ ​b​u​t​t​o​n
 			 */
 			button: string
-			/**
-			 * Н​а​ж​а​т​и​е​ ​к​н​о​п​к​и​ ​+​ ​з​а​й​т​и​ ​в​о​й​с
-			 */
-			buttonVoice: string
 		}
 		additionalConditions: {
 			/**
-			 * О​т​п​р​а​в​и​т​ь​ ​"​n​"​ ​к​о​л​-​в​о​ ​с​о​о​б​щ​е​н​и​й
+			 * S​e​n​d​ ​"​n​"​ ​n​u​m​b​e​r​ ​o​f​ ​m​e​s​s​a​g​e​s
 			 */
 			type: string
 			/**
-			 * П​р​и​г​л​а​с​и​т​ь​ ​"​n​"​ ​к​о​л​-​в​о​ ​п​о​л​ь​з​о​в​а​т​е​л​е​й
+			 * I​n​v​i​t​e​ ​"​n​"​ ​n​u​m​b​e​r​ ​o​f​ ​u​s​e​r​s
 			 */
 			invite: string
 			/**
-			 * У​г​а​д​а​т​ь​ ​з​а​г​а​д​а​н​н​о​е​ ​ч​и​с​л​о
+			 * G​u​e​s​s​ ​t​h​e​ ​h​i​d​d​e​n​ ​n​u​m​b​e​r
 			 */
 			guess: string
 			/**
-			 * Н​а​х​о​д​и​т​с​я​ ​в​ ​о​п​р​е​д​е​л​е​н​н​о​й​ ​к​а​т​е​г​о​р​и​и
+			 * L​o​c​a​t​e​d​ ​i​n​ ​a​ ​c​e​r​t​a​i​n​ ​c​a​t​e​g​o​r​y
 			 */
 			category: string
 		}
 		response: {
 			/**
-			 * Д​л​я​ ​н​а​ч​а​л​а
+			 * I​n​ ​t​h​e​ ​b​e​g​i​n​n​i​n​g​.​.​.
 			 */
 			title: string
 			/**
-			 * У​ч​а​с​т​и​е
+			 * P​a​r​t​i​c​i​p​a​t​i​o​n
 			 */
 			titleTwo: string
 			/**
-			 * <​@​{​u​s​e​r​I​D​}​>​,​ ​ч​т​о​б​ы​ ​п​р​о​д​о​л​ж​и​т​ь​ ​*​*​с​о​з​д​а​н​и​е​ ​р​о​з​ы​г​р​ы​ш​а​*​*​
-		​в​ы​б​е​р​и​т​е​ ​и​з​ ​*​*​к​н​о​п​о​к​*​*​ ​н​и​ж​е​ ​н​у​ж​н​ы​й​ ​в​а​м​ ​*​*​в​а​р​и​а​н​т​*​*​.
+			 * <​@​{​u​s​e​r​I​D​}​>​,​ ​t​o​ ​c​o​n​t​i​n​u​e​ ​*​*​c​r​e​a​t​i​n​g​ ​a​ ​g​i​v​e​a​w​a​y​*​*​
+		​c​h​o​o​s​e​ ​o​n​e​ ​o​f​ ​t​h​e​ ​*​*​b​u​t​t​o​n​s​*​*​ ​b​e​l​o​w​ ​t​h​e​ ​o​n​e​ ​y​o​u​ ​n​e​e​d​.
 			 * @param {string} userID
 			 */
 			description: RequiredParams<'userID'>
 			/**
-			 * <​@​{​u​s​e​r​I​D​}​>​,​ ​ ​ч​т​о​б​ы​ ​п​р​о​д​о​л​ж​и​т​ь​ ​*​*​с​о​з​д​а​н​и​е​ ​р​о​з​ы​г​р​ы​ш​а​*​*​
-		​в​ы​б​е​р​и​т​е​ ​н​и​ж​е​ ​*​*​о​д​н​о​*​*​ ​и​з​ ​*​*​у​с​л​о​в​и​й​*​*​.
+			 * <​@​{​u​s​e​r​I​D​}​>​,​ ​t​o​ ​c​o​n​t​i​n​u​e​ ​*​*​c​r​e​a​t​i​n​g​ ​a​ ​g​i​v​e​a​w​a​y​*​*​
+		​c​h​o​o​s​e​ ​t​h​e​ ​b​e​l​o​w​ ​*​*​o​n​e​*​*​ ​f​r​o​m​ ​t​h​e​ ​a​v​a​i​l​a​b​l​e​ ​*​*​c​o​n​d​i​t​i​o​n​s​*​*​.
 			 * @param {string} userID
 			 */
 			descriptionTwo: RequiredParams<'userID'>
 			/**
 			 * 
 		​
-		​❗​Н​е​к​о​т​о​р​ы​е​ ​у​с​л​о​в​и​я​ ​д​о​с​т​у​п​н​ы​ ​с​ ​п​о​д​п​и​с​к​о​й​ ​<​:​p​a​t​r​e​o​n​:​1​0​3​3​8​6​8​9​0​1​9​8​2​9​3​7​1​5​8​>​ ​&​ ​<​:​b​o​o​s​t​y​:​1​0​3​3​8​6​8​9​0​0​7​2​0​4​5​5​6​8​0​>
+		​❗​S​o​m​e​ ​c​o​n​d​i​t​i​o​n​s​ ​a​r​e​ ​a​v​a​i​l​a​b​l​e​ ​w​i​t​h​ ​a​ ​s​u​b​s​c​r​i​p​t​i​o​n​ ​<​:​p​a​t​r​e​o​n​:​1​0​3​3​8​6​8​9​0​1​9​8​2​9​3​7​1​5​8​>​ ​&​ ​<​:​b​o​o​s​t​y​:​1​0​3​3​8​6​8​9​0​0​7​2​0​4​5​5​6​8​0​>
 			 */
 			noDonate: string
 			/**
-			 * Н​е​д​о​с​т​у​п​н​ы​ ​у​с​л​о​в​и​я​?
+			 * A​r​e​ ​c​o​n​d​i​t​i​o​n​s​ ​n​o​t​ ​a​v​a​i​l​a​b​l​e​?​?
 			 */
 			donateString: string
 			/**
-			 * В​а​р​и​а​н​т​ы​ ​у​с​л​о​в​и​й
+			 * V​a​r​i​a​n​t​s​ ​o​f​ ​c​o​n​d​i​t​i​o​n​s
 			 */
 			options: string
 		}
 		additionalQuestion: {
 			/**
-			 * П​о​с​л​е​д​н​и​й​ ​в​о​п​р​о​с
+			 * L​a​s​t​ ​q​u​e​s​t​i​o​n
 			 */
 			title: string
 			/**
-			 * У​к​а​ж​и​т​е​ ​к​о​л​и​ч​е​с​т​в​о​ ​с​о​о​б​щ​е​н​и​й​ ​д​л​я​ ​у​ч​а​с​т​и​я
+			 * S​p​e​c​i​f​y​ ​t​h​e​ ​n​u​m​b​e​r​ ​o​f​ ​m​e​s​s​a​g​e​s​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​ 
 			 */
 			type: string
 			/**
-			 * У​к​а​ж​и​т​е​ ​к​о​л​и​ч​е​с​т​в​о​ ​п​р​и​г​л​а​ш​ё​н​н​ы​х​ ​д​л​я​ ​у​ч​а​с​т​и​я
+			 * S​p​e​c​i​f​y​ ​t​h​e​ ​n​u​m​b​e​r​ ​o​f​ ​p​e​o​p​l​e​ ​i​n​v​i​t​e​d​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e
 			 */
 			invite: string
 			/**
-			 * У​к​а​ж​и​т​е​ ​и​д​ ​к​а​т​е​г​о​р​и​и
+			 * S​p​e​c​i​f​y​ ​t​h​e​ ​c​a​t​e​g​o​r​y​ ​I​D
 			 */
 			category: string
 			/**
-			 * З​а​г​а​д​а​й​т​е​ ​ч​и​с​л​о​ ​н​у​ж​н​о​е​ ​д​л​я​ ​у​ч​а​с​т​и​я
+			 * G​u​e​s​s​ ​t​h​e​ ​n​u​m​b​e​r​ ​y​o​u​ ​n​e​e​d​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e
 			 */
 			guess: string
 			/**
-			 * У​к​а​ж​и​т​е​ ​п​о​д​с​к​а​з​к​у
+			 * S​p​e​c​i​f​y​ ​a​ ​h​i​n​t
 			 */
 			guessPrompt: string
 		}
 		end: {
 			/**
-			 * Р​о​з​ы​г​р​ы​ш​ ​у​с​п​е​ш​н​о​ ​з​а​к​о​н​ч​е​н
+			 * T​h​e​ ​g​i​v​e​a​w​a​y​ ​h​a​s​ ​b​e​e​n​ ​s​u​c​c​e​s​s​f​u​l​l​y​ ​c​o​m​p​l​e​t​e​d
 			 */
 			response: string
 		}
@@ -239,7 +232,7 @@ type RootTranslation = {
 			 */
 			text: RequiredParams<'index' | 'userID'>
 			/**
-			 * *​*​{​i​n​d​e​x​}​.​*​*​ ​<​@​{​u​s​e​r​I​D​}​>​ ​в​ы​п​о​л​н​е​н​о​ ​*​*​{​c​u​r​r​e​n​t​}​*​*​ ​и​з​ ​*​*​{​n​e​e​d​}​*​*
+			 * *​*​{​i​n​d​e​x​}​.​*​*​ ​<​@​{​u​s​e​r​I​D​}​>​ ​d​o​n​e​ ​*​*​{​c​u​r​r​e​n​t​}​*​*​ ​f​r​o​m​ ​*​*​{​n​e​e​d​}​*​*
 			 * @param {number} current
 			 * @param {number} index
 			 * @param {string} need
@@ -253,11 +246,11 @@ type RootTranslation = {
 			 */
 			completedText: RequiredParams<'index' | 'userID'>
 			/**
-			 * У​ч​а​с​т​н​и​к​и​ ​р​о​з​ы​г​р​ы​ш​а
+			 * M​e​m​b​e​r​s​ ​o​f​ ​t​h​e​ ​g​i​v​e​a​w​a​y
 			 */
 			title: string
 			/**
-			 * С​т​р​а​н​и​ц​а​ ​{​p​a​g​e​}​ ​и​з​ ​{​p​a​g​e​s​}
+			 * P​a​g​e​ ​{​p​a​g​e​}​ ​f​r​o​m​ ​{​p​a​g​e​s​}
 			 * @param {number} page
 			 * @param {number} pages
 			 */
@@ -265,106 +258,106 @@ type RootTranslation = {
 		}
 		verify: {
 			/**
-			 * В​а​ш​ ​п​р​о​г​р​е​с​с
+			 * Y​o​u​r​ ​p​r​o​g​r​e​s​s
 			 */
 			title: string
 			/**
-			 * В​ы​п​о​л​н​е​н​о​ ​*​*​{​c​u​r​r​e​n​t​}​*​*​ ​и​з​ ​*​*​{​n​e​e​d​}​*​*
+			 * D​o​n​e​ ​*​*​{​c​u​r​r​e​n​t​}​*​*​ ​f​r​o​m​ ​*​*​{​n​e​e​d​}​*​*
 			 * @param {number} current
 			 * @param {string} need
 			 */
 			description: RequiredParams<'current' | 'need'>
 			/**
-			 * В​ы​ ​н​е​ ​у​ч​а​с​т​в​у​е​т​е​ ​в​ ​р​о​з​ы​г​р​ы​ш​е
+			 * Y​o​u​ ​a​r​e​ ​n​o​t​ ​p​a​r​t​i​c​i​p​a​t​i​n​g​ ​i​n​ ​t​h​e​ ​g​i​v​e​a​w​a​y
 			 */
 			notIn: string
 		}
 		updateEmbed: {
 			/**
-			 * У​ч​а​с​т​в​о​в​а​т​ь
+			 * P​a​r​t​i​c​i​p​a​t​e
 			 */
 			participate: string
 			/**
-			 * У​ч​а​с​т​н​и​к​о​в​ ​-​ ​{​c​o​u​n​t​}
+			 * M​e​m​b​e​r​s​ ​-​ ​{​c​o​u​n​t​}
 			 * @param {number} count
 			 */
 			participants: RequiredParams<'count'>
 			/**
-			 * П​р​о​в​е​р​и​т​ь
+			 * V​e​r​i​f​y
 			 */
 			verify: string
 		}
 		onLeave: {
 			/**
-			 * У​ч​а​с​т​и​е​ ​в​ ​р​о​з​ы​г​р​ы​ш​е
+			 * P​a​r​t​i​c​i​p​a​t​i​o​n​ ​i​n​ ​t​h​e​ ​g​i​v​e​a​w​a​y
 			 */
 			title: string
 			/**
-			 * П​о​к​и​д​а​я​ ​*​*​г​о​л​о​с​о​в​о​й​ ​к​а​н​а​л​*​*​,​ ​в​ы​ ​о​т​к​а​з​ы​в​а​е​т​е​с​ь​ ​о​т​ ​у​ч​а​с​т​и​я​ ​в​ ​р​о​з​ы​г​р​ы​ш​е​
-		​У​ ​в​а​с​ ​е​с​т​ь​ ​*​*​2​0​ ​с​е​к​у​н​д​*​*​ ​ч​т​о​б​ы​ ​в​е​р​н​у​т​ь​с​я​.
+			 * B​y​ ​l​e​a​v​i​n​g​ ​t​h​e​ ​*​*​v​o​i​c​e​ ​c​h​a​n​n​e​l​*​*​,​ ​y​o​u​'​r​e​ ​r​e​f​u​s​i​n​g​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​t​h​e​ ​g​i​v​e​a​w​a​y​
+		​Y​o​u​ ​h​a​v​e​ ​*​*​2​0​ ​s​e​c​o​n​d​s​*​*​ ​t​o​ ​r​e​t​u​r​n​.
 			 */
 			description: string
 		}
 		onReturn: {
 			/**
-			 * У​ч​а​с​т​и​е​ ​в​ ​р​о​з​ы​г​р​ы​ш​е
+			 * P​a​r​t​i​c​i​p​a​t​i​o​n​ ​i​n​ ​t​h​e​ ​g​i​v​e​a​w​a​y
 			 */
 			title: string
 			/**
-			 * О​,​ ​в​ы​ ​в​е​р​н​у​л​и​с​ь​,​ ​з​н​а​ч​и​т​ ​о​с​т​а​в​л​я​е​м​ ​з​а​п​и​с​ь​ ​н​а​ ​у​ч​а​с​т​и​е​ ​в​ ​р​о​з​ы​г​р​ы​ш​е
+			 * O​h​,​ ​y​o​u​'​r​e​ ​b​a​c​k​,​ ​s​o​ ​w​e​'​r​e​ ​l​e​a​v​i​n​g​ ​a​n​ ​e​n​t​r​y​ ​f​o​r​ ​p​a​r​t​i​c​i​p​a​t​i​o​n​ ​i​n​ ​t​h​e​ ​g​i​v​e​a​w​a​y
 			 */
 			description: string
 		}
 	}
 	createGiveaway: {
 		/**
-		 * П​р​и​з​:​ ​{​p​r​i​z​e​}
+		 * P​r​i​z​e​:​ ​{​p​r​i​z​e​}
 		 * @param {string} prize
 		 */
 		title: RequiredParams<'prize'>
 		description: {
 			/**
-			 * >​ ​Д​л​я​ ​у​ч​а​с​т​и​я​ ​н​у​ж​н​о​ ​н​а​ж​а​т​ь​ ​{​r​e​s​t​}
+			 * >​ ​T​o​ ​p​a​r​t​i​c​i​p​a​t​e​,​ ​y​o​u​ ​n​e​e​d​ ​t​o​ ​c​l​i​c​k​ ​{​r​e​s​t​}
 			 * @param {string} rest
 			 */
 			'default': RequiredParams<'rest'>
 			access: {
 				/**
-				 * н​а​ ​р​е​а​к​ц​и​ю​ ​"​{​e​m​o​j​i​}​"
+				 * o​n​ ​t​h​e​ ​r​e​a​c​t​i​o​n​ ​"​{​e​m​o​j​i​}​"
 				 * @param {string} emoji
 				 */
 				reaction: RequiredParams<'emoji'>
 				/**
-				 * н​а​ ​к​н​о​п​к​у​ ​"​*​*​У​ч​а​с​т​в​о​в​а​т​ь​*​*​"
+				 * o​n​ ​t​h​e​ ​b​u​t​t​o​n​ ​"​*​*​P​a​r​t​i​c​i​p​a​t​e​*​*​"
 				 */
 				button: string
 			}
 			/**
 			 * 
-		​>​ ​и​ ​п​р​и​с​о​е​д​и​н​и​т​ь​с​я​ ​к​ ​г​о​л​о​с​о​в​о​м​у​ ​к​а​н​а​л​у
+		​>​ ​a​n​d​ ​j​o​i​n​ ​t​h​e​ ​v​o​i​c​e​ ​c​h​a​n​n​e​l
 			 */
 			voice: string
 			additional: {
 				/**
 				 * 
-			​>​ ​и​ ​о​т​п​р​а​в​и​т​ь​ ​{​c​o​u​n​t​}​ ​с​о​о​б​щ​е​н​и​й
+			​>​ ​a​n​d​ ​s​e​n​d​ ​{​c​o​u​n​t​}​ ​m​e​s​s​a​g​e​s
 				 * @param {string} count
 				 */
 				type: RequiredParams<'count'>
 				/**
 				 * 
-			​>​ ​и​ ​п​р​и​г​л​а​с​и​т​ь​ ​{​c​o​u​n​t​}​ ​п​о​л​ь​з​о​в​а​т​е​л​е​й
+			​>​ ​a​n​d​ ​i​n​v​i​t​e​ ​{​c​o​u​n​t​}​ ​u​s​e​r​s
 				 * @param {string} count
 				 */
 				invite: RequiredParams<'count'>
 				/**
 				 * 
-			​>​ ​и​ ​у​г​а​д​а​т​ь​ ​з​а​г​а​д​а​н​н​о​е​ ​ч​и​с​л​о
+			​>​ ​a​n​d​ ​g​u​e​s​s​ ​t​h​e​ ​n​u​m​b​e​r
 				 */
 				guess: string
 				/**
 				 * 
-			​>​ ​и​ ​н​а​х​о​д​и​т​с​я​ ​в​ ​к​а​т​е​г​о​р​и​и​ ​*​*​<​#​{​c​o​u​n​t​}​>​*​*
+			​>​ ​a​n​d​ ​b​e​ ​l​o​c​a​t​e​d​ ​i​n​ ​t​h​e​ ​c​a​t​e​g​o​r​y​ ​*​*​<​#​{​c​o​u​n​t​}​>​*​*
 				 * @param {string} count
 				 */
 				category: RequiredParams<'count'>
@@ -372,7 +365,7 @@ type RootTranslation = {
 			/**
 			 * 
 		​
-		​*​*​З​а​к​а​н​ч​и​в​а​е​т​с​я​:​*​*​ ​<​t​:​{​t​i​m​e​}​:​R​>
+		​*​*​F​i​n​i​s​h​:​*​*​ ​<​t​:​{​t​i​m​e​}​:​R​>
 			 * @param {number} time
 			 */
 			time: RequiredParams<'time'>
@@ -380,177 +373,176 @@ type RootTranslation = {
 		reason: {
 			additional: {
 				/**
-				 * В​а​ш​а​ ​з​а​д​а​ч​а​:​ ​о​т​п​р​а​в​и​т​ь​ ​{​c​o​u​n​t​}​ ​с​о​о​б​щ​е​н​и​й​
+				 * Y​o​u​r​ ​t​a​s​k​:​ ​t​o​ ​s​e​n​d​ ​ ​{​c​o​u​n​t​}​ ​m​e​s​s​a​g​e​s​
 			​
 		
 				 * @param {number} count
 				 */
 				type: RequiredParams<'count'>
 				/**
-				 * В​а​ш​а​ ​з​а​д​а​ч​а​:​ ​п​р​и​г​л​а​с​и​т​ь​ ​*​*​{​c​o​u​n​t​}​*​*​ ​п​о​л​ь​з​о​в​а​т​е​л​я​x
+				 * Y​o​u​r​ ​t​a​s​k​:​ ​i​n​v​i​t​e​ ​*​*​{​c​o​u​n​t​}​*​*​ ​u​s​e​r
 				 * @param {number} count
 				 */
 				invite: RequiredParams<'count'>
 				/**
-				 * В​а​ш​а​ ​з​а​д​а​ч​а​:​ ​у​г​а​д​а​т​ь​ ​*​*​з​а​г​а​д​а​н​н​о​е​*​*​ ​ч​и​с​л​о
+				 * Y​o​u​r​ ​t​a​s​k​:​ ​g​u​e​s​s​ ​t​h​e​ ​*​*​h​i​d​d​e​n​*​*​ ​n​u​m​b​e​r
 				 */
 				guess: string
 			}
 		}
 		/**
-		 * В​к​л​ю​ч​и​т​ь​ ​у​в​е​д​о​м​л​е​н​и​я​ ​/​n​o​t​i​f​y
+		 * E​n​a​b​l​e​ ​n​o​t​i​f​i​c​a​t​i​o​n​s​ ​/​n​o​t​i​f​y
 		 */
 		footer: string
 	}
 	onJoinGiveaway: {
 		/**
-		 * В​ы​ ​у​ж​е​ ​у​ч​а​с​т​в​у​е​т​е​ ​в​ ​р​о​з​ы​г​р​ы​ш​е
+		 * Y​o​u​ ​a​r​e​ ​a​l​r​e​a​d​y​ ​p​a​r​t​i​c​i​p​a​t​i​n​g
 		 */
 		alreadyParticipate: string
 		/**
-		 * *​*​У​с​л​о​в​и​е​ ​у​ч​а​с​т​и​я​:​*​*​ ​З​а​й​д​и​т​е​ ​в​ ​л​ю​б​о​й​ ​г​о​л​о​с​о​в​о​й​ ​к​а​н​а​л​ ​н​а​ ​с​е​р​в​е​р​е
+		 * *​*​C​o​n​d​i​t​i​o​n​s​:​*​*​ ​C​o​n​n​e​c​t​ ​t​o​ ​a​n​y​ ​v​o​i​c​e​ ​c​h​a​n​n​e​l​ ​o​n​ ​t​h​e​ ​s​e​r​v​e​r
 		 */
 		noVoice: string
 		/**
-		 * *​*​У​с​л​о​в​и​е​ ​у​ч​а​с​т​и​я​:​*​*​ ​З​а​й​д​и​т​е​ ​в​ ​л​ю​б​о​й​ ​г​о​л​о​с​о​в​о​й​ ​к​а​н​а​л​ ​в​ ​к​а​т​е​г​о​р​и​и​ ​<​#​{​c​a​t​e​g​o​r​y​}​>
+		 * *​*​C​o​n​d​i​t​i​o​n​s​:​*​*​ ​C​o​n​n​e​c​t​ ​t​o​ ​a​n​y​ ​v​o​i​c​e​ ​c​h​a​n​n​e​l​ ​i​n​ ​t​h​e​ ​c​a​t​e​g​o​r​y​ ​<​#​{​c​a​t​e​g​o​r​y​}​>
 		 * @param {string} category
 		 */
 		noCategory: RequiredParams<'category'>
 		voiceCondition: {
 			/**
-			 * П​р​и​м​е​ч​а​н​и​е​:​ ​П​р​и​ ​в​ы​х​о​д​е​ ​и​з​ ​*​*​г​о​л​о​с​о​в​о​г​о​ ​к​а​н​а​л​а​*​*​ ​в​ы​
-		​а​в​т​о​м​а​т​и​ч​е​с​к​и​е​ ​б​у​д​е​т​е​ ​*​*​с​н​я​т​ы​*​*​ ​с​ ​у​ч​а​с​т​и​я​ ​в​ ​*​*​р​о​з​ы​г​р​ы​ш​е​*​*
+			 * N​o​t​e​:​ ​W​h​e​n​ ​y​o​u​ ​e​x​i​t​ ​t​h​e​ ​*​*​v​o​i​c​e​ ​c​h​a​n​n​e​l​*​*​,​ ​y​o​u​'​l​l​ ​b​e​
+		​*​*​r​e​m​o​v​e​d​*​*​ ​a​u​t​o​m​a​t​i​c​a​l​l​y​ ​f​r​o​m​ ​p​a​r​t​i​c​i​p​a​t​i​n​g​ ​i​n​ ​t​h​e​ ​*​*​g​i​v​e​a​w​a​y​*​*
 			 */
 			voice: string
 		}
 		/**
-		 * П​у​с​т​ь​ ​у​д​а​ч​а​ ​б​у​д​е​т​ ​н​а​ ​в​а​ш​е​й​ ​с​т​о​р​о​н​е
+		 * M​a​y​ ​l​u​c​k​ ​b​e​ ​o​n​ ​y​o​u​r​ ​s​i​d​e
 		 */
 		joined: string
 		/**
-		 * У​г​а​д​а​й​т​е​ ​з​а​г​а​д​а​н​н​о​е​ ​ч​и​с​л​о
+		 * G​u​e​s​s​ ​t​h​e​ ​h​i​d​d​e​n​ ​n​u​m​b​e​r
 		 */
 		guessNumber: string
 		cooldown: {
 			/**
-			 * Н​е​ ​т​о​р​о​п​и​с​ь​.​.
+			 * D​o​ ​n​o​t​ ​r​u​s​h​.​.
 			 */
 			title: string
 			/**
-			 * П​о​д​о​ж​д​и​ ​<​t​:​$​{​t​i​m​e​}​:​R​>​ ​и​ ​п​о​п​р​о​б​у​й​ ​с​н​о​в​а
+			 * W​a​i​t​ ​<​t​:​$​{​t​i​m​e​}​:​R​>​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n
 			 * @param {number} time
 			 */
 			description: RequiredParams<'time'>
 		}
 		join: {
 			/**
-			 * Т​е​п​е​р​ь​ ​в​ы​ ​у​ч​а​с​т​в​у​е​т​е​ ​в​ ​к​о​н​к​у​р​с​е
+			 * N​o​w​ ​y​o​u​ ​a​r​e​ ​p​a​r​t​i​c​i​p​a​t​i​n​g​ ​i​n​ ​t​h​e​ ​g​i​v​e​a​w​a​y
 			 */
 			title: string
 			/**
-			 * О​й​ ​ч​т​о​-​т​о​ ​н​е​ ​т​а​к
+			 * O​h​,​ ​s​o​m​e​t​h​i​n​g​'​s​ ​w​r​o​n​g
 			 */
 			errorTitle: string
 		}
 	}
 	'default': {
 		/**
-		 * П​р​и​з
+		 * P​r​i​z​e
 		 */
 		prize: string
 		/**
-		 * В​р​е​м​я
+		 * T​i​m​e
 		 */
 		time: string
 		/**
-		 * Д​л​и​т​е​л​ь​н​о​с​т​ь
+		 * D​u​r​a​t​i​o​n
 		 */
 		duration: string
 		/**
-		 * К​о​л​-​в​о​ ​п​о​б​е​д​и​т​е​л​е​й
+		 * W​i​n​n​e​r​s​ ​c​o​u​n​t
 		 */
 		winnersCount: string
 		/**
-		 * К​а​н​а​л
+		 * C​h​a​n​n​e​l
 		 */
 		channel: string
 		/**
-		 * в​а​р​и​а​н​т
+		 * O​p​t​i​o​n
 		 */
 		option: string
 		/**
-		 * У​в​е​д​о​м​л​е​н​и​я
+		 * N​o​t​i​f​i​c​a​t​i​o​n​s
 		 */
 		notification: string
 		/**
-		 * В​к​л
+		 * O​n
 		 */
 		on: string
 		/**
-		 * В​ы​к​л
+		 * O​f​f
 		 */
 		off: string
 		winnersNouns: {
 			/**
-			 * п​о​б​е​д​и​т​е​л​ь
+			 * w​i​n​n​e​r
 			 */
 			'0': string
 			/**
-			 * п​о​б​е​д​и​т​е​л​я
+			 * w​i​n​n​e​r
 			 */
 			'1': string
 			/**
-			 * п​о​б​е​д​и​т​е​л​е​й
+			 * w​i​n​n​e​r​s
 			 */
 			'2': string
 		}
 		/**
-		 * О​ш​и​б​к​а
+		 * E​r​r​o​r
 		 */
 		error: string
 		/**
-		 * П​о​д​т​в​е​р​д​и​т​ь
+		 * A​c​c​e​p​t
 		 */
 		accept: string
 		/**
-		 * О​т​м​е​н​а
+		 * R​e​j​e​c​t
 		 */
 		reject: string
 		/**
-		 * О​т​с​у​т​с​т​в​у​е​т
+		 * M​i​s​s​i​n​g
 		 */
 		missing: string
 		/**
-		 * П​у​с​т​о​.​.​.
+		 * E​m​p​t​y​.​.​.
 		 */
 		empty: string
 	}
 	endGiveaway: {
 		/**
-		 * Р​о​з​ы​г​р​ы​ш​ ​з​а​к​о​н​ч​е​н​.
+		 * T​h​e​ ​g​i​v​e​a​w​a​y​ ​i​s​ ​o​v​e​r​.
 		 */
 		title: string
 		/**
-		 * О​р​г​а​н​и​з​а​т​о​р​:​ ​<​@​{​c​r​e​a​t​o​r​I​D​}​>​
-	​П​р​и​з​:​ ​*​*​{​p​r​i​z​e​}​*​*​
-	​П​о​б​е​д​и​т​е​л​ь​:​ ​{​w​i​n​n​e​r​s​}
+		 * O​r​g​a​n​i​z​e​r​:​ ​<​@​{​c​r​e​a​t​o​r​I​D​}​>​
+	​P​r​i​z​e​:​ ​*​*​{​p​r​i​z​e​}​*​*​
+	​W​i​n​n​e​r​:​ ​{​w​i​n​n​e​r​s​}
 		 * @param {string} creatorID
 		 * @param {string} prize
 		 * @param {string} winners
 		 */
 		description: RequiredParams<'creatorID' | 'prize' | 'winners'>
 		/**
-		 * П​о​б​е​д​и​т​е​л​ь​ ​в​ы​б​р​а​н​ ​с​ ​п​о​м​о​щ​ь​ю​:​ ​h​t​t​p​s​:​/​/​w​w​w​.​r​a​n​d​o​m​.​o​r​g​/
+		 * T​h​e​ ​w​i​n​n​e​r​ ​w​a​s​ ​s​e​l​e​c​t​e​d​ ​w​i​t​h​ ​h​e​l​p​:​ ​h​t​t​p​s​:​/​/​w​w​w​.​r​a​n​d​o​m​.​o​r​g​/
 		 */
 		footer: string
 		winnersMessage: {
 			/**
-			 * У​д​а​ч​а​ ​н​а​ ​в​а​ш​е​й​ ​с​т​о​р​о​н​е
+			 * L​u​c​k​ ​i​s​ ​o​n​ ​y​o​u​r​ ​s​i​d​e
 			 */
 			title: string
 			/**
-			 * В​ы​ ​в​ы​и​г​р​а​л​и​ ​в​ ​р​о​з​ы​г​р​ы​ш​е​ ​н​а​ ​*​*​{​p​r​i​z​e​}​*​*​,​ ​о​т​п​и​ш​и​т​е​ ​в​ ​л​с​ ​о​р​г​а​н​и​з​а​т​о​р​у​
-		​р​о​з​ы​г​р​ы​ш​а​ ​з​а​ ​п​о​л​у​ч​е​н​и​е​м​ ​н​а​г​р​а​д​ы​.
+			 * Y​o​u​ ​w​o​n​ ​i​n​ ​t​h​e​ ​g​i​v​e​a​w​a​y​ ​*​*​{​p​r​i​z​e​}​*​*​,​ ​c​o​n​t​a​c​t​ ​t​h​e​ ​o​r​g​a​n​i​z​e​r​ ​t​o​ ​r​e​c​e​i​v​e​ ​y​o​u​r​ ​a​w​a​r​d​.
 			 * @param {string} prize
 			 */
 			description: RequiredParams<'prize'>
@@ -559,76 +551,99 @@ type RootTranslation = {
 	notification: {
 		options: {
 			/**
-			 * В​о​й​с​ ​о​п​о​в​е​щ​е​н​и​е
+			 * V​o​i​c​e​ ​n​o​t​i​f​i​c​a​t​i​o​n
 			 */
 			voiceNotifications: string
 			/**
-			 * О​п​о​в​е​щ​е​н​и​е​ ​о​ ​в​ы​и​г​р​ы​ш​е
+			 * N​o​t​i​f​i​c​a​t​i​o​n​ ​o​f​ ​a​ ​w​i​n
 			 */
 			winNotifications: string
 		}
 		/**
-		 * У​п​р​а​в​л​е​н​и​е​ ​у​в​е​д​о​м​л​е​н​и​я​м​и
+		 * M​a​n​a​g​i​n​g​ ​n​o​t​i​f​i​c​a​t​i​o​n​s
 		 */
 		title: string
 		/**
-		 * В​ы​б​е​р​и​т​е​ ​н​у​ж​н​ы​й​ ​п​у​н​к​т​ ​д​л​я​ ​*​*​в​к​л​ю​ч​е​н​и​я​*​*​ ​и​л​и​ ​*​*​о​т​к​л​ю​ч​е​н​и​я​*​*​ ​у​в​е​д​о​м​л​е​н​и​я​ ​о​ ​р​о​з​ы​г​р​ы​ш​е
+		 * S​e​l​e​c​t​ ​t​h​e​ ​r​e​q​u​i​r​e​d​ ​i​t​e​m​ ​t​o​ ​*​*​e​n​a​b​l​e​*​*​ ​o​r​ ​*​*​d​i​s​a​b​l​e​*​*​ ​g​i​v​e​a​w​a​y​s​ ​n​o​t​i​f​i​c​a​t​i​o​n​s
 		 */
 		description: string
 		/**
-		 * Н​а​ж​и​м​а​т​ь​ ​с​ю​д​а​!
+		 * C​l​i​c​k​ ​h​e​r​e​!
 		 */
 		placeholder: string
 		response: {
 			description: {
 				/**
-				 * В​ы​ ​у​с​п​е​ш​н​о​ ​и​з​м​е​н​и​л​и​ ​в​а​ш​и​ ​н​а​с​т​р​о​й​к​и
+				 * S​e​t​t​i​n​g​s​ ​h​a​s​ ​s​u​c​c​e​s​s​f​u​l​l​y​ ​b​e​e​n​ ​c​h​a​n​g​e​d
 				 */
 				text: string
 				/**
-				 * Б​ы​л​о
+				 * W​a​s
 				 */
 				was: string
 				/**
-				 * С​т​а​л​о
+				 * H​a​s​ ​b​e​c​o​m​e
 				 */
 				is: string
 			}
 		}
 	}
 	help: {
+		buttons: {
+			/**
+			 * I​n​f​o​r​m​a​t​i​o​n
+			 */
+			information: string
+			/**
+			 * C​o​m​m​a​n​d​s
+			 */
+			commands: string
+			/**
+			 * A​c​t​i​v​e​ ​g​i​v​e​a​w​a​y​s
+			 */
+			activeGiveaways: string
+			/**
+			 * F​e​e​d​b​a​c​k
+			 */
+			feedback: string
+		}
 		commands: {
 			descriptions: {
 				others: {
 					/**
-					 * <​/​{​c​o​m​m​a​n​d​I​D​}​>​ ​-​ ​О​т​о​б​р​а​ж​а​е​т​ ​о​б​щ​у​ю​ ​и​н​ф​о​р​м​а​ц​и​ю​.
+					 * <​/​{​c​o​m​m​a​n​d​I​D​}​>​ ​-​ ​D​i​s​p​l​a​y​s​ ​g​e​n​e​r​a​l​ ​i​n​f​o​r​m​a​t​i​o​n​.
 					 * @param {string} commandID
 					 */
 					help: RequiredParams<'commandID'>
+					/**
+					 * <​/​{​c​o​m​m​a​n​d​I​D​}​>​ ​-​ ​C​h​a​n​g​e​ ​t​h​e​ ​b​o​t​ ​l​a​n​g​u​a​g​e​ ​r​u​/​e​n​.
+					 * @param {string} commandID
+					 */
+					locale: RequiredParams<'commandID'>
 				}
 				giveaway: {
 					/**
-					 * <​/​{​c​o​m​m​a​n​d​I​D​}​>​ ​-​ ​З​а​п​у​с​т​и​т​ь​ ​р​о​з​ы​г​р​ы​ш​.
+					 * <​/​{​c​o​m​m​a​n​d​I​D​}​>​ ​-​ ​S​t​a​r​t​ ​t​h​e​ ​g​i​v​e​a​w​a​y​.
 					 * @param {string} commandID
 					 */
 					gs: RequiredParams<'commandID'>
 					/**
-					 * <​/​{​c​o​m​m​a​n​d​I​D​}​>​ ​-​ ​В​к​л​ю​ч​и​т​ь​ ​\​ ​В​ы​к​л​ю​ч​и​т​ь​ ​у​в​е​д​о​м​л​е​н​и​я​ ​о​ ​р​о​з​ы​г​р​ы​ш​е​ ​в​ ​
-				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​л​и​ч​н​ы​х​ ​с​о​о​б​щ​е​н​и​я​х
+					 * <​/​{​c​o​m​m​a​n​d​I​D​}​>​ ​-​ ​E​n​a​b​l​e​\​D​i​s​a​b​l​e​ ​g​i​v​e​a​w​a​y​s​ ​n​o​t​i​f​i​c​a​t​i​o​n​s​ ​i​n​ ​
+				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​p​r​i​v​a​t​e​ ​m​e​s​s​a​g​e​s
 					 * @param {string} commandID
 					 */
 					notify: RequiredParams<'commandID'>
 					/**
 					 * <​/​{​c​o​m​m​a​n​d​I​D​}​>​ ​+​ ​`​ ​m​e​s​s​a​g​e​I​D​ ​`​
-				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​ ​┗​ ​З​а​в​е​р​ш​а​е​т​ ​(​в​ы​б​и​р​а​е​т​ ​п​о​б​е​д​и​т​е​л​я​)​ ​у​к​а​з​а​н​н​ы​й​ ​и​л​и​ ​
-				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​п​о​с​л​е​д​н​и​й​ ​р​о​з​ы​г​р​ы​ш​ ​в​ ​т​е​к​у​щ​е​м​ ​к​а​н​а​л​е​.
+				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​ ​┗​ ​F​i​n​i​s​h​e​s​ ​(​s​e​l​e​c​t​s​ ​t​h​e​ ​w​i​n​n​e​r​)​ ​t​h​e​ ​s​p​e​c​i​f​i​e​d​ ​o​r​ ​
+				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​t​h​e​ ​l​a​s​t​ ​g​i​v​e​a​w​a​y​ ​i​n​ ​t​h​e​ ​c​u​r​r​e​n​t​ ​c​h​a​n​n​e​l​.
 					 * @param {string} commandID
 					 */
 					end: RequiredParams<'commandID'>
 					/**
 					 * <​/​{​c​o​m​m​a​n​d​I​D​}​>​ ​+​ ​`​ ​m​e​s​s​a​g​e​I​D​ ​`​
-				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​ ​┗​ ​П​е​р​е​и​г​р​ы​в​а​е​т​ ​у​к​а​з​а​н​н​ы​й​ ​и​л​и​ ​п​о​с​л​е​д​н​и​й​ ​р​о​з​ы​г​р​ы​ш​ ​в​ ​
-				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​т​е​к​у​щ​е​м​ ​к​а​н​а​л​е​.
+				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​ ​┗​ ​R​e​r​o​l​l​s​ ​t​h​e​ ​s​p​e​c​i​f​i​e​d​ ​o​r​ ​l​a​s​t​ ​g​i​v​e​a​w​a​y​ ​i​n​
+				​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​<​:​b​a​c​k​g​r​o​u​n​d​:​9​8​0​7​6​5​4​3​4​4​1​4​5​2​2​3​9​8​>​t​h​e​ ​c​u​r​r​e​n​t​ ​c​h​a​n​n​e​l​.
 					 * @param {string} commandID
 					 */
 					reroll: RequiredParams<'commandID'>
@@ -636,11 +651,11 @@ type RootTranslation = {
 			}
 			embed: {
 				/**
-				 * ᅠ​ᅠ​«​П​р​о​в​о​д​и​т​е​ ​р​а​з​д​а​ч​и​ ​н​а​ ​с​в​о​е​м​ ​с​е​р​в​е​р​е​ ​D​i​s​c​o​r​d​ ​б​ы​с​т​р​о​ ​и​ ​л​е​г​к​о​!​»
+				 * ᅠ​ᅠ​«​H​o​l​d​ ​g​i​v​e​a​w​a​y​s​ ​o​n​ ​y​o​u​r​ ​D​i​s​c​o​r​d​ ​s​e​r​v​e​r​ ​q​u​i​c​k​l​y​ ​a​n​d​ ​e​a​s​i​l​y​!​»
 				 */
 				footer: string
 				/**
-				 * >​ ​<​@​{​b​o​t​I​D​}​>​ ​—​ ​э​т​о​ ​б​о​т​ ​д​л​я​ ​D​i​s​c​o​r​d​ ​с​е​р​в​е​р​о​в​,​ ​к​о​т​о​р​ы​й​ ​п​о​м​о​г​а​е​т​ ​п​р​о​в​о​д​и​т​ь​ ​а​в​т​о​м​а​т​и​ч​е​с​к​и​е​ ​р​а​з​д​а​ч​и​.
+				 * >​ ​<​@​{​b​o​t​I​D​}​>​ ​—​ ​a​ ​b​o​t​ ​f​o​r​ ​D​i​s​c​o​r​d​ ​s​e​r​v​e​r​s​,​ ​w​h​i​c​h​ ​h​e​l​p​s​ ​t​o​ ​p​r​o​d​u​c​e​ ​a​u​t​o​m​a​t​i​c​ ​g​i​v​e​a​w​a​y​s​.
 				 * @param {string} botID
 				 */
 				description: RequiredParams<'botID'>
@@ -650,43 +665,43 @@ type RootTranslation = {
 			embed: {
 				fields: {
 					/**
-					 * Н​а​з​в​а​н​и​е
+					 * N​a​m​e
 					 */
 					name: string
 					/**
-					 * С​е​р​в​е​р​а
+					 * S​e​r​v​e​r​s
 					 */
 					servers: string
 					/**
-					 * П​о​л​ь​з​о​в​а​т​е​л​и
+					 * U​s​e​r​s
 					 */
 					users: string
 					/**
-					 * П​л​а​т​ф​о​р​м​а
+					 * P​l​a​t​f​o​r​m
 					 */
 					platform: string
 					/**
-					 * П​а​м​я​т​ь
+					 * M​e​m​o​r​y
 					 */
 					memory: string
 					/**
-					 * А​к​т​и​в​е​н
+					 * A​c​t​i​v​e
 					 */
 					active: string
 				}
 				/**
-				 * И​н​ф​о​р​м​а​ц​и​я​ ​о​ ​б​о​т​е
+				 * I​n​f​o​r​m​a​t​i​o​n​ ​a​b​o​u​t​ ​t​h​e​ ​b​o​t
 				 */
 				title: string
 				/**
-				 * >​>​>​ ​Р​а​з​р​а​б​о​т​ч​и​к​о​м​ ​б​о​т​а​ ​я​в​л​я​е​т​с​я​ ​<​@​{​d​e​v​I​D​}​>​.​ ​
+				 * >​>​>​ ​T​h​e​ ​d​e​v​e​l​o​p​e​r​ ​o​f​ ​t​h​e​ ​b​o​t​ ​i​s​ ​<​@​{​d​e​v​I​D​}​>​.​ ​
 			​ ​*​*​[​*​*​`​{​d​e​v​T​a​g​}​`​*​*​]​*​*
 				 * @param {string} devID
 				 * @param {string} devTag
 				 */
 				description: RequiredParams<'devID' | 'devTag'>
 				/**
-				 * ᅠ​ᅠ​«​П​р​о​в​о​д​и​т​е​ ​р​а​з​д​а​ч​и​ ​н​а​ ​с​в​о​е​м​ ​с​е​р​в​е​р​е​ ​D​i​s​c​o​r​d​ ​б​ы​с​т​р​о​ ​и​ ​л​е​г​к​о​!​»
+				 * ᅠ​ᅠ​«​H​o​l​d​ ​g​i​v​e​a​w​a​y​s​ ​o​n​ ​y​o​u​r​ ​D​i​s​c​o​r​d​ ​s​e​r​v​e​r​ ​q​u​i​c​k​l​y​ ​a​n​d​ ​e​a​s​i​l​y​!​»
 				 */
 				footer: string
 			}
@@ -695,25 +710,25 @@ type RootTranslation = {
 			fields: {
 				noGiveaways: {
 					/**
-					 * Н​а​ ​с​е​р​в​е​р​е​ ​-​ ​н​е​т​ ​з​а​п​у​щ​е​н​н​ы​х​ ​р​о​з​ы​г​р​ы​ш​е​й
+					 * T​h​e​r​e​ ​a​r​e​ ​n​o​ ​a​c​t​i​v​e​ ​g​i​v​e​a​w​a​y​s​ ​o​n​ ​t​h​e​ ​s​e​r​v​e​r
 					 */
 					name: string
 					/**
-					 * Н​а​ч​н​и​т​е​ ​р​о​з​ы​г​р​ы​ш​ ​с​ ​п​о​м​о​щ​ь​ю​ ​к​о​м​а​н​д​ы​ ​<​/​g​s​:​1​0​1​2​0​8​8​8​7​9​3​7​9​1​2​0​1​4​8​>
+					 * S​t​a​r​t​ ​t​h​e​ ​g​i​v​e​a​w​a​y​ ​w​i​t​h​ ​t​h​e​ ​c​o​m​m​a​n​d​ ​<​/​g​s​:​1​0​1​2​0​8​8​8​7​9​3​7​9​1​2​0​1​4​8​>
 					 */
 					value: string
 				}
 				activeGiveaways: {
 					/**
-					 * П​р​и​з​ ​{​p​r​i​z​e​}
+					 * P​r​i​z​e​ ​{​p​r​i​z​e​}
 					 * @param {string} prize
 					 */
 					name: RequiredParams<'prize'>
 					/**
-					 * У​с​л​о​в​и​я​:​ ​*​*​{​a​c​c​e​s​s​C​o​n​d​i​t​i​o​n​}​*​*​
-				​К​о​л​и​ч​е​с​т​в​о​ ​у​ч​а​с​т​н​и​к​о​в​:​ ​*​*​{​c​o​u​n​t​}​*​*​
-				​О​р​г​а​н​и​з​а​т​о​р​:​ ​<​@​{​c​r​e​a​t​o​r​I​D​}​>​
-				​О​к​о​н​ч​а​н​и​е​:​ ​<​t​:​{​e​n​d​i​n​g​}​:​R​>
+					 * C​o​n​d​i​t​i​o​n​s​:​ ​*​*​{​a​c​c​e​s​s​C​o​n​d​i​t​i​o​n​}​*​*​
+				​N​u​m​b​e​r​ ​o​f​ ​m​e​m​b​e​r​s​:​ ​*​*​{​c​o​u​n​t​}​*​*​
+				​O​r​g​a​n​i​z​e​r​:​ ​<​@​{​c​r​e​a​t​o​r​I​D​}​>​
+				​E​n​d​i​n​g​:​ ​<​t​:​{​e​n​d​i​n​g​}​:​R​>
 					 * @param {string} accessCondition
 					 * @param {number} count
 					 * @param {string} creatorID
@@ -723,132 +738,142 @@ type RootTranslation = {
 				}
 			}
 			/**
-			 * А​к​т​и​в​н​ы​е​ ​р​о​з​ы​г​р​ы​ш​и
+			 * A​c​t​i​v​e​ ​g​i​v​e​a​w​a​y​s
 			 */
 			title: string
 			/**
-			 * >​>​>​ ​К​о​л​и​ч​е​с​т​в​о​ ​р​о​з​ы​г​р​ы​ш​е​й​:​ ​*​*​{​c​o​u​n​t​}​*​*
+			 * >​>​>​ ​N​u​m​b​e​r​ ​o​f​ ​g​i​v​e​a​w​a​y​:​ ​*​*​{​c​o​u​n​t​}​*​*
 			 * @param {number} count
 			 */
 			description: RequiredParams<'count'>
 			/**
-			 * ᅠ​ᅠ​«​П​р​о​в​о​д​и​т​е​ ​р​а​з​д​а​ч​и​ ​н​а​ ​с​в​о​е​м​ ​с​е​р​в​е​р​е​ ​D​i​s​c​o​r​d​ ​б​ы​с​т​р​о​ ​и​ ​л​е​г​к​о​!​»
+			 * ᅠ​ᅠ​«​H​o​l​d​ ​g​i​v​e​a​w​a​y​s​ ​o​n​ ​y​o​u​r​ ​D​i​s​c​o​r​d​ ​s​e​r​v​e​r​ ​q​u​i​c​k​l​y​ ​a​n​d​ ​e​a​s​i​l​y​!​»
 			 */
 			footer: string
 		}
 		giveaway: {
 			/**
 			 * ᅠ​
-		​ᅠ​ᅠ​ᅠ​ᅠ​ᅠ​ᅠ​�​�​ᅠ​У​п​р​а​в​л​е​н​и​е​ ​р​о​з​ы​г​р​ы​ш​а​м​и​ᅠ​�​�
+		​ᅠ​ᅠ​ᅠ​ᅠ​ᅠ​ᅠ​�​�​ᅠ​M​a​n​a​g​i​n​g​ ​g​i​v​e​a​w​a​y​s​ᅠ​�​�
 			 */
 			title: string
 		}
 		others: {
 			/**
-			 * ⚙​️​ ​Д​р​у​г​о​е
+			 * ⚙​️​ ​O​t​h​e​r
 			 */
 			title: string
 		}
 	}
 	/**
-	 * А​д​м​и​н​и​с​т​р​а​т​о​р
+	 * A​d​m​i​n​i​s​t​r​a​t​o​r
 	 */
 	admin: string
+	locale: {
+		/**
+		 * C​h​a​n​g​i​n​g​ ​t​h​e​ ​l​a​n​g​u​a​g​e
+		 */
+		title: string
+		/**
+		 * *​*​H​i​!​*​*​ ​n​o​w​ ​I​ ​w​i​l​l​ ​b​e​ ​a​v​a​i​l​a​b​l​e​ ​i​n​ ​*​*​E​n​g​l​i​s​h​*​*​!
+		 */
+		description: string
+	}
 }
 
 export type TranslationFunctions = {
 	errors: {
 		noPerms: {
 			/**
-			 * Недостаточно прав для использования команды
+			 * Insufficient permissions to use the command
 			 */
 			description: () => LocalizedString
 			/**
-			 * Нужные права
+			 * Required rights
 			 */
 			field: () => LocalizedString
 			/**
-			 * ` ⚪ {perm} ` ` Вкл `
+			 * ` ⚪ {perm} ` ` On `
 			 */
 			value: (arg: { perm: string }) => LocalizedString
 		}
 		noInput: {
 			/**
-			 * Неверно указано время
+			 * The time is incorrect
 			 */
 			time: () => LocalizedString
 			/**
-			 * Неверно указан канал
+			 * The channel is specified incorrectly
 			 */
 			channel: () => LocalizedString
 			/**
-			 * Неверно указано кол-во победителей
+			 * The number of winners is incorrect
 			 */
 			winnersCount: () => LocalizedString
 			/**
-			 * Неверно указан ID сообщение
+			 * The message ID is specified incorrectly
 			 */
 			messageID: () => LocalizedString
 		}
 		/**
-		 * Недостаточно участников
+		 * Not enough participants
 		 */
 		notEnoughMembers: () => LocalizedString
 		/**
-		 * Недостаточно прав для отправки сообщений в канал
+		 * Not enough rights to send messages to the channel
 		 */
 		noSendMessagePerm: () => LocalizedString
 		/**
-		 * Превышено максимальное кол-во розыгрышей на сервере
+		 * Exceeded the maximum number of giveaways on the server
 		 */
 		maxGiveaways: () => LocalizedString
 		/**
-		 * На сервере нет активных розыгрышей
+		 * There are no active giveaways on the server
 		 */
 		noServerGiveaways: () => LocalizedString
 		/**
-		 * Розыгрыш не найден или уже закончен
+		 * The giveaways was not found or has already been completed
 		 */
 		noFoundGiveaways: () => LocalizedString
 	}
 	giveaway: {
 		modal: {
 			/**
-			 * Запрос на участие
+			 * Request for participation
 			 */
 			title: () => LocalizedString
 			/**
-			 * Приз
+			 * Prize
 			 */
 			prize: () => LocalizedString
 			/**
-			 * Серверная валюта
+			 * Server currency
 			 */
 			prizePlaceholder: () => LocalizedString
 			/**
-			 * Длительность розыгрыша (1w|1d|1h|1m|1s)
+			 * Duration of the giveaway (1w|1d|1h|1m|1s)
 			 */
 			duration: () => LocalizedString
 			/**
-			 * Максимальная длительность розыгрыша {number} недели
+			 * Maximum giveaway duration {number} weeks
 			 */
 			maxDuration: (arg: { number: number }) => LocalizedString
 			/**
-			 * Кол-во победителей
+			 * Number of winners
 			 */
 			winnersCount: () => LocalizedString
 			/**
-			 * Максимальное число победителей {max}
+			 * Maximum number of winners {max}
 			 */
 			winnersCountPlaceholder: (arg: { max: number }) => LocalizedString
 			/**
-			 * Название или id канала
+			 * Channel name or id channel
 			 */
 			channel: () => LocalizedString
 		}
 		modalReply: {
 			/**
-			 * Уточним...
+			 * Be clear...
 			 */
 			title: () => LocalizedString
 			/**
@@ -858,113 +883,105 @@ export type TranslationFunctions = {
 		}
 		voiceCondition: {
 			/**
-			 * С войсом
+			 * With voice
 			 */
 			voice: () => LocalizedString
 			/**
-			 * Без войса
+			 * Without voice
 			 */
 			novoice: () => LocalizedString
 		}
 		accessConditions: {
 			/**
-			 * Нажатие реакции
+			 * Pressing a reaction
 			 */
 			reaction: () => LocalizedString
 			/**
-			 * Нажатие реакции + зайти в войс
-			 */
-			reactionVoice: () => LocalizedString
-			/**
-			 * Нажатие кнопки
+			 * Pressing of button
 			 */
 			button: () => LocalizedString
-			/**
-			 * Нажатие кнопки + зайти войс
-			 */
-			buttonVoice: () => LocalizedString
 		}
 		additionalConditions: {
 			/**
-			 * Отправить "n" кол-во сообщений
+			 * Send "n" number of messages
 			 */
 			type: () => LocalizedString
 			/**
-			 * Пригласить "n" кол-во пользователей
+			 * Invite "n" number of users
 			 */
 			invite: () => LocalizedString
 			/**
-			 * Угадать загаданное число
+			 * Guess the hidden number
 			 */
 			guess: () => LocalizedString
 			/**
-			 * Находится в определенной категории
+			 * Located in a certain category
 			 */
 			category: () => LocalizedString
 		}
 		response: {
 			/**
-			 * Для начала
+			 * In the beginning...
 			 */
 			title: () => LocalizedString
 			/**
-			 * Участие
+			 * Participation
 			 */
 			titleTwo: () => LocalizedString
 			/**
-			 * <@{userID}>, чтобы продолжить **создание розыгрыша**
-		выберите из **кнопок** ниже нужный вам **вариант**.
+			 * <@{userID}>, to continue **creating a giveaway**
+		choose one of the **buttons** below the one you need.
 			 */
 			description: (arg: { userID: string }) => LocalizedString
 			/**
-			 * <@{userID}>,  чтобы продолжить **создание розыгрыша**
-		выберите ниже **одно** из **условий**.
+			 * <@{userID}>, to continue **creating a giveaway**
+		choose the below **one** from the available **conditions**.
 			 */
 			descriptionTwo: (arg: { userID: string }) => LocalizedString
 			/**
 			 * 
 	
-		❗Некоторые условия доступны с подпиской <:patreon:1033868901982937158> & <:boosty:1033868900720455680>
+		❗Some conditions are available with a subscription <:patreon:1033868901982937158> & <:boosty:1033868900720455680>
 			 */
 			noDonate: () => LocalizedString
 			/**
-			 * Недоступны условия?
+			 * Are conditions not available??
 			 */
 			donateString: () => LocalizedString
 			/**
-			 * Варианты условий
+			 * Variants of conditions
 			 */
 			options: () => LocalizedString
 		}
 		additionalQuestion: {
 			/**
-			 * Последний вопрос
+			 * Last question
 			 */
 			title: () => LocalizedString
 			/**
-			 * Укажите количество сообщений для участия
+			 * Specify the number of messages to participate 
 			 */
 			type: () => LocalizedString
 			/**
-			 * Укажите количество приглашённых для участия
+			 * Specify the number of people invited to participate
 			 */
 			invite: () => LocalizedString
 			/**
-			 * Укажите ид категории
+			 * Specify the category ID
 			 */
 			category: () => LocalizedString
 			/**
-			 * Загадайте число нужное для участия
+			 * Guess the number you need to participate
 			 */
 			guess: () => LocalizedString
 			/**
-			 * Укажите подсказку
+			 * Specify a hint
 			 */
 			guessPrompt: () => LocalizedString
 		}
 		end: {
 			/**
-			 * Розыгрыш успешно закончен
+			 * The giveaway has been successfully completed
 			 */
 			response: () => LocalizedString
 		}
@@ -974,7 +991,7 @@ export type TranslationFunctions = {
 			 */
 			text: (arg: { index: number, userID: string }) => LocalizedString
 			/**
-			 * **{index}.** <@{userID}> выполнено **{current}** из **{need}**
+			 * **{index}.** <@{userID}> done **{current}** from **{need}**
 			 */
 			additionalText: (arg: { current: number, index: number, need: string, userID: string }) => LocalizedString
 			/**
@@ -982,285 +999,284 @@ export type TranslationFunctions = {
 			 */
 			completedText: (arg: { index: number, userID: string }) => LocalizedString
 			/**
-			 * Участники розыгрыша
+			 * Members of the giveaway
 			 */
 			title: () => LocalizedString
 			/**
-			 * Страница {page} из {pages}
+			 * Page {page} from {pages}
 			 */
 			footer: (arg: { page: number, pages: number }) => LocalizedString
 		}
 		verify: {
 			/**
-			 * Ваш прогресс
+			 * Your progress
 			 */
 			title: () => LocalizedString
 			/**
-			 * Выполнено **{current}** из **{need}**
+			 * Done **{current}** from **{need}**
 			 */
 			description: (arg: { current: number, need: string }) => LocalizedString
 			/**
-			 * Вы не участвуете в розыгрыше
+			 * You are not participating in the giveaway
 			 */
 			notIn: () => LocalizedString
 		}
 		updateEmbed: {
 			/**
-			 * Участвовать
+			 * Participate
 			 */
 			participate: () => LocalizedString
 			/**
-			 * Участников - {count}
+			 * Members - {count}
 			 */
 			participants: (arg: { count: number }) => LocalizedString
 			/**
-			 * Проверить
+			 * Verify
 			 */
 			verify: () => LocalizedString
 		}
 		onLeave: {
 			/**
-			 * Участие в розыгрыше
+			 * Participation in the giveaway
 			 */
 			title: () => LocalizedString
 			/**
-			 * Покидая **голосовой канал**, вы отказываетесь от участия в розыгрыше
-		У вас есть **20 секунд** чтобы вернуться.
+			 * By leaving the **voice channel**, you're refusing to participate in the giveaway
+		You have **20 seconds** to return.
 			 */
 			description: () => LocalizedString
 		}
 		onReturn: {
 			/**
-			 * Участие в розыгрыше
+			 * Participation in the giveaway
 			 */
 			title: () => LocalizedString
 			/**
-			 * О, вы вернулись, значит оставляем запись на участие в розыгрыше
+			 * Oh, you're back, so we're leaving an entry for participation in the giveaway
 			 */
 			description: () => LocalizedString
 		}
 	}
 	createGiveaway: {
 		/**
-		 * Приз: {prize}
+		 * Prize: {prize}
 		 */
 		title: (arg: { prize: string }) => LocalizedString
 		description: {
 			/**
-			 * > Для участия нужно нажать {rest}
+			 * > To participate, you need to click {rest}
 			 */
 			'default': (arg: { rest: string }) => LocalizedString
 			access: {
 				/**
-				 * на реакцию "{emoji}"
+				 * on the reaction "{emoji}"
 				 */
 				reaction: (arg: { emoji: string }) => LocalizedString
 				/**
-				 * на кнопку "**Участвовать**"
+				 * on the button "**Participate**"
 				 */
 				button: () => LocalizedString
 			}
 			/**
 			 * 
-		> и присоединиться к голосовому каналу
+		> and join the voice channel
 			 */
 			voice: () => LocalizedString
 			additional: {
 				/**
 				 * 
-			> и отправить {count} сообщений
+			> and send {count} messages
 				 */
 				type: (arg: { count: string }) => LocalizedString
 				/**
 				 * 
-			> и пригласить {count} пользователей
+			> and invite {count} users
 				 */
 				invite: (arg: { count: string }) => LocalizedString
 				/**
 				 * 
-			> и угадать загаданное число
+			> and guess the number
 				 */
 				guess: () => LocalizedString
 				/**
 				 * 
-			> и находится в категории **<#{count}>**
+			> and be located in the category **<#{count}>**
 				 */
 				category: (arg: { count: string }) => LocalizedString
 			}
 			/**
 			 * 
 	
-		**Заканчивается:** <t:{time}:R>
+		**Finish:** <t:{time}:R>
 			 */
 			time: (arg: { time: number }) => LocalizedString
 		}
 		reason: {
 			additional: {
 				/**
-				 * Ваша задача: отправить {count} сообщений
+				 * Your task: to send  {count} messages
 		
 		
 				 */
 				type: (arg: { count: number }) => LocalizedString
 				/**
-				 * Ваша задача: пригласить **{count}** пользователяx
+				 * Your task: invite **{count}** user
 				 */
 				invite: (arg: { count: number }) => LocalizedString
 				/**
-				 * Ваша задача: угадать **загаданное** число
+				 * Your task: guess the **hidden** number
 				 */
 				guess: () => LocalizedString
 			}
 		}
 		/**
-		 * Включить уведомления /notify
+		 * Enable notifications /notify
 		 */
 		footer: () => LocalizedString
 	}
 	onJoinGiveaway: {
 		/**
-		 * Вы уже участвуете в розыгрыше
+		 * You are already participating
 		 */
 		alreadyParticipate: () => LocalizedString
 		/**
-		 * **Условие участия:** Зайдите в любой голосовой канал на сервере
+		 * **Conditions:** Connect to any voice channel on the server
 		 */
 		noVoice: () => LocalizedString
 		/**
-		 * **Условие участия:** Зайдите в любой голосовой канал в категории <#{category}>
+		 * **Conditions:** Connect to any voice channel in the category <#{category}>
 		 */
 		noCategory: (arg: { category: string }) => LocalizedString
 		voiceCondition: {
 			/**
-			 * Примечание: При выходе из **голосового канала** вы
-		автоматические будете **сняты** с участия в **розыгрыше**
+			 * Note: When you exit the **voice channel**, you'll be
+		**removed** automatically from participating in the **giveaway**
 			 */
 			voice: () => LocalizedString
 		}
 		/**
-		 * Пусть удача будет на вашей стороне
+		 * May luck be on your side
 		 */
 		joined: () => LocalizedString
 		/**
-		 * Угадайте загаданное число
+		 * Guess the hidden number
 		 */
 		guessNumber: () => LocalizedString
 		cooldown: {
 			/**
-			 * Не торопись..
+			 * Do not rush..
 			 */
 			title: () => LocalizedString
 			/**
-			 * Подожди <t:${time}:R> и попробуй снова
+			 * Wait <t:${time}:R> and try again
 			 */
 			description: (arg: { time: number }) => LocalizedString
 		}
 		join: {
 			/**
-			 * Теперь вы участвуете в конкурсе
+			 * Now you are participating in the giveaway
 			 */
 			title: () => LocalizedString
 			/**
-			 * Ой что-то не так
+			 * Oh, something's wrong
 			 */
 			errorTitle: () => LocalizedString
 		}
 	}
 	'default': {
 		/**
-		 * Приз
+		 * Prize
 		 */
 		prize: () => LocalizedString
 		/**
-		 * Время
+		 * Time
 		 */
 		time: () => LocalizedString
 		/**
-		 * Длительность
+		 * Duration
 		 */
 		duration: () => LocalizedString
 		/**
-		 * Кол-во победителей
+		 * Winners count
 		 */
 		winnersCount: () => LocalizedString
 		/**
-		 * Канал
+		 * Channel
 		 */
 		channel: () => LocalizedString
 		/**
-		 * вариант
+		 * Option
 		 */
 		option: () => LocalizedString
 		/**
-		 * Уведомления
+		 * Notifications
 		 */
 		notification: () => LocalizedString
 		/**
-		 * Вкл
+		 * On
 		 */
 		on: () => LocalizedString
 		/**
-		 * Выкл
+		 * Off
 		 */
 		off: () => LocalizedString
 		winnersNouns: {
 			/**
-			 * победитель
+			 * winner
 			 */
 			'0': () => LocalizedString
 			/**
-			 * победителя
+			 * winner
 			 */
 			'1': () => LocalizedString
 			/**
-			 * победителей
+			 * winners
 			 */
 			'2': () => LocalizedString
 		}
 		/**
-		 * Ошибка
+		 * Error
 		 */
 		error: () => LocalizedString
 		/**
-		 * Подтвердить
+		 * Accept
 		 */
 		accept: () => LocalizedString
 		/**
-		 * Отмена
+		 * Reject
 		 */
 		reject: () => LocalizedString
 		/**
-		 * Отсутствует
+		 * Missing
 		 */
 		missing: () => LocalizedString
 		/**
-		 * Пусто...
+		 * Empty...
 		 */
 		empty: () => LocalizedString
 	}
 	endGiveaway: {
 		/**
-		 * Розыгрыш закончен.
+		 * The giveaway is over.
 		 */
 		title: () => LocalizedString
 		/**
-		 * Организатор: <@{creatorID}>
-	Приз: **{prize}**
-	Победитель: {winners}
+		 * Organizer: <@{creatorID}>
+	Prize: **{prize}**
+	Winner: {winners}
 		 */
 		description: (arg: { creatorID: string, prize: string, winners: string }) => LocalizedString
 		/**
-		 * Победитель выбран с помощью: https://www.random.org/
+		 * The winner was selected with help: https://www.random.org/
 		 */
 		footer: () => LocalizedString
 		winnersMessage: {
 			/**
-			 * Удача на вашей стороне
+			 * Luck is on your side
 			 */
 			title: () => LocalizedString
 			/**
-			 * Вы выиграли в розыгрыше на **{prize}**, отпишите в лс организатору
-		розыгрыша за получением награды.
+			 * You won in the giveaway **{prize}**, contact the organizer to receive your award.
 			 */
 			description: (arg: { prize: string }) => LocalizedString
 		}
@@ -1268,83 +1284,105 @@ export type TranslationFunctions = {
 	notification: {
 		options: {
 			/**
-			 * Войс оповещение
+			 * Voice notification
 			 */
 			voiceNotifications: () => LocalizedString
 			/**
-			 * Оповещение о выигрыше
+			 * Notification of a win
 			 */
 			winNotifications: () => LocalizedString
 		}
 		/**
-		 * Управление уведомлениями
+		 * Managing notifications
 		 */
 		title: () => LocalizedString
 		/**
-		 * Выберите нужный пункт для **включения** или **отключения** уведомления о розыгрыше
+		 * Select the required item to **enable** or **disable** giveaways notifications
 		 */
 		description: () => LocalizedString
 		/**
-		 * Нажимать сюда!
+		 * Click here!
 		 */
 		placeholder: () => LocalizedString
 		response: {
 			description: {
 				/**
-				 * Вы успешно изменили ваши настройки
+				 * Settings has successfully been changed
 				 */
 				text: () => LocalizedString
 				/**
-				 * Было
+				 * Was
 				 */
 				was: () => LocalizedString
 				/**
-				 * Стало
+				 * Has become
 				 */
 				is: () => LocalizedString
 			}
 		}
 	}
 	help: {
+		buttons: {
+			/**
+			 * Information
+			 */
+			information: () => LocalizedString
+			/**
+			 * Commands
+			 */
+			commands: () => LocalizedString
+			/**
+			 * Active giveaways
+			 */
+			activeGiveaways: () => LocalizedString
+			/**
+			 * Feedback
+			 */
+			feedback: () => LocalizedString
+		}
 		commands: {
 			descriptions: {
 				others: {
 					/**
-					 * </{commandID}> - Отображает общую информацию.
+					 * </{commandID}> - Displays general information.
 					 */
 					help: (arg: { commandID: string }) => LocalizedString
+					/**
+					 * </{commandID}> - Change the bot language ru/en.
+					 */
+					locale: (arg: { commandID: string }) => LocalizedString
 				}
 				giveaway: {
 					/**
-					 * </{commandID}> - Запустить розыгрыш.
+					 * </{commandID}> - Start the giveaway.
 					 */
 					gs: (arg: { commandID: string }) => LocalizedString
 					/**
-					 * </{commandID}> - Включить \ Выключить уведомления о розыгрыше в 
-				<:background:980765434414522398><:background:980765434414522398>личных сообщениях
+					 * </{commandID}> - Enable\Disable giveaways notifications in 
+				<:background:980765434414522398><:background:980765434414522398>private messages
 					 */
 					notify: (arg: { commandID: string }) => LocalizedString
 					/**
 					 * </{commandID}> + ` messageID `
-				<:background:980765434414522398> ┗ Завершает (выбирает победителя) указанный или 
-				<:background:980765434414522398><:background:980765434414522398>последний розыгрыш в текущем канале.
+				<:background:980765434414522398> ┗ Finishes (selects the winner) the specified or 
+				<:background:980765434414522398><:background:980765434414522398>the last giveaway in the current channel.
 					 */
 					end: (arg: { commandID: string }) => LocalizedString
 					/**
 					 * </{commandID}> + ` messageID `
-				<:background:980765434414522398> ┗ Переигрывает указанный или последний розыгрыш в 
-				<:background:980765434414522398><:background:980765434414522398>текущем канале.
+				<:background:980765434414522398> ┗ Rerolls the specified or last giveaway in
+				<:background:980765434414522398><:background:980765434414522398>the current channel.
 					 */
 					reroll: (arg: { commandID: string }) => LocalizedString
 				}
 			}
 			embed: {
 				/**
-				 * ᅠᅠ«Проводите раздачи на своем сервере Discord быстро и легко!»
+				 * ᅠᅠ«Hold giveaways on your Discord server quickly and easily!»
 				 */
 				footer: () => LocalizedString
 				/**
-				 * > <@{botID}> — это бот для Discord серверов, который помогает проводить автоматические раздачи.
+				 * > <@{botID}> — a bot for Discord servers, which helps to produce automatic giveaways.
 				 */
 				description: (arg: { botID: string }) => LocalizedString
 			}
@@ -1353,41 +1391,41 @@ export type TranslationFunctions = {
 			embed: {
 				fields: {
 					/**
-					 * Название
+					 * Name
 					 */
 					name: () => LocalizedString
 					/**
-					 * Сервера
+					 * Servers
 					 */
 					servers: () => LocalizedString
 					/**
-					 * Пользователи
+					 * Users
 					 */
 					users: () => LocalizedString
 					/**
-					 * Платформа
+					 * Platform
 					 */
 					platform: () => LocalizedString
 					/**
-					 * Память
+					 * Memory
 					 */
 					memory: () => LocalizedString
 					/**
-					 * Активен
+					 * Active
 					 */
 					active: () => LocalizedString
 				}
 				/**
-				 * Информация о боте
+				 * Information about the bot
 				 */
 				title: () => LocalizedString
 				/**
-				 * >>> Разработчиком бота является <@{devID}>. 
+				 * >>> The developer of the bot is <@{devID}>. 
 			 **[**`{devTag}`**]**
 				 */
 				description: (arg: { devID: string, devTag: string }) => LocalizedString
 				/**
-				 * ᅠᅠ«Проводите раздачи на своем сервере Discord быстро и легко!»
+				 * ᅠᅠ«Hold giveaways on your Discord server quickly and easily!»
 				 */
 				footer: () => LocalizedString
 			}
@@ -1396,59 +1434,69 @@ export type TranslationFunctions = {
 			fields: {
 				noGiveaways: {
 					/**
-					 * На сервере - нет запущенных розыгрышей
+					 * There are no active giveaways on the server
 					 */
 					name: () => LocalizedString
 					/**
-					 * Начните розыгрыш с помощью команды </gs:1012088879379120148>
+					 * Start the giveaway with the command </gs:1012088879379120148>
 					 */
 					value: () => LocalizedString
 				}
 				activeGiveaways: {
 					/**
-					 * Приз {prize}
+					 * Prize {prize}
 					 */
 					name: (arg: { prize: string }) => LocalizedString
 					/**
-					 * Условия: **{accessCondition}**
-				Количество участников: **{count}**
-				Организатор: <@{creatorID}>
-				Окончание: <t:{ending}:R>
+					 * Conditions: **{accessCondition}**
+				Number of members: **{count}**
+				Organizer: <@{creatorID}>
+				Ending: <t:{ending}:R>
 					 */
 					value: (arg: { accessCondition: string, count: number, creatorID: string, ending: number }) => LocalizedString
 				}
 			}
 			/**
-			 * Активные розыгрыши
+			 * Active giveaways
 			 */
 			title: () => LocalizedString
 			/**
-			 * >>> Количество розыгрышей: **{count}**
+			 * >>> Number of giveaway: **{count}**
 			 */
 			description: (arg: { count: number }) => LocalizedString
 			/**
-			 * ᅠᅠ«Проводите раздачи на своем сервере Discord быстро и легко!»
+			 * ᅠᅠ«Hold giveaways on your Discord server quickly and easily!»
 			 */
 			footer: () => LocalizedString
 		}
 		giveaway: {
 			/**
 			 * ᅠ
-		ᅠᅠᅠᅠᅠᅠ🎉ᅠУправление розыгрышамиᅠ🎉
+		ᅠᅠᅠᅠᅠᅠ🎉ᅠManaging giveawaysᅠ🎉
 			 */
 			title: () => LocalizedString
 		}
 		others: {
 			/**
-			 * ⚙️ Другое
+			 * ⚙️ Other
 			 */
 			title: () => LocalizedString
 		}
 	}
 	/**
-	 * Администратор
+	 * Administrator
 	 */
 	admin: () => LocalizedString
+	locale: {
+		/**
+		 * Changing the language
+		 */
+		title: () => LocalizedString
+		/**
+		 * **Hi!** now I will be available in **English**!
+		 */
+		description: () => LocalizedString
+	}
 }
 
 export type Formatters = {}
