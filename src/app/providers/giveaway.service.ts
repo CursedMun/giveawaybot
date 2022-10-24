@@ -212,12 +212,12 @@ export class GiveawayService {
               ?.send({
                 embeds: [
                   {
-                    title: 'Удача на вашей стороне',
+                    title: locale.en.endGiveaway.winnersMessage.title(),
                     color: config.meta.defaultColor,
-                    description: [
-                      `Вы выиграли в розыгрыше на **${doc.prize}**, отпишите в лс организатору`,
-                      `розыгрыша за получением награды.`
-                    ].join('\n')
+                    description:
+                      locale.en.endGiveaway.winnersMessage.description({
+                        prize: doc.prize
+                      })
                   }
                 ]
               })

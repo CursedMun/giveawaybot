@@ -306,7 +306,8 @@ export class GiveawayEvents {
           return;
         }
         const response = await this.giveawayService.onJoin(member, giveaway.ID);
-        if (response.reason == 'Вы уже участвуете') return;
+        if (response.reason == locale.en.onJoinGiveaway.alreadyParticipate())
+          return;
         if (!response.success) await reaction.users.remove(user.id);
       }
     } catch (err) {
