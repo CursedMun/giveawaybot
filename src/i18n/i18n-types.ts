@@ -543,6 +543,18 @@ type RootTranslation = {
 		 * П​о​б​е​д​и​т​е​л​ь​ ​в​ы​б​р​а​н​ ​с​ ​п​о​м​о​щ​ь​ю​:​ ​h​t​t​p​s​:​/​/​w​w​w​.​r​a​n​d​o​m​.​o​r​g​/
 		 */
 		footer: string
+		winnersMessage: {
+			/**
+			 * У​д​а​ч​а​ ​н​а​ ​в​а​ш​е​й​ ​с​т​о​р​о​н​е
+			 */
+			title: string
+			/**
+			 * В​ы​ ​в​ы​и​г​р​а​л​и​ ​в​ ​р​о​з​ы​г​р​ы​ш​е​ ​н​а​ ​*​*​{​p​r​i​z​e​}​*​*​,​ ​о​т​п​и​ш​и​т​е​ ​в​ ​л​с​ ​о​р​г​а​н​и​з​а​т​о​р​у​
+		​р​о​з​ы​г​р​ы​ш​а​ ​з​а​ ​п​о​л​у​ч​е​н​и​е​м​ ​н​а​г​р​а​д​ы​.
+			 * @param {string} prize
+			 */
+			description: RequiredParams<'prize'>
+		}
 	}
 	notification: {
 		options: {
@@ -1241,6 +1253,17 @@ export type TranslationFunctions = {
 		 * Победитель выбран с помощью: https://www.random.org/
 		 */
 		footer: () => LocalizedString
+		winnersMessage: {
+			/**
+			 * Удача на вашей стороне
+			 */
+			title: () => LocalizedString
+			/**
+			 * Вы выиграли в розыгрыше на **{prize}**, отпишите в лс организатору
+		розыгрыша за получением награды.
+			 */
+			description: (arg: { prize: string }) => LocalizedString
+		}
 	}
 	notification: {
 		options: {

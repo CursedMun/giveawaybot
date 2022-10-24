@@ -175,7 +175,12 @@ const en: BaseTranslation = {
     title: 'Розыгрыш закончен.',
     description:
       'Организатор: <@{creatorID:string}>\nПриз: **{prize:string}**\nПобедитель: {winners:string}',
-    footer: 'Победитель выбран с помощью: https://www.random.org/'
+    footer: 'Победитель выбран с помощью: https://www.random.org/',
+    winnersMessage: {
+      title: 'Удача на вашей стороне',
+      description:
+        'Вы выиграли в розыгрыше на **{prize:string}**, отпишите в лс организатору\nрозыгрыша за получением награды.'
+    }
   },
   //notification Command
   notification: {
