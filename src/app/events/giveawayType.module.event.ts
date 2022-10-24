@@ -60,7 +60,7 @@ export class GiveawayInviteModule {
             { $inc: { 'participants.$.number': v } }
           );
         });
-      const resp = await Promise.allSettled(updates);
+      await Promise.allSettled(updates);
       this.tempMessages = {};
     }, 2000);
   }
