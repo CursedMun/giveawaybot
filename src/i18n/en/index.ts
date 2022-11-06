@@ -122,7 +122,7 @@ const en: BaseTranslation = {
         guess: '\n> and guess the number',
         category: '\n> and be located in the category **<#{count:string}>**'
       },
-      time: '\n\n**Finish:** <t:{time:number}:R>'
+      time: '\n\n**Finish:** <t:{time:number}:R>\n[Please help me by voting!](https://top.gg/bot/1012088879379120148/vote)'
     },
     reason: {
       additional: {

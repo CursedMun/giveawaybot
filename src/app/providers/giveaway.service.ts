@@ -85,7 +85,7 @@ export class GiveawayService {
       } catch (err) {
         const deleted = await this.giveawayService.deleteOne({ ID: doc.ID });
         if (deleted) this.logger.warn(err);
-        this.logger.error(err);
+        else this.logger.error(err);
       }
     }
   }
@@ -402,8 +402,9 @@ export class GiveawayService {
         .react(config.emojis.giveaway)
         .catch(async () => {
           await message.delete().catch(() => null);
-          await message.channel
-            .send({
+          await message.guild.members.cache
+            .get(creatorID)
+            ?.send({
               embeds: [
                 {
                   title: 'Ошибка',

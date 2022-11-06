@@ -5,6 +5,7 @@ import { MongoGuildService } from '@src/schemas/mongo/guild/guild.service';
 import { ModalComponents } from '@src/types/global';
 import {
   ButtonInteraction,
+  CommandInteraction,
   ComponentType,
   GuildMember,
   MessageReaction,
