@@ -121,7 +121,7 @@ const ru: BaseTranslation = {
         guess: '\n> и угадать загаданное число',
         category: '\n> и находится в категории **<#{count:string}>**'
       },
-      time: '\n\n**Заканчивается:** <t:{time:number}:R>'
+      time: '\n\n**Заканчивается:** <t:{time:number}:R>\n[Поддержите бота, проголосовав!](https://top.gg/bot/1012088879379120148/vote)'
     },
     reason: {
       additional: {
