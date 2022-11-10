@@ -134,7 +134,7 @@ type RootTranslation = {
 			 */
 			reaction: string
 			/**
-			 * P​r​e​s​s​i​n​g​ ​o​f​ ​b​u​t​t​o​n
+			 * P​r​e​s​s​i​n​g​ ​a​ ​b​u​t​t​o​n
 			 */
 			button: string
 		}
@@ -365,7 +365,8 @@ type RootTranslation = {
 			/**
 			 * 
 		​
-		​*​*​F​i​n​i​s​h​:​*​*​ ​<​t​:​{​t​i​m​e​}​:​R​>
+		​*​*​F​i​n​i​s​h​:​*​*​ ​<​t​:​{​t​i​m​e​}​:​R​>​
+		​[​P​l​e​a​s​e​ ​h​e​l​p​ ​m​e​ ​b​y​ ​v​o​t​i​n​g​!​]​(​h​t​t​p​s​:​/​/​t​o​p​.​g​g​/​b​o​t​/​1​0​1​2​0​8​8​8​7​9​3​7​9​1​2​0​1​4​8​/​v​o​t​e​)
 			 * @param {number} time
 			 */
 			time: RequiredParams<'time'>
@@ -897,7 +898,7 @@ export type TranslationFunctions = {
 			 */
 			reaction: () => LocalizedString
 			/**
-			 * Pressing of button
+			 * Pressing a button
 			 */
 			button: () => LocalizedString
 		}
@@ -1108,6 +1109,7 @@ export type TranslationFunctions = {
 			 * 
 	
 		**Finish:** <t:{time}:R>
+		[Please help me by voting!](https://top.gg/bot/1012088879379120148/vote)
 			 */
 			time: (arg: { time: number }) => LocalizedString
 		}
