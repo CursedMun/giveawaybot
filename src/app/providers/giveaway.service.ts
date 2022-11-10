@@ -193,7 +193,7 @@ export class GiveawayService {
       const message =
         channel.messages.cache.get(doc.messageID) ??
         (await channel.messages.fetch(doc.messageID));
-      if (!message) return;
+      if (!message || !message.guild) return;
 
       const [embed] = message.embeds;
       if (!embed) return;
@@ -397,15 +397,14 @@ export class GiveawayService {
           .catch(() => null);
         this.logger.error(err);
       });
-    if (!message) return;
+    if (!message || !message.guild) return;
     if (accessCondition === 'reaction') {
       const reaction = await message
         .react(config.emojis.giveaway)
         .catch(async () => {
           await message.delete().catch(() => null);
-          await message.guild.members.cache
-            .get(creatorID)
-            ?.send({
+          const creator = await this.client.users.fetch(creatorID);
+          await creator.send({
               embeds: [
                 {
                   title: 'Ошибка',
