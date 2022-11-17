@@ -1,4 +1,4 @@
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, UpdateQuery } from 'mongoose';
 
 export class BaseService<T> {
   constructor(private model: Model<T>) {}
@@ -17,6 +17,12 @@ export class BaseService<T> {
   }
   async findOne(data?: FilterQuery<T>): Promise<T> {
     return this.model.findOne(data).lean();
+  }
+  async updateOne(filter: FilterQuery<T>, data: UpdateQuery<T>) {
+    return this.model.updateOne(filter, data);
+  }
+  async updateMany(filter: FilterQuery<T>, data: UpdateQuery<T>) {
+    return this.model.updateMany(filter, data);
   }
   async count(data: FilterQuery<T>): Promise<number> {
     return await this.model.find(data).countDocuments().lean();

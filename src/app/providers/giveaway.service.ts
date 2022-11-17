@@ -48,9 +48,14 @@ export class GiveawayService {
     private readonly guildService: MongoGuildService
   ) {}
   //global
-  async check() {
-    const docs = await this.giveawayService.find({ ended: false });
-    for (const doc of docs) {
+  async check(interval: number = config.ticks.oneHour) {
+    const docs = await this.giveawayService.find({
+      ended: false,
+      endDate: {
+        $lt: interval + Date.now()
+      }
+    });
+    for await (const doc of docs) {
       try {
         const guild =
           this.client.guilds.cache.get(doc.guildID) ??
@@ -66,13 +71,15 @@ export class GiveawayService {
           await this.giveawayService.deleteOne({ ID: doc.ID });
           continue;
         }
+
         const message =
           channel.messages.cache.get(doc.messageID) ??
           (await channel.messages.fetch(doc.messageID));
         if (!message) {
-          await this.giveawayService.deleteOne({ ID: doc.ID });
+          await this.giveawayService.deleteOne({ ID: String(doc.ID) });
           continue;
         }
+
         this.timers.set(message.id, {
           giveawayTimer: new Timer(
             doc.endDate,
@@ -179,6 +186,7 @@ export class GiveawayService {
 
   async endGiveaway(ID: string, winner?: string) {
     try {
+      console.log(ID);
       const doc = await this.giveawayService.findOne({ ID });
       if (!doc || doc.ended) return;
 
@@ -233,10 +241,7 @@ export class GiveawayService {
                 )
               );
         }),
-        this.giveawayService.GiveawayModel.updateOne(
-          { ID },
-          { winners: winners }
-        ),
+        this.giveawayService.updateOne({ ID }, { winners: winners }),
         message.edit({
           embeds: [
             {
@@ -269,10 +274,7 @@ export class GiveawayService {
     } catch (err) {
       this.logger.error(err);
     } finally {
-      await this.giveawayService.GiveawayModel.updateOne(
-        { ID },
-        { ended: true }
-      );
+      await this.giveawayService.updateOne({ ID }, { ended: true });
     }
   }
   async createGiveaway(data: GiveawayCreationData, region: Locales) {
@@ -573,7 +575,7 @@ export class GiveawayService {
         success: true
       };
     }
-    await this.giveawayService.GiveawayModel.updateOne(
+    await this.giveawayService.updateOne(
       { ID },
       { $addToSet: { participants: { ID: member.id, number: 0 } } }
     );
@@ -599,7 +601,7 @@ export class GiveawayService {
     userID: string,
     IDs: string[]
   ): Promise<{ reason: string; success: boolean }> {
-    await this.giveawayService.GiveawayModel.updateOne(
+    await this.giveawayService.updateOne(
       { ID: { $in: IDs } },
       { $pull: { participants: { ID: userID } } }
     );

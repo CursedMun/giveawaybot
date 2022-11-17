@@ -50,7 +50,7 @@ export class GiveawayInviteModule {
       const updates = Object.entries(this.tempMessages)
         .filter(Boolean)
         .map(([k, v]) => {
-          return this.giveawayService.giveawayService.GiveawayModel.updateMany(
+          return this.giveawayService.giveawayService.updateMany(
             {
               ID: { $in: giveaways },
               participants: {

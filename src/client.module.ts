@@ -29,8 +29,8 @@ import { ClientGateway } from './app/events/client.gateaway.event';
             status: 'online',
             activities: [
               {
-                name: '💫 напишите ??invite',
-                type: ActivityType.Competing,
+                name: '💫 with giveaways',
+                type: ActivityType.Playing,
                 url: 'https://discord.com/api/oauth2/authorize?client_id=960300300038717490&permissions=0&scope=bot'
               }
             ]
@@ -46,9 +46,18 @@ import { ClientGateway } from './app/events/client.gateaway.event';
           ],
           makeCache: Options.cacheWithLimits({
             ...Options.DefaultMakeCacheSettings,
-            ReactionManager: 0
+            ReactionManager: 0,
+            GuildMemberManager: {
+              maxSize: 200
+            }
           }),
-          sweepers: Options.DefaultSweeperSettings
+          sweepers: {
+            ...Options.DefaultSweeperSettings,
+            messages: {
+              interval: 3600, // Every hour...
+              lifetime: 1800 // Remove messages older than 30 minutes.
+            }
+          }
         },
         registerCommandOptions: [{}]
       }),

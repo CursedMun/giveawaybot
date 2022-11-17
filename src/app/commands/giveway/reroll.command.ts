@@ -111,7 +111,7 @@ export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
       giveaway,
       parseInt(count ?? giveaway.winnerCount)
     );
-    await this.giveawayService.giveawayService.GiveawayModel.updateOne(
+    await this.giveawayService.giveawayService.updateOne(
       { ID: giveaway.ID },
       { winners: winners }
     );

@@ -30,13 +30,17 @@ export class Ready {
         2
       )} MB / ${(process.memoryUsage().rss / 1024 / 1024).toFixed(2)} MB`
     };
-    await this.giveawayService.check();
+    this.checkTemps();
     this.logger.log(
       Object.entries(stats)
         .map(([key, value]) => `${key} ${value}`)
         .join('\n')
     );
     // this.userService.getPremiumUsers();
+  }
+  checkTemps() {
+    this.giveawayService.check();
+    setTimeout(() => this.checkTemps(), config.ticks.oneHour);
   }
   @On('guildCreate')
   async onGuildJoin(guild: Guild): Promise<void> {

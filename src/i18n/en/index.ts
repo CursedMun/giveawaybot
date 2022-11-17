@@ -167,7 +167,7 @@ const en: BaseTranslation = {
     error: 'Error',
     accept: 'Accept',
     reject: 'Reject',
-    missing: 'Missing',
+    missing: 'No winners',
     empty: 'Empty...'
   },
   endGiveaway: {
