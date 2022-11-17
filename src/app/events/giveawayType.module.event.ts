@@ -14,7 +14,8 @@ export class GiveawayInviteModule {
   @On('messageCreate')
   async onMessage(message: Message): Promise<void> {
     if (message.author.bot || message.channel.type === ChannelType.DM) return;
-    if (!message.guildId) return;
+    if (!message.guild) return;
+    if (!this.giveawayService.verifyGuild(message.guild.id)) return;
     if (
       this.messagesTimeout[message.author.id] &&
       this.messagesTimeout[message.author.id] > Date.now()
@@ -23,25 +24,13 @@ export class GiveawayInviteModule {
     else
       this.messagesTimeout[message.author.id] =
         Date.now() + config.ticks.oneMinute / 2;
-    const giveaways = await this.giveawayService.getServerGiveaways(
-      message.guildId
-    );
-    if (!giveaways.length) return;
-    const docs = (
-      await Promise.all(
-        giveaways.map((id) =>
-          this.giveawayService.giveawayService.findOne({
-            ID: id,
-            ended: false
-          })
-        )
-      )
-    ).filter((x) => x?.additionalCondition === 'type');
+    const docs = await this.giveawayService.getServerGiveaways({
+      guildID: message.guild.id,
+      ended: false,
+      additionalCondition: 'type',
+      'participants.ID': message.author.id
+    });
     if (!docs.length) return;
-    if (
-      !docs.some((x) => x?.participants.find((x) => x.ID === message.author.id))
-    )
-      return;
 
     this.tempMessages[message.author.id] =
       this.tempMessages[message.author.id] + 1 || 1;
@@ -52,7 +41,7 @@ export class GiveawayInviteModule {
         .map(([k, v]) => {
           return this.giveawayService.giveawayService.updateMany(
             {
-              ID: { $in: giveaways },
+              ID: { $in: docs.map((x) => x.ID) },
               participants: {
                 $elemMatch: { ID: k }
               }

@@ -21,8 +21,10 @@ import {
   SnowflakeUtil,
   TextChannel
 } from 'discord.js';
+import { FilterQuery } from 'mongoose';
 import fetch from 'node-fetch';
 import { config } from '../utils/config';
+import { fetchableGuilds } from '../utils/GlobalVar';
 import Timer from '../utils/timer';
 export type GiveawayCreationData = {
   creatorID: string;
@@ -75,6 +77,7 @@ export class GiveawayService {
         const message =
           channel.messages.cache.get(doc.messageID) ??
           (await channel.messages.fetch(doc.messageID));
+
         if (!message) {
           await this.giveawayService.deleteOne({ ID: String(doc.ID) });
           continue;
@@ -186,7 +189,6 @@ export class GiveawayService {
 
   async endGiveaway(ID: string, winner?: string) {
     try {
-      console.log(ID);
       const doc = await this.giveawayService.findOne({ ID });
       if (!doc || doc.ended) return;
 
@@ -271,6 +273,16 @@ export class GiveawayService {
           ? await message.reactions.removeAll()
           : null
       ]);
+      // TODO: make it delete from global var
+      // const notEndedGiveaways = await this.getServerGiveaways({
+      //   guildID: doc.guildID,
+      //   ended: false
+      // });
+      // if (!notEndedGiveaways.length) {
+      //   //remove from array
+      //   const newValues = fetchableGuilds.filter((x) => x != doc.guildID);
+      //   fetchableGuilds.splice(0, fetchableGuilds.length, ...newValues);
+      // }
     } catch (err) {
       this.logger.error(err);
     } finally {
@@ -481,29 +493,18 @@ export class GiveawayService {
           config.ticks.oneHour
         )
       });
+    if (additionalCondition == 'type' || voiceCondition == 'voice') {
+      fetchableGuilds.push(doc.guildID);
+    }
   }
   //DataBase communication
   async getGiveaway(ID: string): Promise<Giveaway | null> {
     const giveaway = await this.giveawayService.findOne({ ID });
     return giveaway;
   }
-  async getGiveawayByChannel(
-    guildID: string | null,
-    channelID: string,
-    force?: boolean,
-    ttl?: number
-  ): Promise<Giveaway | null> {
-    const giveaways = await this.giveawayService.findOne({
-      channelID,
-      guildID: guildID ?? ''
-    });
-    return giveaways ? giveaways : null;
-  }
   async getGiveawayByMessage(
     guildID: string | null,
-    messageID: string,
-    force?: boolean,
-    ttl?: number
+    messageID: string
   ): Promise<Giveaway | null> {
     const giveaways = await this.giveawayService.findOne({
       messageID,
@@ -511,18 +512,16 @@ export class GiveawayService {
     });
     return giveaways ? giveaways : null;
   }
-  async getServerGiveaways(guildID: string) {
-    return this.giveawayService.find({ guildID });
+  async getServerGiveaways(data: FilterQuery<Giveaway>) {
+    return this.giveawayService.find(data);
   }
   async getServerGiveawayObjects(
     guildID: string,
-    force?: boolean,
     ended?: boolean
   ): Promise<Giveaway[]> {
     const giveaways = await this.giveawayService.find({
       guildID,
-      ended,
-      force
+      ended
     });
     return giveaways;
   }
@@ -629,5 +628,13 @@ export class GiveawayService {
       current: parcipant ? parcipant.number : null,
       need: doc.number
     };
+  }
+  pushToFetchableGuilds(guildID: string[]) {
+    for (const guild of guildID) {
+      if (!fetchableGuilds.includes(guild)) fetchableGuilds.push(guild);
+    }
+  }
+  verifyGuild(guildID: string) {
+    return fetchableGuilds.includes(guildID);
   }
 }

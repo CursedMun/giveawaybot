@@ -1,4 +1,4 @@
-import { On } from '@discord-nestjs/core';
+import { On, Once } from '@discord-nestjs/core';
 import { Injectable, Logger, UseGuards } from '@nestjs/common';
 import locale from '@src/i18n/i18n-node';
 import { MongoGuildService } from '@src/schemas/mongo/guild/guild.service';
@@ -16,6 +16,7 @@ import {
 import { GiveawayService } from '../providers/giveaway.service';
 import { UserService } from '../providers/user.service';
 import { config } from '../utils/config';
+import { fetchableGuilds } from '../utils/GlobalVar';
 import { IsButtonInteractionGuard } from '../utils/guards/is-button-interaction.guard';
 import Book, { PageCallback } from '../utils/navigation/Book';
 
@@ -33,7 +34,14 @@ export class GiveawayEvents {
     private readonly guildService: MongoGuildService
   ) {}
   private readonly logger = new Logger(GiveawayEvents.name);
-
+  @Once('ready')
+  async onReady() {
+    const smth = await this.giveawayService.getServerGiveaways({
+      ended: false,
+      $or: [{ additionalCondition: 'type' }, { voiceCondition: 'voice' }]
+    });
+    this.giveawayService.pushToFetchableGuilds(smth.map((x) => x.guildID));
+  }
   @On('interactionCreate')
   @UseGuards(IsButtonInteractionGuard)
   async onInteractionCreate(button: ButtonInteraction): Promise<void> {
@@ -288,24 +296,10 @@ export class GiveawayEvents {
     if (user.bot) return;
     try {
       if (reaction?.emoji.name == config.emojis.giveaway) {
-        let giveaway = await this.giveawayService.getGiveawayByMessage(
+        const giveaway = await this.giveawayService.getGiveawayByMessage(
           reaction.message.guildId,
           reaction.message.id
         );
-        if (!giveaway) {
-          const tempGiveaway = await this.giveawayService.getGiveawayByMessage(
-            reaction.message.guildId,
-            reaction.message.id,
-            true
-          );
-          if (tempGiveaway)
-            giveaway = await this.giveawayService.getGiveawayByMessage(
-              reaction.message.guildId,
-              reaction.message.id,
-              false,
-              (tempGiveaway.endDate - Date.now()) / 1e3
-            );
-        }
         if (!giveaway) return;
 
         const member =
@@ -324,12 +318,18 @@ export class GiveawayEvents {
       this.logger.log(err);
     }
   }
-  //on channel enter
+  //on channel leave
   @On('voiceStateUpdate')
-  async onChannelEnter(
+  async onChannelLeave(
     oldState: VoiceState,
     newState: VoiceState
   ): Promise<void> {
+    if (
+      !this.giveawayService.verifyGuild(
+        newState?.guild?.id ?? oldState?.guild?.id
+      )
+    )
+      return;
     if (
       (oldState.channel && !newState.channel) ||
       (oldState.channel &&
@@ -337,24 +337,13 @@ export class GiveawayEvents {
         oldState.channel?.parentId != newState.channel?.parentId)
     ) {
       let category = false;
-      const giveaways = await this.giveawayService.getServerGiveaways(
-        newState.guild.id
-      );
-      if (!giveaways) return;
-      const docs = await Promise.all(
-        giveaways.map((id) =>
-          this.giveawayService.giveawayService.findOne({
-            ID: id,
-            ended: false
-          })
-        )
-      );
-      if (!docs.length) return;
-      if (!docs.some((giveaway) => giveaway?.voiceCondition === 'voice'))
-        return;
-      if (!docs.some((x) => x?.participants.find((x) => x.ID === newState.id)))
-        return;
-      if (!oldState.member) return;
+      const docs = await this.giveawayService.getServerGiveaways({
+        guildID: newState.guild.id,
+        ended: false,
+        voiceCondition: 'voice',
+        'participants.ID': newState.id
+      });
+      if (!docs || !oldState.member) return;
       if (
         docs.some(
           (x) =>
@@ -422,7 +411,8 @@ export class GiveawayEvents {
               return x?.number !== member.voice.channel?.parentId;
             return false;
           })
-          .map((giveaway) => giveaway?.ID ?? '');
+          .filter((x) => !x.ended)
+          .map((giveaway) => giveaway.ID ?? '');
         if (!IDs.length) return;
         await this.giveawayService.onLeave(oldState.id, IDs);
       }, config.ticks.tenSeconds * 2);

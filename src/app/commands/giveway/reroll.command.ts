@@ -93,8 +93,7 @@ export class RerollCmd implements DiscordTransformedCommand<RerollDto> {
     }
     const giveaway = await this.giveawayService.getGiveawayByMessage(
       guild.id,
-      messageID,
-      true
+      messageID
     );
     if (!giveaway || !giveaway.ended) {
       reply(locale[region].errors.noFoundGiveaways());

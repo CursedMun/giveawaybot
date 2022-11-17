@@ -46,10 +46,7 @@ import { ClientGateway } from './app/events/client.gateaway.event';
           ],
           makeCache: Options.cacheWithLimits({
             ...Options.DefaultMakeCacheSettings,
-            ReactionManager: 0,
-            GuildMemberManager: {
-              maxSize: 200
-            }
+            ReactionManager: 0
           }),
           sweepers: {
             ...Options.DefaultSweeperSettings,

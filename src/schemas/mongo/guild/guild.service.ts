@@ -6,10 +6,10 @@ import { BaseService } from '../base/BaseService';
 import { Guild, GuildDocument } from './guild.schema';
 
 @Injectable()
-export class MongoGuildService extends BaseService<GuildDocument> {
+export class MongoGuildService extends BaseService<Guild> {
   constructor(
     @InjectModel(Guild.name)
-    public GuildModel: Model<GuildDocument>
+    public GuildModel: Model<Guild>
   ) {
     super(GuildModel);
   }

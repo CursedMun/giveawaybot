@@ -314,7 +314,6 @@ export class HelpCmd implements DiscordCommand {
         if (!guildID) return;
         const documents = await this.giveawayService.getServerGiveawayObjects(
           guildID ?? '',
-          true,
           false
         );
         return {

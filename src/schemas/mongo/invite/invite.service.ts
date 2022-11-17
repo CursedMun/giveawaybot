@@ -6,11 +6,11 @@ import { BaseService } from '../base/BaseService';
 import { Invite, InviteDocument } from './invite.schema';
 
 @Injectable()
-export class MongoInviteService extends BaseService<InviteDocument> {
+export class MongoInviteService extends BaseService<Invite> {
   private readonly defaulttl = config.ticks.oneMinute / 1e3; // 1m in seconds
   constructor(
     @InjectModel(Invite.name)
-    public InviteModel: Model<InviteDocument>
+    public InviteModel: Model<Invite>
   ) {
     super(InviteModel);
   }
