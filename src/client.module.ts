@@ -15,13 +15,7 @@ import { ClientGateway } from './app/events/client.gateaway.event';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        uri: `mongodb+srv://${configService.get(
-          'MONGO_LOGIN'
-        )}:${configService.get(
-          'MONGO_PASSWORD'
-        )}@insomniatests.8ljkr.mongodb.net/${
-          process.env.NODE_ENV === 'development' ? 'dev' : 'test'
-        }?retryWrites=true&w=majority`
+        uri: configService.get('MONGO_URL')
       }),
       inject: [ConfigService]
     }),

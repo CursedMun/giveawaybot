@@ -5,13 +5,11 @@ import { Module } from '@nestjs/common';
 import { GiveawayModule } from '@src/schemas/mongo';
 import { GuildModule } from '@src/schemas/mongo/guild/guild.module';
 import { InjectDynamicProviders } from 'nestjs-dynamic-providers';
-import { CacheModule } from 'src/cache.module';
 import { GiveawayService } from './providers/giveaway.service';
 
 @InjectDynamicProviders('**/*.pcommand.js')
 @Module({
   imports: [
-    CacheModule,
     GiveawayModule,
     UserModule,
     DiscordModule.forFeature(),

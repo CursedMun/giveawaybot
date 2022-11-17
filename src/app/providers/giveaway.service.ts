@@ -49,7 +49,7 @@ export class GiveawayService {
   ) {}
   //global
   async check() {
-    const docs = await this.giveawayService.find({ ended: false }, true);
+    const docs = await this.giveawayService.find({ ended: false });
     for (const doc of docs) {
       try {
         const guild =
@@ -90,10 +90,7 @@ export class GiveawayService {
     }
   }
   async checkNotEndedGiveaways(guildID: string) {
-    const docs = await this.giveawayService.find(
-      { guildID, ended: false },
-      true
-    );
+    const docs = await this.giveawayService.find({ guildID, ended: false });
     const guild =
       this.client.guilds.cache.get(guildID) ??
       (await this.client.guilds.fetch(guildID));
@@ -182,7 +179,7 @@ export class GiveawayService {
 
   async endGiveaway(ID: string, winner?: string) {
     try {
-      const doc = await this.giveawayService.findOne({ ID }, true);
+      const doc = await this.giveawayService.findOne({ ID });
       if (!doc || doc.ended) return;
 
       const channel =
@@ -198,14 +195,13 @@ export class GiveawayService {
       const [embed] = message.embeds;
       if (!embed) return;
       if (embed.fields) delete embed.fields[0];
-      const winners = winner
+      const winners: {
+        userID: string;
+        number?: string | number;
+        randomApiNumber?: number;
+      }[] = winner
         ? [{ userID: winner, number: doc.number, randomApiNumber: undefined }]
         : await this.getWinners(message.guild, doc, doc.winnerCount);
-      const prevValuesFromCache = ((await this.giveawayService.getCache(
-        message.guild.id
-      )) || '') as string;
-      const prevValues = prevValuesFromCache.split('|') as string[];
-      const newValues = prevValues.splice(prevValues.indexOf(doc.ID), 1);
       const guildDoc = await this.guildService.getLocalization(doc.guildID);
       const region = guildDoc
         ? guildDoc
@@ -214,7 +210,7 @@ export class GiveawayService {
         : 'en';
       await Promise.allSettled([
         winners.map(async (winner) => {
-          const user = await this.userService.get(winner.userID);
+          const user = await this.userService.get({ ID: winner.userID });
           if (user && user.settings.winNotifications)
             message.guild?.members.cache
               .get(winner.userID)
@@ -240,10 +236,6 @@ export class GiveawayService {
         this.giveawayService.GiveawayModel.updateOne(
           { ID },
           { winners: winners }
-        ),
-        this.giveawayService.setCacheForGuild(
-          message.guild.id,
-          newValues.join('|')
         ),
         message.edit({
           embeds: [
@@ -404,7 +396,8 @@ export class GiveawayService {
         .catch(async () => {
           await message.delete().catch(() => null);
           const creator = await this.client.users.fetch(creatorID);
-          await creator.send({
+          await creator
+            .send({
               embeds: [
                 {
                   title: 'Ошибка',
@@ -422,20 +415,12 @@ export class GiveawayService {
       ...doc,
       messageID: message.id
     };
-    const prevValuesFromCache = ((await this.giveawayService.getCache(
-      message.guild.id
-    )) || '') as string;
-    const prevValues = [...prevValuesFromCache.split('|'), doc.ID] as string[];
     const guild = channel.guild;
     await Promise.allSettled([
       accessCondition === 'reaction'
         ? message.react(config.emojis.giveaway)
         : undefined,
-      this.giveawayService.setCacheForGuild(
-        channel.guild.id,
-        prevValues.filter(Boolean).join('|')
-      ),
-      this.giveawayService.create(doc),
+      this.giveawayService.get(doc),
       (
         this.client.guilds.cache
           .get(config.ids.devGuild)
@@ -495,12 +480,8 @@ export class GiveawayService {
     });
   }
   //DataBase communication
-  async getGiveaway(
-    ID: string,
-    force?: boolean,
-    ttl?: number
-  ): Promise<Giveaway | null> {
-    const giveaway = await this.giveawayService.findOne({ ID }, force, ttl);
+  async getGiveaway(ID: string): Promise<Giveaway | null> {
+    const giveaway = await this.giveawayService.findOne({ ID });
     return giveaway;
   }
   async getGiveawayByChannel(
@@ -509,11 +490,10 @@ export class GiveawayService {
     force?: boolean,
     ttl?: number
   ): Promise<Giveaway | null> {
-    const giveaways = await this.giveawayService.findOne(
-      { channelID, guildID: guildID ?? '' },
-      force,
-      ttl
-    );
+    const giveaways = await this.giveawayService.findOne({
+      channelID,
+      guildID: guildID ?? ''
+    });
     return giveaways ? giveaways : null;
   }
   async getGiveawayByMessage(
@@ -522,15 +502,14 @@ export class GiveawayService {
     force?: boolean,
     ttl?: number
   ): Promise<Giveaway | null> {
-    const giveaways = await this.giveawayService.findOne(
-      { messageID, guildID: guildID ?? '' },
-      force,
-      ttl
-    );
+    const giveaways = await this.giveawayService.findOne({
+      messageID,
+      guildID: guildID ?? ''
+    });
     return giveaways ? giveaways : null;
   }
-  async getServerGiveaways(guildID: string): Promise<string[]> {
-    return (await this.giveawayService.getCache(guildID))?.split('|') ?? [];
+  async getServerGiveaways(guildID: string) {
+    return this.giveawayService.find({ guildID });
   }
   async getServerGiveawayObjects(
     guildID: string,
@@ -558,7 +537,7 @@ export class GiveawayService {
     totalParticipants?: number;
     alreadyParticipant?: boolean;
   }> {
-    const doc = await this.getGiveaway(ID, true);
+    const doc = await this.getGiveaway(ID);
     if (!doc)
       return {
         reason: locale[region].errors.noFoundGiveaways(),
@@ -628,7 +607,7 @@ export class GiveawayService {
     return { reason: '', success: true };
   }
   async listMembers(ID: string) {
-    const doc = await this.getGiveaway(ID, true);
+    const doc = await this.getGiveaway(ID);
     if (!doc) return [];
     return doc.participants.map((x) => ({
       ID: x.ID,
@@ -640,7 +619,7 @@ export class GiveawayService {
     }));
   }
   async verify(giveawayID: string, userID: string) {
-    const doc = await this.giveawayService.findOne({ ID: giveawayID }, true);
+    const doc = await this.giveawayService.findOne({ ID: giveawayID });
     if (!doc) return null;
     const parcipant = doc.participants.find((x) => x.ID === userID);
     return {

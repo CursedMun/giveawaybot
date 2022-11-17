@@ -5,7 +5,6 @@ import { MongoGuildService } from '@src/schemas/mongo/guild/guild.service';
 import { ModalComponents } from '@src/types/global';
 import {
   ButtonInteraction,
-  CommandInteraction,
   ComponentType,
   GuildMember,
   MessageReaction,
@@ -344,13 +343,10 @@ export class GiveawayEvents {
       if (!giveaways) return;
       const docs = await Promise.all(
         giveaways.map((id) =>
-          this.giveawayService.giveawayService.findOne(
-            {
-              ID: id,
-              ended: false
-            },
-            true
-          )
+          this.giveawayService.giveawayService.findOne({
+            ID: id,
+            ended: false
+          })
         )
       );
       if (!docs.length) return;
@@ -369,7 +365,7 @@ export class GiveawayEvents {
         return;
       else category = true;
       const [user, guildLocal] = await Promise.all([
-        this.userService.getUser(oldState.member.id, false, 20),
+        this.userService.getUser(oldState.member.id),
         this.guildService.getLocalization(oldState.guild.id)
       ]);
       const region = guildLocal

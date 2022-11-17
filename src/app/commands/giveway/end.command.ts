@@ -73,13 +73,10 @@ export class EndCmd implements DiscordTransformedCommand<EndDto> {
         this.logger.warn(err);
       }
     };
-    const guildGiveaways = await this.giveawayService.giveawayService.find(
-      {
-        guildID: guild.id,
-        ended: false
-      },
-      true
-    );
+    const guildGiveaways = await this.giveawayService.giveawayService.find({
+      guildID: guild.id,
+      ended: false
+    });
     if (!guildGiveaways.length) {
       reply(locale[region].errors.noServerGiveaways());
       return;

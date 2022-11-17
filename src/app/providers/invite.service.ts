@@ -6,19 +6,15 @@ import { Injectable, Logger } from '@nestjs/common';
 export class InviteService {
   private readonly logger = new Logger(InviteService.name);
   constructor(public readonly inviteService: MongoInviteService) {}
-  async getInvite(
-    userID: string,
-    force?: boolean,
-    ttl?: number
-  ): Promise<Invite | null> {
-    const invite = await this.inviteService.findOne({ userID }, force, ttl);
+  async getInvite(userID: string): Promise<Invite | null> {
+    const invite = await this.inviteService.findOne({ userID });
     return invite;
   }
   async deleteInvite(userID: string) {
     await this.inviteService.deleteOne({ userID });
   }
   async createInvite(userID: string, inviterID: string, code: string) {
-    await this.inviteService.create({
+    await this.inviteService.get({
       userID,
       inviterID,
       code

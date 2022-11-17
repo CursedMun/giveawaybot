@@ -8,8 +8,8 @@ import { config } from '../utils/config';
 export class UserService {
   private readonly logger = new Logger(UserService.name);
   constructor(public readonly userService: MongoUserService) {}
-  async getUser(ID: string, force: boolean, ttl: number): Promise<User | null> {
-    const user = await this.userService.findOne({ ID }, force, ttl);
+  async getUser(ID: string): Promise<User | null> {
+    const user = await this.userService.findOne({ ID });
     return user;
   }
   async getPremiumUsers() {
@@ -69,12 +69,9 @@ export class UserService {
             .find((role) => role.id === x)
         );
       });
-      const premUsers = await this.userService.find(
-        {
-          tier: { $ne: 'default' }
-        },
-        10
-      );
+      const premUsers = await this.userService.find({
+        tier: { $ne: 'default' }
+      });
       const IDs = [
         ...premUsers.map((x) => x.ID),
         ...premiumUsers.map((x) => x.id)

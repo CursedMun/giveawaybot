@@ -29,6 +29,7 @@ import {
     ru: 'Помощь по командам',
     'en-US': 'Help Command'
   },
+  defaultMemberPermissions: ['SendMessages'],
   description: 'Help Command'
 })
 export class HelpCmd implements DiscordCommand {

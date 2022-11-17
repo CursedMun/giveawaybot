@@ -116,10 +116,9 @@ export class GiveawayStartCommand implements DiscordCommand {
 
       const [premium, giveaways] = await Promise.all([
         this.userService.verifyPremium(command.guild.ownerId),
-        this.giveawayService.giveawayService.countDocuments(
-          { guildID: command.guild.id },
-          5
-        )
+        this.giveawayService.giveawayService.count({
+          guildID: command.guild.id
+        })
       ]);
       this.tempCache[command.user.id] = {
         premium,
@@ -317,7 +316,7 @@ export class GiveawayStartCommand implements DiscordCommand {
       await interaction.message?.delete().catch(() => {});
       return;
     }
-    const region = this.tempCache[interaction.user.id].region ?? 'en';
+    const region = this.tempCache[interaction.user.id]?.region ?? 'en';
     switch (action) {
       case 'confirm': {
         try {
@@ -558,7 +557,7 @@ export class GiveawayStartCommand implements DiscordCommand {
       ...this.tempCache[userID],
       ...option
     };
-    const region = this.tempCache[interaction.user.id].region ?? 'en';
+    const region = this.tempCache[interaction.user.id]?.region ?? 'en';
 
     if (typeof option.additionalCondition === 'string') {
       const components = [

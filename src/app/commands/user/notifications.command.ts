@@ -30,7 +30,7 @@ export class NotificationsCmd implements DiscordCommand {
       : command.guild?.preferredLocale == 'ru'
       ? 'ru'
       : 'en';
-    const user = await this.usersService.get(command.user.id, 5);
+    const user = await this.usersService.get({ ID: command.user.id });
     const options = locale[region].notification.options;
 
     const message = await command
