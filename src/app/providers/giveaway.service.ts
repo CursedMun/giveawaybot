@@ -57,7 +57,7 @@ export class GiveawayService {
         $lt: interval + Date.now()
       }
     });
-    for await (const doc of docs) {
+    for (const doc of docs) {
       try {
         const guild =
           this.client.guilds.cache.get(doc.guildID) ??
