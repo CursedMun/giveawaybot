@@ -10,6 +10,7 @@ import { CommandInteraction, ComponentType, Message } from 'discord.js';
 @Command({
   name: 'notify',
   dmPermission: true,
+  defaultMemberPermissions: ['SendMessages'],
   descriptionLocalizations: {
     ru: 'Включить/Выключить уведомления о розыгрышах',
     'en-US': 'Turn on/off giveaway notifications'
