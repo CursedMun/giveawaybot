@@ -471,15 +471,16 @@ export class GiveawayService {
         })
         .catch((err) => this.logger.error(err.message))
     ]);
-    this.timers.set(doc.messageID, {
-      giveawayTimer: new Timer(
-        doc.endDate,
-        () => {
-          this.endGiveaway(doc.ID);
-        },
-        config.ticks.oneHour
-      )
-    });
+    if (doc.endDate <= Date.now() + config.ticks.oneHour)
+      this.timers.set(doc.messageID, {
+        giveawayTimer: new Timer(
+          doc.endDate,
+          () => {
+            this.endGiveaway(doc.ID);
+          },
+          config.ticks.oneHour
+        )
+      });
   }
   //DataBase communication
   async getGiveaway(ID: string): Promise<Giveaway | null> {
