@@ -16,7 +16,6 @@ import {
 import { GiveawayService } from '../providers/giveaway.service';
 import { UserService } from '../providers/user.service';
 import { config } from '../utils/config';
-import { fetchableGuilds } from '../utils/GlobalVar';
 import { IsButtonInteractionGuard } from '../utils/guards/is-button-interaction.guard';
 import Book, { PageCallback } from '../utils/navigation/Book';
 
@@ -330,29 +329,41 @@ export class GiveawayEvents {
       )
     )
       return;
+
     if (
-      (oldState.channel && !newState.channel) ||
-      (oldState.channel &&
-        newState.channel &&
-        oldState.channel?.parentId != newState.channel?.parentId)
+      oldState.channel &&
+      oldState.channel?.parent?.id != newState.channel?.parent?.id &&
+      newState.channel
     ) {
-      let category = false;
+      await this.sendMessage(oldState, newState, true);
+    } else if (oldState.channel && !newState.channel) {
+      await this.sendMessage(oldState, newState, false);
+    }
+  }
+  //on message write
+  async sendMessage(
+    oldState: VoiceState,
+    newState: VoiceState,
+    category: boolean
+  ) {
+    try {
       const docs = await this.giveawayService.getServerGiveaways({
         guildID: newState.guild.id,
         ended: false,
         voiceCondition: 'voice',
+        additionalCondition: category ? 'category' : { $exists: false },
         'participants.ID': newState.id
       });
       if (!docs || !oldState.member) return;
       if (
+        category &&
         docs.some(
           (x) =>
-            x?.additionalCondition === 'category' &&
-            x?.number === newState.channel?.parentId
+            x.additionalCondition === 'category' &&
+            x.number === newState.channel?.parentId
         )
       )
         return;
-      else category = true;
       const [user, guildLocal] = await Promise.all([
         this.userService.getUser(oldState.member.id),
         this.guildService.getLocalization(oldState.guild.id)
@@ -375,16 +386,17 @@ export class GiveawayEvents {
           })
           .catch((reason) => this.logger.log(reason));
       setTimeout(async () => {
-        const member = await oldState.guild.members.fetch(
-          oldState.member?.id ?? ''
-        );
+        const member = await oldState.guild.members.fetch({
+          user: oldState.member?.id ?? '',
+          force: true,
+          cache: false
+        });
         if (
-          category
+          user &&
+          user.settings.voiceNotifications &&
+          (category
             ? docs.every((x) => x?.number === member.voice.channel?.parentId)
-            : user &&
-              user.settings.voiceNotifications &&
-              member &&
-              member.voice.channel
+            : member && member.voice.channel)
         ) {
           await member
             .send({
@@ -400,23 +412,12 @@ export class GiveawayEvents {
           return;
         }
         //remove this user from all the giveaways
-        const IDs = docs
-          .filter((x) => {
-            if (
-              x?.voiceCondition == 'voice' &&
-              x?.additionalCondition != 'category'
-            )
-              return true;
-            if (x?.additionalCondition == 'category')
-              return x?.number !== member.voice.channel?.parentId;
-            return false;
-          })
-          .filter((x) => !x.ended)
-          .map((giveaway) => giveaway.ID ?? '');
+        const IDs = docs.map((giveaway) => giveaway.ID ?? '');
         if (!IDs.length) return;
         await this.giveawayService.onLeave(oldState.id, IDs);
       }, config.ticks.tenSeconds * 2);
+    } catch (e) {
+      this.logger.error(e);
     }
   }
-  //on message write
 }
