@@ -106,10 +106,10 @@ export class HelpCmd implements DiscordCommand {
                 disabled: true
               },
               {
-                label: 'Ko-fi (Support me)',
+                emoji: '1043220121512050768',
                 type: ComponentType.Button,
                 style: ButtonStyle.Link,
-                url: 'https://ko-fi.com/giveawaybot'
+                url: 'https://www.donationalerts.com/r/cursedmun'
               }
             ]
           }
