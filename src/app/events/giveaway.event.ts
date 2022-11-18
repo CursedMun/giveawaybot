@@ -386,12 +386,15 @@ export class GiveawayEvents {
           })
           .catch((reason) => this.logger.log(reason));
       setTimeout(async () => {
-        const member = await oldState.guild.members.fetch({
-          user: oldState.member?.id ?? '',
-          force: true,
-          cache: false
-        });
+        const member = await oldState.guild.members
+          .fetch({
+            user: oldState.member?.id ?? '',
+            force: true,
+            cache: false
+          })
+          .catch((reason) => this.logger.log(reason));
         if (
+          member &&
           user &&
           user.settings.voiceNotifications &&
           (category
