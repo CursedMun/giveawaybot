@@ -459,6 +459,12 @@ export class GiveawayStartCommand implements DiscordCommand {
                         style: ButtonStyle.Link,
                         emoji: '1033868900720455680',
                         url: 'https://boosty.to/giveaway'
+                      },
+                      {
+                        emoji: '1043220121512050768',
+                        type: ComponentType.Button,
+                        style: ButtonStyle.Link,
+                        url: 'https://www.donationalerts.com/r/cursedmun'
                       }
                     ]
                   : undefined
